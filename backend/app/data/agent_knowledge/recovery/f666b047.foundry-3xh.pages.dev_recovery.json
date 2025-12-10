@@ -1,0 +1,74 @@
+{
+  "unknown:wait_and_retry": {
+    "problem_type": "unknown",
+    "recovery_action": "wait_and_retry",
+    "attempts": 42,
+    "successes": 42,
+    "last_used": "2025-12-03T09:53:14.955389",
+    "contexts": [
+      {
+        "selector": "[data-test*=\"welcome\"]"
+      },
+      {
+        "selector": "[data-test*=\"welcome\"]"
+      },
+      {
+        "selector": "[data-test*=\"email\"]"
+      },
+      {
+        "selector": "[data-test*=\"email\"]"
+      },
+      {
+        "selector": "[data-test*=\"email\"]"
+      }
+    ]
+  },
+  "timeout:wait_for_loading": {
+    "problem_type": "timeout",
+    "recovery_action": "wait_for_loading",
+    "attempts": 40,
+    "successes": 40,
+    "last_used": "2025-12-03T10:02:49.709529",
+    "contexts": [
+      {
+        "selector": "[data-test*=\"registration\"]"
+      },
+      {
+        "selector": "[data-test*=\"registration\"]"
+      },
+      {
+        "selector": "[data-test*=\"registration\"]"
+      },
+      {
+        "selector": "[data-test*=\"welcome\"]"
+      },
+      {
+        "selector": "[data-test*=\"email\"]"
+      }
+    ]
+  },
+  "element_not_visible:scroll_into_view": {
+    "problem_type": "element_not_visible",
+    "recovery_action": "scroll_into_view",
+    "attempts": 9,
+    "successes": 9,
+    "last_used": "2025-12-02T06:21:52.438741",
+    "contexts": [
+      {
+        "selector": "[data-testid=\"VerifiedUserIcon\"]"
+      },
+      {
+        "selector": "[data-testid=\"VerifiedUserIcon\"]"
+      },
+      {
+        "selector": "[data-testid=\"VerifiedUserIcon\"]"
+      },
+      {
+        "selector": "[data-testid=\"VerifiedUserIcon\"]"
+      },
+      {
+        "selector": "[data-testid=\"VerifiedUserIcon\"]"
+      }
+    ]
+  }
+}

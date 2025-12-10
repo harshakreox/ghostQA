@@ -1,0 +1,433 @@
+{
+  "id": "feature_1764930140.810364",
+  "name": "Edit Compliance Record - Back Office User",
+  "description": "As a Back Office User, I can click the Edit button to modify compliance record details including requirements in a pre-filled form",
+  "created_at": "2025-12-05T15:52:20.810364",
+  "updated_at": "2025-12-05T15:52:24.092182",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am logged in as a Back Office User"
+    },
+    {
+      "keyword": "And",
+      "text": "I am on the Compliance Dashboard list view"
+    },
+    {
+      "keyword": "And",
+      "text": "there are existing compliance records in the list"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Successfully edit compliance record and save changes",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I can see a compliance record in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Edit button for the compliance record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to the compliance record form in edit mode"
+        },
+        {
+          "keyword": "And",
+          "text": "the form should be pre-filled with existing data"
+        },
+        {
+          "keyword": "When",
+          "text": "I modify the compliance details"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the Save button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the success message \"Compliance record updated successfully\""
+        },
+        {
+          "keyword": "And",
+          "text": "I should be redirected to the Compliance Dashboard list view"
+        }
+      ]
+    },
+    {
+      "name": "Edit form displays all required elements and fields are editable",
+      "tags": [
+        "@positive",
+        "@ui"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I can see a compliance record in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Edit button for the compliance record"
+        },
+        {
+          "keyword": "Then",
+          "text": "all form fields should be editable"
+        },
+        {
+          "keyword": "And",
+          "text": "the Requirements tab should be visible"
+        },
+        {
+          "keyword": "And",
+          "text": "the Requirements tab should be editable"
+        },
+        {
+          "keyword": "And",
+          "text": "the Save button should be available"
+        },
+        {
+          "keyword": "And",
+          "text": "the Cancel button should be available"
+        }
+      ]
+    },
+    {
+      "name": "Successfully edit requirements tab and save",
+      "tags": [
+        "@positive",
+        "@requirements"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have clicked the Edit button for a compliance record"
+        },
+        {
+          "keyword": "And",
+          "text": "I am in the edit form"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Requirements tab"
+        },
+        {
+          "keyword": "And",
+          "text": "I modify the requirements details"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the Save button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the success message \"Compliance record updated successfully\""
+        },
+        {
+          "keyword": "And",
+          "text": "the updated requirements should reflect in the list view"
+        }
+      ]
+    },
+    {
+      "name": "Cancel editing returns to list view without saving changes",
+      "tags": [
+        "@positive",
+        "@alternative"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have clicked the Edit button for a compliance record"
+        },
+        {
+          "keyword": "And",
+          "text": "I am in the edit form"
+        },
+        {
+          "keyword": "When",
+          "text": "I modify some compliance details"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the Cancel button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be returned to the Compliance Dashboard list view"
+        },
+        {
+          "keyword": "And",
+          "text": "the changes should not be saved"
+        },
+        {
+          "keyword": "And",
+          "text": "the original data should remain unchanged in the list"
+        }
+      ]
+    },
+    {
+      "name": "Updated data reflects in Client Admin view without Requirements tab",
+      "tags": [
+        "@positive",
+        "@integration"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have successfully updated a compliance record"
+        },
+        {
+          "keyword": "And",
+          "text": "I am back on the Compliance Dashboard list view"
+        },
+        {
+          "keyword": "When",
+          "text": "I switch to Client Admin view"
+        },
+        {
+          "keyword": "Then",
+          "text": "the updated compliance data should be visible"
+        },
+        {
+          "keyword": "But",
+          "text": "the Requirements tab should remain hidden for Client Admin"
+        }
+      ]
+    },
+    {
+      "name": "Multiple compliance records can be edited sequentially",
+      "tags": [
+        "@positive",
+        "@workflow"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there are multiple compliance records in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I edit and save the first compliance record"
+        },
+        {
+          "keyword": "And",
+          "text": "I edit and save the second compliance record"
+        },
+        {
+          "keyword": "Then",
+          "text": "both records should show updated data in the list view"
+        },
+        {
+          "keyword": "And",
+          "text": "success messages should display for each save operation"
+        }
+      ]
+    },
+    {
+      "name": "Form validation prevents saving with invalid required fields",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have clicked the Edit button for a compliance record"
+        },
+        {
+          "keyword": "And",
+          "text": "I am in the edit form"
+        },
+        {
+          "keyword": "When",
+          "text": "I clear a required field"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the Save button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a validation error message"
+        },
+        {
+          "keyword": "And",
+          "text": "the form should not be saved"
+        },
+        {
+          "keyword": "And",
+          "text": "I should remain in the edit form"
+        }
+      ]
+    },
+    {
+      "name": "Invalid data format shows validation error",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have clicked the Edit button for a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter invalid data format in a field"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the Save button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a format validation error"
+        },
+        {
+          "keyword": "And",
+          "text": "the record should not be saved"
+        }
+      ]
+    },
+    {
+      "name": "Network error during save shows appropriate error message",
+      "tags": [
+        "@negative",
+        "@error-handling"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have modified a compliance record in edit form"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Save button"
+        },
+        {
+          "keyword": "And",
+          "text": "a network error occurs during save"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message indicating the save failed"
+        },
+        {
+          "keyword": "And",
+          "text": "I should remain in the edit form with my changes intact"
+        }
+      ]
+    },
+    {
+      "name": "Edit form handles records with no existing requirements",
+      "tags": [
+        "@edge-case",
+        "@requirements"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a compliance record with no existing requirements"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Edit button for this record"
+        },
+        {
+          "keyword": "Then",
+          "text": "the form should open successfully"
+        },
+        {
+          "keyword": "And",
+          "text": "the Requirements tab should be visible and empty"
+        },
+        {
+          "keyword": "When",
+          "text": "I add new requirements and save"
+        },
+        {
+          "keyword": "Then",
+          "text": "the requirements should be saved successfully"
+        }
+      ]
+    },
+    {
+      "name": "Edit form handles records with maximum data length",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a compliance record with maximum allowed data length"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Edit button for this record"
+        },
+        {
+          "keyword": "Then",
+          "text": "the form should load all data correctly"
+        },
+        {
+          "keyword": "And",
+          "text": "all fields should display the full content"
+        },
+        {
+          "keyword": "When",
+          "text": "I make minor modifications and save"
+        },
+        {
+          "keyword": "Then",
+          "text": "the changes should be saved successfully"
+        }
+      ]
+    },
+    {
+      "name": "Editing the same record twice shows latest data",
+      "tags": [
+        "@edge-case",
+        "@data-consistency"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have successfully edited and saved a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Edit button for the same record again"
+        },
+        {
+          "keyword": "Then",
+          "text": "the form should be pre-filled with the latest saved data"
+        },
+        {
+          "keyword": "And",
+          "text": "not the original data from before the first edit"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: Edit Compliance Record - Back Office User\n  As a Back Office User, I can click the Edit button to modify compliance record details including requirements in a pre-filled form\n\n  Background:\n    Given I am logged in as a Back Office User\n    And I am on the Compliance Dashboard list view\n    And there are existing compliance records in the list\n\n  @smoke @positive\n  Scenario: Successfully edit compliance record and save changes\n    Given I can see a compliance record in the list\n    When I click the Edit button for the compliance record\n    Then I should be navigated to the compliance record form in edit mode\n    And the form should be pre-filled with existing data\n    When I modify the compliance details\n    And I click the Save button\n    Then I should see the success message \"Compliance record updated successfully\"\n    And I should be redirected to the Compliance Dashboard list view\n\n  @positive @ui\n  Scenario: Edit form displays all required elements and fields are editable\n    Given I can see a compliance record in the list\n    When I click the Edit button for the compliance record\n    Then all form fields should be editable\n    And the Requirements tab should be visible\n    And the Requirements tab should be editable\n    And the Save button should be available\n    And the Cancel button should be available\n\n  @positive @requirements\n  Scenario: Successfully edit requirements tab and save\n    Given I have clicked the Edit button for a compliance record\n    And I am in the edit form\n    When I click on the Requirements tab\n    And I modify the requirements details\n    And I click the Save button\n    Then I should see the success message \"Compliance record updated successfully\"\n    And the updated requirements should reflect in the list view\n\n  @positive @alternative\n  Scenario: Cancel editing returns to list view without saving changes\n    Given I have clicked the Edit button for a compliance record\n    And I am in the edit form\n    When I modify some compliance details\n    And I click the Cancel button\n    Then I should be returned to the Compliance Dashboard list view\n    And the changes should not be saved\n    And the original data should remain unchanged in the list\n\n  @positive @integration\n  Scenario: Updated data reflects in Client Admin view without Requirements tab\n    Given I have successfully updated a compliance record\n    And I am back on the Compliance Dashboard list view\n    When I switch to Client Admin view\n    Then the updated compliance data should be visible\n    But the Requirements tab should remain hidden for Client Admin\n\n  @positive @workflow\n  Scenario: Multiple compliance records can be edited sequentially\n    Given there are multiple compliance records in the list\n    When I edit and save the first compliance record\n    And I edit and save the second compliance record\n    Then both records should show updated data in the list view\n    And success messages should display for each save operation\n\n  @negative @validation\n  Scenario: Form validation prevents saving with invalid required fields\n    Given I have clicked the Edit button for a compliance record\n    And I am in the edit form\n    When I clear a required field\n    And I click the Save button\n    Then I should see a validation error message\n    And the form should not be saved\n    And I should remain in the edit form\n\n  @negative @validation\n  Scenario: Invalid data format shows validation error\n    Given I have clicked the Edit button for a compliance record\n    When I enter invalid data format in a field\n    And I click the Save button\n    Then I should see a format validation error\n    And the record should not be saved\n\n  @negative @error-handling\n  Scenario: Network error during save shows appropriate error message\n    Given I have modified a compliance record in edit form\n    When I click the Save button\n    And a network error occurs during save\n    Then I should see an error message indicating the save failed\n    And I should remain in the edit form with my changes intact\n\n  @edge-case @requirements\n  Scenario: Edit form handles records with no existing requirements\n    Given there is a compliance record with no existing requirements\n    When I click the Edit button for this record\n    Then the form should open successfully\n    And the Requirements tab should be visible and empty\n    When I add new requirements and save\n    Then the requirements should be saved successfully\n\n  @edge-case @boundary\n  Scenario: Edit form handles records with maximum data length\n    Given there is a compliance record with maximum allowed data length\n    When I click the Edit button for this record\n    Then the form should load all data correctly\n    And all fields should display the full content\n    When I make minor modifications and save\n    Then the changes should be saved successfully\n\n  @edge-case @data-consistency\n  Scenario: Editing the same record twice shows latest data\n    Given I have successfully edited and saved a compliance record\n    When I click the Edit button for the same record again\n    Then the form should be pre-filled with the latest saved data\n    And not the original data from before the first edit"
+}

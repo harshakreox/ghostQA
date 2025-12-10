@@ -1,0 +1,411 @@
+{
+  "id": "feature_1764140909.111782",
+  "name": "Issue Notice of Cancellation (NOC) for Bound Applications",
+  "description": "Underwriters can initiate NOC process for bound applications through right-click menu actions in the EOX UW list view",
+  "created_at": "2025-11-26T11:48:42.182897",
+  "updated_at": "2025-11-26T12:38:29.111782",
+  "project_id": "952981ca-9688-48c0-b59b-3d35eeea6494",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am logged in to the EOX application as an Underwriter"
+    },
+    {
+      "keyword": "And",
+      "text": "I am on the UW list view page"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Successfully issue NOC for a bound application",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is an application with 'Bound' status in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the bound application"
+        },
+        {
+          "keyword": "And",
+          "text": "I click on the 'Issue NOC' action button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a pop-up message 'Please complete the NOC in IMS before performing further activities'"
+        },
+        {
+          "keyword": "And",
+          "text": "the application status should change to 'Notice of Cancellation'"
+        }
+      ]
+    },
+    {
+      "name": "NOC action button appears only for bound applications",
+      "tags": [
+        "@positive",
+        "@ui"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is an application with 'Bound' status in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the bound application"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the 'Issue NOC' action button in the context menu"
+        },
+        {
+          "keyword": "And",
+          "text": "the action button should be enabled"
+        }
+      ]
+    },
+    {
+      "name": "Multiple bound applications can have NOC issued",
+      "tags": [
+        "@positive",
+        "@multiple-records"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there are multiple applications with 'Bound' status in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the first bound application"
+        },
+        {
+          "keyword": "And",
+          "text": "I click on 'Issue NOC' action button"
+        },
+        {
+          "keyword": "And",
+          "text": "I acknowledge the pop-up message"
+        },
+        {
+          "keyword": "And",
+          "text": "I right-click on another bound application"
+        },
+        {
+          "keyword": "And",
+          "text": "I click on 'Issue NOC' action button"
+        },
+        {
+          "keyword": "Then",
+          "text": "both applications should have status 'Notice of Cancellation'"
+        }
+      ]
+    },
+    {
+      "name": "Pop-up message acknowledgment updates status correctly",
+      "tags": [
+        "@positive",
+        "@status-update"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is an application with 'Bound' status in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the bound application"
+        },
+        {
+          "keyword": "And",
+          "text": "I click on 'Issue NOC' action button"
+        },
+        {
+          "keyword": "And",
+          "text": "I acknowledge the pop-up message"
+        },
+        {
+          "keyword": "Then",
+          "text": "the application status should automatically change to 'Notice of Cancellation'"
+        },
+        {
+          "keyword": "And",
+          "text": "the status change should be visible immediately in the list view"
+        }
+      ]
+    },
+    {
+      "name": "Application with Notice of Cancellation status available for IMS processing",
+      "tags": [
+        "@positive",
+        "@integration"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have issued NOC for a bound application"
+        },
+        {
+          "keyword": "And",
+          "text": "the application status is 'Notice of Cancellation'"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to IMS"
+        },
+        {
+          "keyword": "And",
+          "text": "I go to Policy > Notice of Cancellation"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be able to change the status to Notice of Cancellation in IMS"
+        }
+      ]
+    },
+    {
+      "name": "Issue NOC maintains data consistency across sessions",
+      "tags": [
+        "@positive",
+        "@persistence"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have issued NOC for a bound application"
+        },
+        {
+          "keyword": "And",
+          "text": "the application status is 'Notice of Cancellation'"
+        },
+        {
+          "keyword": "When",
+          "text": "I log out and log back in"
+        },
+        {
+          "keyword": "And",
+          "text": "I navigate to the UW list view"
+        },
+        {
+          "keyword": "Then",
+          "text": "the application status should remain as 'Notice of Cancellation'"
+        }
+      ]
+    },
+    {
+      "name": "Issue NOC action not available for non-bound applications",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is an application with 'Pending' status in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the pending application"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see the 'Issue NOC' action button in the context menu"
+        }
+      ]
+    },
+    {
+      "name": "Cannot issue NOC for applications with existing Notice of Cancellation status",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is an application with 'Notice of Cancellation' status in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the application"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see the 'Issue NOC' action button in the context menu"
+        },
+        {
+          "keyword": "And",
+          "text": "the application status should remain unchanged"
+        }
+      ]
+    },
+    {
+      "name": "System handles NOC pop-up dismissal without status change",
+      "tags": [
+        "@negative",
+        "@user-cancellation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is an application with 'Bound' status in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the bound application"
+        },
+        {
+          "keyword": "And",
+          "text": "I click on 'Issue NOC' action button"
+        },
+        {
+          "keyword": "And",
+          "text": "I dismiss the pop-up without acknowledging"
+        },
+        {
+          "keyword": "Then",
+          "text": "the application status should remain as 'Bound'"
+        },
+        {
+          "keyword": "And",
+          "text": "no NOC process should be initiated"
+        }
+      ]
+    },
+    {
+      "name": "Issue NOC validation with various application statuses",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is an application with <status> status in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the application"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see <result>"
+        }
+      ]
+    },
+    {
+      "name": "Edge case - Issue NOC immediately after application becomes bound",
+      "tags": [
+        "@edge-case",
+        "@timing"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "an application has just changed status to 'Bound'"
+        },
+        {
+          "keyword": "When",
+          "text": "I refresh the UW list view"
+        },
+        {
+          "keyword": "And",
+          "text": "I right-click on the newly bound application"
+        },
+        {
+          "keyword": "And",
+          "text": "I click on 'Issue NOC' action button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the NOC process should initiate successfully"
+        },
+        {
+          "keyword": "And",
+          "text": "the status should change to 'Notice of Cancellation'"
+        }
+      ]
+    },
+    {
+      "name": "Edge case - Maximum character limit in pop-up message display",
+      "tags": [
+        "@edge-case",
+        "@ui"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is an application with 'Bound' status in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the bound application"
+        },
+        {
+          "keyword": "And",
+          "text": "I click on 'Issue NOC' action button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the pop-up message should display completely without truncation"
+        },
+        {
+          "keyword": "And",
+          "text": "the message should be 'Please complete the NOC in IMS before performing further activities'"
+        }
+      ]
+    },
+    {
+      "name": "Alternative flow - Issue NOC using keyboard navigation",
+      "tags": [
+        "@alternative-flow",
+        "@accessibility"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is an application with 'Bound' status in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the bound application using keyboard"
+        },
+        {
+          "keyword": "And",
+          "text": "I press the context menu key"
+        },
+        {
+          "keyword": "And",
+          "text": "I select 'Issue NOC' action using keyboard"
+        },
+        {
+          "keyword": "Then",
+          "text": "the NOC process should initiate successfully"
+        },
+        {
+          "keyword": "And",
+          "text": "the application status should change to 'Notice of Cancellation'"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: Issue Notice of Cancellation (NOC) for Bound Applications\n  Underwriters can initiate NOC process for bound applications through right-click menu actions in the EOX UW list view\n\n  Background:\n    Given I am logged in to the EOX application as an Underwriter\n    And I am on the UW list view page\n\n  @smoke @positive\n  Scenario: Successfully issue NOC for a bound application\n    Given there is an application with 'Bound' status in the list\n    When I right-click on the bound application\n    And I click on the 'Issue NOC' action button\n    Then I should see a pop-up message 'Please complete the NOC in IMS before performing further activities'\n    And the application status should change to 'Notice of Cancellation'\n\n  @positive @ui\n  Scenario: NOC action button appears only for bound applications\n    Given there is an application with 'Bound' status in the list\n    When I right-click on the bound application\n    Then I should see the 'Issue NOC' action button in the context menu\n    And the action button should be enabled\n\n  @positive @multiple-records\n  Scenario: Multiple bound applications can have NOC issued\n    Given there are multiple applications with 'Bound' status in the list\n    When I right-click on the first bound application\n    And I click on 'Issue NOC' action button\n    And I acknowledge the pop-up message\n    And I right-click on another bound application\n    And I click on 'Issue NOC' action button\n    Then both applications should have status 'Notice of Cancellation'\n\n  @positive @status-update\n  Scenario: Pop-up message acknowledgment updates status correctly\n    Given there is an application with 'Bound' status in the list\n    When I right-click on the bound application\n    And I click on 'Issue NOC' action button\n    And I acknowledge the pop-up message\n    Then the application status should automatically change to 'Notice of Cancellation'\n    And the status change should be visible immediately in the list view\n\n  @positive @integration\n  Scenario: Application with Notice of Cancellation status available for IMS processing\n    Given I have issued NOC for a bound application\n    And the application status is 'Notice of Cancellation'\n    When I navigate to IMS\n    And I go to Policy > Notice of Cancellation\n    Then I should be able to change the status to Notice of Cancellation in IMS\n\n  @positive @persistence\n  Scenario: Issue NOC maintains data consistency across sessions\n    Given I have issued NOC for a bound application\n    And the application status is 'Notice of Cancellation'\n    When I log out and log back in\n    And I navigate to the UW list view\n    Then the application status should remain as 'Notice of Cancellation'\n\n  @negative @validation\n  Scenario: Issue NOC action not available for non-bound applications\n    Given there is an application with 'Pending' status in the list\n    When I right-click on the pending application\n    Then I should not see the 'Issue NOC' action button in the context menu\n\n  @negative @validation\n  Scenario: Cannot issue NOC for applications with existing Notice of Cancellation status\n    Given there is an application with 'Notice of Cancellation' status in the list\n    When I right-click on the application\n    Then I should not see the 'Issue NOC' action button in the context menu\n    And the application status should remain unchanged\n\n  @negative @user-cancellation\n  Scenario: System handles NOC pop-up dismissal without status change\n    Given there is an application with 'Bound' status in the list\n    When I right-click on the bound application\n    And I click on 'Issue NOC' action button\n    And I dismiss the pop-up without acknowledging\n    Then the application status should remain as 'Bound'\n    And no NOC process should be initiated\n\n  @negative @validation\n  Scenario: Issue NOC validation with various application statuses\n    Given there is an application with <status> status in the list\n    When I right-click on the application\n    Then I should see <result>\n\n  @edge-case @timing\n  Scenario: Edge case - Issue NOC immediately after application becomes bound\n    Given an application has just changed status to 'Bound'\n    When I refresh the UW list view\n    And I right-click on the newly bound application\n    And I click on 'Issue NOC' action button\n    Then the NOC process should initiate successfully\n    And the status should change to 'Notice of Cancellation'\n\n  @edge-case @ui\n  Scenario: Edge case - Maximum character limit in pop-up message display\n    Given there is an application with 'Bound' status in the list\n    When I right-click on the bound application\n    And I click on 'Issue NOC' action button\n    Then the pop-up message should display completely without truncation\n    And the message should be 'Please complete the NOC in IMS before performing further activities'\n\n  @alternative-flow @accessibility\n  Scenario: Alternative flow - Issue NOC using keyboard navigation\n    Given there is an application with 'Bound' status in the list\n    When I navigate to the bound application using keyboard\n    And I press the context menu key\n    And I select 'Issue NOC' action using keyboard\n    Then the NOC process should initiate successfully\n    And the application status should change to 'Notice of Cancellation'"
+}

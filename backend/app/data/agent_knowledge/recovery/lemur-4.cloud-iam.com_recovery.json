@@ -1,0 +1,50 @@
+{
+  "unknown:wait_and_retry": {
+    "problem_type": "unknown",
+    "recovery_action": "wait_and_retry",
+    "attempts": 148,
+    "successes": 148,
+    "last_used": "2025-12-03T09:57:35.005031",
+    "contexts": [
+      {
+        "selector": "user"
+      },
+      {
+        "selector": "user"
+      },
+      {
+        "selector": "user"
+      },
+      {
+        "selector": "user"
+      },
+      {
+        "selector": "user"
+      }
+    ]
+  },
+  "timeout:wait_for_loading": {
+    "problem_type": "timeout",
+    "recovery_action": "wait_for_loading",
+    "attempts": 12,
+    "successes": 12,
+    "last_used": "2025-12-03T09:58:16.846021",
+    "contexts": [
+      {
+        "selector": "[data-test*=\"welcome\"]"
+      },
+      {
+        "selector": "[data-test*=\"welcome\"]"
+      },
+      {
+        "selector": "[data-test*=\"welcome\"]"
+      },
+      {
+        "selector": "[data-test*=\"welcome\"]"
+      },
+      {
+        "selector": "[data-test*=\"welcome\"]"
+      }
+    ]
+  }
+}

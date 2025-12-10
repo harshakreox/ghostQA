@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ report_title }}</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+          "Oxygen", "Ubuntu", "Cantarell", sans-serif;
+        background: #f5f5f5;
+        color: #333;
+        line-height: 1.6;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+      }
+
+      .header .date {
+        opacity: 0.9;
+        font-size: 0.9em;
+      }
+
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 30px;
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .summary-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .summary-card .label {
+        color: #6b7280;
+        font-size: 0.875em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+
+      .summary-card .value {
+        font-size: 2.5em;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .summary-card.total .value {
+        color: #3b82f6;
+      }
+      .summary-card.passed .value {
+        color: #10b981;
+      }
+      .summary-card.failed .value {
+        color: #ef4444;
+      }
+      .summary-card.skipped .value {
+        color: #f59e0b;
+      }
+
+      .tests {
+        padding: 30px;
+      }
+
+      .test {
+        margin-bottom: 30px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .test-header {
+        padding: 15px 20px;
+        font-weight: 600;
+        font-size: 1.1em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .test-header.passed {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      .test-header.failed {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .test-badge {
+        background: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.85em;
+        font-weight: 600;
+      }
+
+      .test-badge.passed {
+        color: #059669;
+      }
+      .test-badge.failed {
+        color: #dc2626;
+      }
+
+      .steps {
+        background: white;
+      }
+
+      .step {
+        padding: 15px 20px;
+        border-bottom: 1px solid #f3f4f6;
+        display: grid;
+        grid-template-columns: 60px 100px 1fr 100px;
+        gap: 15px;
+        align-items: start;
+      }
+
+      .step:last-child {
+        border-bottom: none;
+      }
+
+      .step:hover {
+        background: #f9fafb;
+      }
+
+      .step-number {
+        color: #6b7280;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      .step-action {
+        color: #6366f1;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.75em;
+        letter-spacing: 0.5px;
+      }
+
+      .step-description {
+        color: #374151;
+      }
+
+      .step-status {
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .step-status.pass {
+        color: #059669;
+      }
+
+      .step-status.fail {
+        color: #dc2626;
+      }
+
+      .step-status.skip {
+        color: #f59e0b;
+      }
+
+      .step-error {
+        grid-column: 2 / -1;
+        background: #fef2f2;
+        border: 1px solid #fee2e2;
+        padding: 10px 15px;
+        border-radius: 6px;
+        margin-top: 10px;
+        color: #991b1b;
+        font-size: 0.9em;
+      }
+
+      .step-screenshot {
+        grid-column: 2 / -1;
+        margin-top: 10px;
+      }
+
+      .step-screenshot img {
+        max-width: 100%;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #6b7280;
+        font-size: 0.875em;
+        background: #f9fafb;
+        border-top: 1px solid #e5e7eb;
+      }
+
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+        }
+
+        .container {
+          box-shadow: none;
+        }
+
+        .step-screenshot img {
+          max-width: 500px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>{{ report_title }}</h1>
+        <p class="date">Generated on {{ generation_date }}</p>
+      </div>
+
+      <div class="summary">
+        <div class="summary-card total">
+          <div class="label">Total Tests</div>
+          <div class="value">{{ total_tests }}</div>
+        </div>
+        <div class="summary-card total">
+          <div class="label">Total Steps</div>
+          <div class="value">{{ total_steps }}</div>
+        </div>
+        <div class="summary-card passed">
+          <div class="label">Passed</div>
+          <div class="value">{{ passed }}</div>
+        </div>
+        <div class="summary-card failed">
+          <div class="label">Failed</div>
+          <div class="value">{{ failed }}</div>
+        </div>
+        {% if skipped > 0 %}
+        <div class="summary-card skipped">
+          <div class="label">Skipped</div>
+          <div class="value">{{ skipped }}</div>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="tests">
+        {% for test in tests %}
+        <div class="test">
+          <div class="test-header {{ test.status|lower }}">
+            <span>{{ test.name }}</span>
+            <span class="test-badge {{ test.status|lower }}"
+              >{{ test.status }}</span
+            >
+          </div>
+          <div class="steps">
+            {% for step in test.steps %}
+            <div class="step">
+              <div class="step-number">#{{ step.StepNo }}</div>
+              <div class="step-action">{{ step.Action }}</div>
+              <div class="step-description">{{ step.Description }}</div>
+              <div class="step-status {{ step.Status|lower }}">
+                {{ step.Status }}
+              </div>
+
+              {% if step.Error %}
+              <div class="step-error">
+                <strong>Error:</strong> {{ step.Error }}
+              </div>
+              {% endif %} {% if step.Screenshot %}
+              <div class="step-screenshot">
+                <img
+                  src="{{ step.Screenshot }}"
+                  alt="Screenshot for step {{ step.StepNo }}"
+                  loading="lazy"
+                />
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="footer">
+        <p>
+          Autonomous Test Automation Framework | Report ID: {{ generation_date
+          }}
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

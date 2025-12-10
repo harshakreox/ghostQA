@@ -1,0 +1,363 @@
+{
+  "id": "feature_1764930460.831732",
+  "name": "Compliance Dashboard Access - Alliant Admin",
+  "description": "Alliant Admin users can click on the Compliance Dashboard module to navigate to a companies list view and access detailed compliance information for each company.",
+  "created_at": "2025-12-05T15:57:40.831732",
+  "updated_at": "2025-12-05T15:57:44.570119",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am on the application at https://2bd642eb.taruvi-testconsole.pages.dev/insurer-claims-dashboard"
+    },
+    {
+      "keyword": "And",
+      "text": "I am logged in as an Alliant Admin user"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Alliant Admin successfully views Compliance Dashboard module on home page",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "the module should display with \"Compliance Dashboard\" title"
+        }
+      ]
+    },
+    {
+      "name": "Alliant Admin successfully navigates to companies list view",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "And",
+          "text": "I can see the Compliance Dashboard module"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to the Compliance Dashboard"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the companies list view"
+        }
+      ]
+    },
+    {
+      "name": "Companies list view displays all company records with correct columns",
+      "tags": [
+        "@positive",
+        "@data-display"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have navigated to the Compliance Dashboard companies list view"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see records of all companies"
+        },
+        {
+          "keyword": "And",
+          "text": "the list should contain the \"Company Name\" column"
+        },
+        {
+          "keyword": "And",
+          "text": "the list should contain the \"Action\" column"
+        },
+        {
+          "keyword": "And",
+          "text": "each company record should display the client company name"
+        }
+      ]
+    },
+    {
+      "name": "View Details action button displays correctly for each company",
+      "tags": [
+        "@positive",
+        "@ui-elements"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the companies list in the Compliance Dashboard"
+        },
+        {
+          "keyword": "Then",
+          "text": "each company record should have an Action button"
+        },
+        {
+          "keyword": "And",
+          "text": "the Action button should display \"View Details\" text"
+        }
+      ]
+    },
+    {
+      "name": "Successfully view company-specific compliance details",
+      "tags": [
+        "@positive",
+        "@navigation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the companies list in the Compliance Dashboard"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the \"View Details\" button for a specific company"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be directed to the Compliance Dashboard"
+        },
+        {
+          "keyword": "And",
+          "text": "the dashboard should display details related to that company only"
+        }
+      ]
+    },
+    {
+      "name": "Multiple companies display with individual View Details actions",
+      "tags": [
+        "@positive",
+        "@multiple-records"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the companies list in the Compliance Dashboard"
+        },
+        {
+          "keyword": "And",
+          "text": "there are multiple companies in the list"
+        },
+        {
+          "keyword": "Then",
+          "text": "each company should have its own \"View Details\" button"
+        },
+        {
+          "keyword": "And",
+          "text": "clicking different View Details buttons should show different company details"
+        }
+      ]
+    },
+    {
+      "name": "Compliance Dashboard module not visible for non-Alliant Admin users",
+      "tags": [
+        "@negative",
+        "@authorization"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a non-Alliant Admin user"
+        },
+        {
+          "keyword": "When",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see the Compliance Dashboard module"
+        }
+      ]
+    },
+    {
+      "name": "Error handling when companies list fails to load",
+      "tags": [
+        "@negative",
+        "@error-handling"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have clicked on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "there is a server error preventing data loading"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an appropriate error message"
+        },
+        {
+          "keyword": "And",
+          "text": "the error should indicate that company data could not be retrieved"
+        }
+      ]
+    },
+    {
+      "name": "Navigation fails when View Details clicked on invalid company record",
+      "tags": [
+        "@negative",
+        "@data-integrity"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the companies list in the Compliance Dashboard"
+        },
+        {
+          "keyword": "And",
+          "text": "there is a company record with invalid or missing data"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the \"View Details\" button for that company"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not be navigated away from the companies list"
+        }
+      ]
+    },
+    {
+      "name": "Unauthorized access attempt to Compliance Dashboard URL",
+      "tags": [
+        "@negative",
+        "@security"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am not logged in as an Alliant Admin user"
+        },
+        {
+          "keyword": "When",
+          "text": "I attempt to directly access the Compliance Dashboard URL"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be denied access"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see an unauthorized access message"
+        }
+      ]
+    },
+    {
+      "name": "Empty companies list displays appropriate message",
+      "tags": [
+        "@edge-case",
+        "@empty-state"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have navigated to the Compliance Dashboard companies list view"
+        },
+        {
+          "keyword": "And",
+          "text": "there are no companies in the system"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a message indicating no companies are available"
+        },
+        {
+          "keyword": "And",
+          "text": "the Company Name and Action columns should still be visible"
+        }
+      ]
+    },
+    {
+      "name": "Single company record displays correctly in list view",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is exactly one company in the system"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the Compliance Dashboard companies list view"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see one company record"
+        },
+        {
+          "keyword": "And",
+          "text": "the single company should have a functioning \"View Details\" button"
+        }
+      ]
+    },
+    {
+      "name": "Company with very long name displays properly in list",
+      "tags": [
+        "@edge-case",
+        "@ui-boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a company with a very long name in the system"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the companies list in the Compliance Dashboard"
+        },
+        {
+          "keyword": "Then",
+          "text": "the long company name should be displayed properly"
+        },
+        {
+          "keyword": "And",
+          "text": "the list layout should remain functional"
+        },
+        {
+          "keyword": "And",
+          "text": "the \"View Details\" button should remain accessible"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: Compliance Dashboard Access - Alliant Admin\n  Alliant Admin users can click on the Compliance Dashboard module to navigate to a companies list view and access detailed compliance information for each company.\n\n  Background:\n    Given I am on the application at https://2bd642eb.taruvi-testconsole.pages.dev/insurer-claims-dashboard\n    And I am logged in as an Alliant Admin user\n\n  @smoke @positive\n  Scenario: Alliant Admin successfully views Compliance Dashboard module on home page\n    Given I am on the home page\n    Then I should see the Compliance Dashboard module\n    And the module should display with \"Compliance Dashboard\" title\n\n  @smoke @positive\n  Scenario: Alliant Admin successfully navigates to companies list view\n    Given I am on the home page\n    And I can see the Compliance Dashboard module\n    When I click on the Compliance Dashboard module\n    Then I should be navigated to the Compliance Dashboard\n    And I should see the companies list view\n\n  @positive @data-display\n  Scenario: Companies list view displays all company records with correct columns\n    Given I have navigated to the Compliance Dashboard companies list view\n    Then I should see records of all companies\n    And the list should contain the \"Company Name\" column\n    And the list should contain the \"Action\" column\n    And each company record should display the client company name\n\n  @positive @ui-elements\n  Scenario: View Details action button displays correctly for each company\n    Given I am viewing the companies list in the Compliance Dashboard\n    Then each company record should have an Action button\n    And the Action button should display \"View Details\" text\n\n  @positive @navigation\n  Scenario: Successfully view company-specific compliance details\n    Given I am viewing the companies list in the Compliance Dashboard\n    When I click the \"View Details\" button for a specific company\n    Then I should be directed to the Compliance Dashboard\n    And the dashboard should display details related to that company only\n\n  @positive @multiple-records\n  Scenario: Multiple companies display with individual View Details actions\n    Given I am viewing the companies list in the Compliance Dashboard\n    And there are multiple companies in the list\n    Then each company should have its own \"View Details\" button\n    And clicking different View Details buttons should show different company details\n\n  @negative @authorization\n  Scenario: Compliance Dashboard module not visible for non-Alliant Admin users\n    Given I am logged in as a non-Alliant Admin user\n    When I am on the home page\n    Then I should not see the Compliance Dashboard module\n\n  @negative @error-handling\n  Scenario: Error handling when companies list fails to load\n    Given I have clicked on the Compliance Dashboard module\n    And there is a server error preventing data loading\n    Then I should see an appropriate error message\n    And the error should indicate that company data could not be retrieved\n\n  @negative @data-integrity\n  Scenario: Navigation fails when View Details clicked on invalid company record\n    Given I am viewing the companies list in the Compliance Dashboard\n    And there is a company record with invalid or missing data\n    When I click the \"View Details\" button for that company\n    Then I should see an error message\n    And I should not be navigated away from the companies list\n\n  @negative @security\n  Scenario: Unauthorized access attempt to Compliance Dashboard URL\n    Given I am not logged in as an Alliant Admin user\n    When I attempt to directly access the Compliance Dashboard URL\n    Then I should be denied access\n    And I should see an unauthorized access message\n\n  @edge-case @empty-state\n  Scenario: Empty companies list displays appropriate message\n    Given I have navigated to the Compliance Dashboard companies list view\n    And there are no companies in the system\n    Then I should see a message indicating no companies are available\n    And the Company Name and Action columns should still be visible\n\n  @edge-case @boundary\n  Scenario: Single company record displays correctly in list view\n    Given there is exactly one company in the system\n    When I navigate to the Compliance Dashboard companies list view\n    Then I should see one company record\n    And the single company should have a functioning \"View Details\" button\n\n  @edge-case @ui-boundary\n  Scenario: Company with very long name displays properly in list\n    Given there is a company with a very long name in the system\n    When I view the companies list in the Compliance Dashboard\n    Then the long company name should be displayed properly\n    And the list layout should remain functional\n    And the \"View Details\" button should remain accessible"
+}

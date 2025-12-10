@@ -1,0 +1,241 @@
+[
+  {
+    "timestamp": "2025-12-01T11:25:46.388317",
+    "test_id": "feature_1764219056.895716_Maximum_capacity_-_Form_with_50_fields_loads_correctly",
+    "test_name": "Maximum capacity - Form with 50 fields loads correctly",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-01T11:25:53.593700",
+    "test_id": "feature_1764219056.895716_Minimum_boundary_-_Form_with_single_field_functions_properly",
+    "test_name": "Minimum boundary - Form with single field functions properly",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-01T11:26:00.824578",
+    "test_id": "feature_1764219056.895716_Form_editing_affects_only_new_enrollments,_not_existing_ones",
+    "test_name": "Form editing affects only new enrollments, not existing ones",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-01T11:27:09.262793",
+    "test_id": "feature_1764219056.895716_Alternative_workflow_-_Copy_existing_form_to_create_new_version",
+    "test_name": "Alternative workflow - Copy existing form to create new version",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "copy button for the form",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

@@ -1,0 +1,47 @@
+{
+  "id": "report_20251203_070454",
+  "project_id": "96a02259-94d8-488e-b799-d5b731b8585c",
+  "project_name": "SauceDemo E2E Tests",
+  "executed_at": "2025-12-03T07:04:54.621084",
+  "total_tests": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "duration": 219.414082,
+  "results": [
+    {
+      "test_case_id": "ea6c50c1-77b5-4086-b2b6-cd78107e97c7",
+      "test_case_name": "Complete Checkout Flow - Happy Path",
+      "status": "failed",
+      "duration": 214.366,
+      "error_message": "Step 6: Step execution timed out after 60 seconds",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\ea6c50c1-77b5-4086-b2b6-cd78107e97c7_step6_failure.png",
+      "logs": [
+        "Step 1: Navigate to https://www.saucedemo.com - passed",
+        "Step 2: Type 'standard_user' into 'user-name' - passed",
+        "Step 3: Type 'secret_sauce' into 'password' - passed",
+        "Step 4: Click on 'login-button' - passed",
+        "Step 5: Click on 'add-to-cart-sauce-labs-backpack' - passed",
+        "Step 6: Click on '.shopping_cart_link' - failed",
+        "Step 7: Click on 'checkout' - failed",
+        "Step 8: Type 'John' into 'first-name' - passed",
+        "Step 9: Type 'Doe' into 'last-name' - failed",
+        "Step 10: Type '12345' into 'postal-code' - passed",
+        "Step 11: Click on 'continue' - passed",
+        "Step 12: Assert URL contains 'checkout-step-two.html' - failed",
+        "Step 13: Click on 'finish' - failed",
+        "Step 14: Assert URL contains 'checkout-complete.html' - failed",
+        "Step 15: Assert '.complete-header' is visible - failed",
+        "Step 16: Assert text 'Thank you' in '.complete-header' - failed"
+      ]
+    }
+  ],
+  "format": "traditional",
+  "execution_mode": "guided",
+  "pass_rate": 0.0,
+  "total_ai_calls": 0,
+  "total_kb_hits": 21,
+  "ai_dependency_percent": 0.0,
+  "new_selectors_learned": 0,
+  "errors": []
+}

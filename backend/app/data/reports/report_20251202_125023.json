@@ -1,0 +1,266 @@
+{
+  "id": "report_20251202_125023",
+  "project_id": "23baf525-d28d-4e55-9f97-26a8f9b661fe",
+  "project_name": "Foundry",
+  "executed_at": "2025-12-02T12:50:23.972965",
+  "total_tests": 14,
+  "passed": 0,
+  "failed": 14,
+  "skipped": 0,
+  "duration": 339.683015,
+  "results": [
+    {
+      "test_case_id": "feature_1764667190.953682_User_successfully_creates_account_with_valid_information",
+      "test_case_name": "User successfully creates account with valid information",
+      "status": "failed",
+      "duration": 118.925,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764667190.953682_User_successfully_creates_account_with_valid_information_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Click on 'Sign Up' - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: step - failed",
+        "Step 8: step - failed",
+        "Step 9: Click on 'Sign Up' - passed",
+        "Step 10: Assert URL contains 'user' - failed",
+        "Step 11: Assert on 'a welcome message' - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764667190.953682_User_creates_account_and_receives_welcome_email",
+      "test_case_name": "User creates account and receives welcome email",
+      "status": "failed",
+      "duration": 8.171,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764667190.953682_User_creates_account_and_receives_welcome_email_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764667190.953682_Registration_succeeds_with_minimum_password_requirements",
+      "test_case_name": "Registration succeeds with minimum password requirements",
+      "status": "failed",
+      "duration": 9.506,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764667190.953682_Registration_succeeds_with_minimum_password_requirements_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764667190.953682_User_registration_with_special_characters_in_name",
+      "test_case_name": "User registration with special characters in name",
+      "status": "failed",
+      "duration": 9.854,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764667190.953682_User_registration_with_special_characters_in_name_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: step - failed",
+        "Step 8: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764667190.953682_Registration_with_long_but_valid_input_values",
+      "test_case_name": "Registration with long but valid input values",
+      "status": "failed",
+      "duration": 7.971,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764667190.953682_Registration_with_long_but_valid_input_values_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764667190.953682_Alternative_registration_flow_using_different_field_order",
+      "test_case_name": "Alternative registration flow using different field order",
+      "status": "failed",
+      "duration": 9.055,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764667190.953682_Alternative_registration_flow_using_different_field_order_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764667190.953682_Registration_fails_when_required_fields_are_empty",
+      "test_case_name": "Registration fails when required fields are empty",
+      "status": "failed",
+      "duration": 15.464,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764667190.953682_Registration_fails_when_required_fields_are_empty_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: Click on 'Sign Up' - passed",
+        "Step 7: Assert on 'an error message indicating <field> is required' - failed",
+        "Step 8: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764667190.953682_Registration_fails_with_invalid_email_format",
+      "test_case_name": "Registration fails with invalid email format",
+      "status": "failed",
+      "duration": 69.468,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764667190.953682_Registration_fails_with_invalid_email_format_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: Assert on 'an error message ' - failed",
+        "Step 8: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764667190.953682_Registration_fails_with_weak_password",
+      "test_case_name": "Registration fails with weak password",
+      "status": "failed",
+      "duration": 54.314,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764667190.953682_Registration_fails_with_weak_password_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: Assert on 'password complexity error messages' - failed",
+        "Step 8: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764667190.953682_Registration_fails_with_duplicate_username",
+      "test_case_name": "Registration fails with duplicate username",
+      "status": "failed",
+      "duration": 9.027,
+      "error_message": "Failed to navigate to https://f666b047.foundry-3xh.pages.dev/: Target page, context or browser has been closed",
+      "screenshot_path": null,
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: step - failed",
+        "Step 4: Noop - passed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: step - failed",
+        "Step 8: Assert on 'an error message ' - failed",
+        "Step 9: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764667190.953682_Password_validation_with_various_invalid_formats",
+      "test_case_name": "Password validation with various invalid formats",
+      "status": "failed",
+      "duration": 4.408,
+      "error_message": "Failed to navigate to https://f666b047.foundry-3xh.pages.dev/: Target page, context or browser has been closed",
+      "screenshot_path": null,
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: Type '<password>' into 'password' - failed",
+        "Step 5: step - failed",
+        "Step 6: Assert on '<error_message>' - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764667190.953682_Email_field_accepts_valid_email_formats",
+      "test_case_name": "Email field accepts valid email formats",
+      "status": "failed",
+      "duration": 8.31,
+      "error_message": "Failed to navigate to https://f666b047.foundry-3xh.pages.dev/: Target page, context or browser has been closed",
+      "screenshot_path": null,
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: Type '<email>' into 'email' - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764667190.953682_Username_field_boundary_-_minimum_length_acceptance",
+      "test_case_name": "Username field boundary - minimum length acceptance",
+      "status": "failed",
+      "duration": 4.829,
+      "error_message": "Failed to navigate to https://f666b047.foundry-3xh.pages.dev/: Target page, context or browser has been closed",
+      "screenshot_path": null,
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764667190.953682_Form_submission_disabled_until_all_required_fields_completed",
+      "test_case_name": "Form submission disabled until all required fields completed",
+      "status": "failed",
+      "duration": 4.228,
+      "error_message": "Failed to navigate to https://f666b047.foundry-3xh.pages.dev/: Target page, context or browser has been closed",
+      "screenshot_path": null,
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed"
+      ]
+    }
+  ],
+  "format": "gherkin",
+  "execution_mode": "autonomous",
+  "pass_rate": 0.0,
+  "total_ai_calls": 0,
+  "total_kb_hits": 26,
+  "ai_dependency_percent": 0.0,
+  "new_selectors_learned": 0,
+  "errors": []
+}

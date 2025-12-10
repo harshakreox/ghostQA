@@ -1,0 +1,589 @@
+[
+  {
+    "timestamp": "2025-12-03T10:11:23.865741",
+    "test_id": "feature_1764066099.460405_Successfully_save_tile_configuration_changes",
+    "test_name": "Successfully save tile configuration changes",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": "login_page",
+        "selector_used": "login_page",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "navigate",
+        "target": "tile_configuration",
+        "selector_used": "tile_configuration",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "tile_configuration_modify_button",
+        "selector_used": "[data-testid=\"EmailOutlinedIcon\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "save button",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "a success confirmation message",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "tile display changes",
+        "selector_used": "[data-testid=\"EmailOutlinedIcon\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "left-hand burger menu",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-03T10:14:06.506557",
+    "test_id": "feature_1764066099.460405_Successfully_update_user_role_configuration",
+    "test_name": "Successfully update user role configuration",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": "login_page",
+        "selector_used": "login_page",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "navigate",
+        "target": "login_page",
+        "selector_used": "user_role_configurations",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "navigate",
+        "target": "user_management",
+        "selector_used": "role_configuration",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "save_button",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "configuration updated confirmation",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "the changes",
+        "selector_used": "[data-testid=\"EmailOutlinedIcon\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-03T10:17:54.455744",
+    "test_id": "feature_1764066099.460405_Navigate_between_multiple_tabs_while_maintaining_filters",
+    "test_name": "Navigate between multiple tabs while maintaining filters",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": "login_page",
+        "selector_used": "login_page",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "filter_button",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "navigate",
+        "target": "configuration",
+        "selector_used": "specific configuration data",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "tab[1]",
+        "selector_used": "[data-testid=\"EmailOutlinedIcon\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "navigate",
+        "target": "previous_tab",
+        "selector_used": "previous_tab",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "applied_filters",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "view_state",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-03T10:21:10.095332",
+    "test_id": "feature_1764066099.460405_Alternative_workflow_using_bulk_tile_configuration",
+    "test_name": "Alternative workflow using bulk tile configuration",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": "login_page",
+        "selector_used": "login",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "navigate",
+        "target": "tiles_configuration_page",
+        "selector_used": "multiple_tiles",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "multiple_tiles",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "apply_bulk_changes_button",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "save_button",
+        "selector_used": "button:has-text('Save')",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "updated_tiles",
+        "selector_used": "[data-test*=\"updated\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "unselected tiles",
+        "selector_used": "[data-test*=\"unselected\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-03T10:21:49.702017",
+    "test_id": "feature_1764066099.460405_Quick_configuration_using_keyboard_shortcuts",
+    "test_name": "Quick configuration using keyboard shortcuts",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": "login_page",
+        "selector_used": "login_page",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "fill",
+        "target": "keyboard_shortcut",
+        "selector_used": "[data-test*=\"keyboard\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "fill",
+        "target": "body",
+        "selector_used": "[data-test*=\"body\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "success_message",
+        "selector_used": "[data-test*=\"success\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "visual confirmation of the save",
+        "selector_used": "button:has-text('Save')",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-03T10:22:28.186041",
+    "test_id": "feature_1764066099.460405_Unsaved_changes_warning_prevents_data_loss",
+    "test_name": "Unsaved changes warning prevents data loss",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": "login_page",
+        "selector_used": "login as Super Admin with alliant@admin.com",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "fill",
+        "target": "tile_configuration_field",
+        "selector_used": "[data-testid=\"EmailOutlinedIcon\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "navigate",
+        "target": "about:blank",
+        "selector_used": "about:blank",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "warning ",
+        "selector_used": "[data-test*=\"warning\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "navigation_blocked_dialog",
+        "selector_used": "[data-test*=\"navigation\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-03T10:23:03.684261",
+    "test_id": "feature_1764066099.460405_Invalid_tile_configuration_values_rejected",
+    "test_name": "Invalid tile configuration values rejected",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": "login_page",
+        "selector_used": "login as Super Admin with alliant@admin.com",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "navigate",
+        "target": "tile_settings",
+        "selector_used": "/tile-settings",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "fill",
+        "target": "configuration_field",
+        "selector_used": "input[type='email']",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "save_button",
+        "selector_used": "button:has-text('Save')",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "an error message indicating invalid input",
+        "selector_used": "input[type='email']",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "configuration_not_saved_message",
+        "selector_used": "button:has-text('Save')",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-03T10:23:32.626455",
+    "test_id": "feature_1764066099.460405_Missing_required_configuration_fields_validation",
+    "test_name": "Missing required configuration fields validation",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": "login_page",
+        "selector_used": "login_page",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "navigate",
+        "target": "tile_configuration",
+        "selector_used": "new",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "fill",
+        "target": "required_field",
+        "selector_used": "input[type='email']",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "save_button",
+        "selector_used": "button:has-text('Save')",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "error messages for required fields",
+        "selector_used": "input[type='email']",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "save_prevented_message",
+        "selector_used": "button:has-text('Save')",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-03T10:24:08.331205",
+    "test_id": "feature_1764066099.460405_User_role_assignment_with_invalid_permissions",
+    "test_name": "User role assignment with invalid permissions",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": "login_page",
+        "selector_used": "login as Super Admin with alliant@admin.com",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "navigate",
+        "target": "user_role_assignment_page",
+        "selector_used": "user_role_assignment_page",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "fill",
+        "target": "permissions_field",
+        "selector_used": "input[type='email']",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "save_button",
+        "selector_used": "button:has-text('Save')",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "a validation error about permission conflicts",
+        "selector_used": "[data-test*=\"validation\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "user_role_unchanged",
+        "selector_used": "[data-test*=\"user\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-03T10:24:41.032508",
+    "test_id": "feature_1764066099.460405_Configuration_validation_with_various_input_types",
+    "test_name": "Configuration validation with various input types",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": "login_page",
+        "selector_used": "login_page",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "navigate",
+        "target": "configuration",
+        "selector_used": "configuration",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "fill",
+        "target": "input",
+        "selector_used": "input[type='email']",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "save_button",
+        "selector_used": "button:has-text('Save')",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "<result>",
+        "selector_used": "[data-test*=\"result\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

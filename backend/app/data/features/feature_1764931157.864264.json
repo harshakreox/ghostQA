@@ -1,0 +1,415 @@
+{
+  "id": "feature_1764931157.864264",
+  "name": "Access Compliance Dashboard - Client Admin",
+  "description": "Client Admin users can navigate to the Compliance Dashboard module from the home page",
+  "created_at": "2025-12-05T16:09:17.864264",
+  "updated_at": "2025-12-05T16:09:20.569907",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am on the application home page"
+    },
+    {
+      "keyword": "And",
+      "text": "I am logged in as a Client Admin user"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Client Admin successfully views Compliance Dashboard module on home page",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "the module should display the compliance icon"
+        },
+        {
+          "keyword": "And",
+          "text": "the module should display the \"Compliance Dashboard\" title"
+        }
+      ]
+    },
+    {
+      "name": "Client Admin successfully navigates to Compliance Dashboard",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I can see the Compliance Dashboard module on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to the Compliance Dashboard page"
+        },
+        {
+          "keyword": "And",
+          "text": "the page URL should contain compliance dashboard"
+        }
+      ]
+    },
+    {
+      "name": "Compliance Dashboard module displays correct visual elements",
+      "tags": [
+        "@positive",
+        "@ui"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I locate the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "the module should be clearly visible"
+        },
+        {
+          "keyword": "And",
+          "text": "the compliance icon should be displayed prominently"
+        },
+        {
+          "keyword": "And",
+          "text": "the title text should be readable and properly formatted"
+        }
+      ]
+    },
+    {
+      "name": "Client Admin can interact with Compliance Dashboard module using keyboard navigation",
+      "tags": [
+        "@positive",
+        "@accessibility"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the Compliance Dashboard module using the Tab key"
+        },
+        {
+          "keyword": "Then",
+          "text": "the module should receive focus"
+        },
+        {
+          "keyword": "When",
+          "text": "I press the Enter key"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to the Compliance Dashboard page"
+        }
+      ]
+    },
+    {
+      "name": "Compliance Dashboard module remains accessible after page refresh",
+      "tags": [
+        "@positive",
+        "@reliability"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I refresh the page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should still see the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "the module should remain clickable"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to the Compliance Dashboard page"
+        }
+      ]
+    },
+    {
+      "name": "Multiple clicks on Compliance Dashboard module work correctly",
+      "tags": [
+        "@positive",
+        "@interaction"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to the Compliance Dashboard page"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate back to the home page"
+        },
+        {
+          "keyword": "And",
+          "text": "I click on the Compliance Dashboard module again"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to the Compliance Dashboard page again"
+        }
+      ]
+    },
+    {
+      "name": "Non-Client Admin user cannot see Compliance Dashboard module",
+      "tags": [
+        "@negative",
+        "@authorization"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a regular user"
+        },
+        {
+          "keyword": "When",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "the compliance icon should not be visible"
+        },
+        {
+          "keyword": "And",
+          "text": "the \"Compliance Dashboard\" title should not be displayed"
+        }
+      ]
+    },
+    {
+      "name": "Unauthenticated user cannot access Compliance Dashboard module",
+      "tags": [
+        "@negative",
+        "@security"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am not logged in"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be redirected to the login page"
+        }
+      ]
+    },
+    {
+      "name": "Error handling when Compliance Dashboard is temporarily unavailable",
+      "tags": [
+        "@negative",
+        "@error-handling"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "And",
+          "text": "the Compliance Dashboard service is temporarily unavailable"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an appropriate error message"
+        },
+        {
+          "keyword": "And",
+          "text": "I should remain on the current page or be shown a fallback"
+        }
+      ]
+    },
+    {
+      "name": "Session timeout while accessing Compliance Dashboard",
+      "tags": [
+        "@negative",
+        "@session"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "And",
+          "text": "my session has expired"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be redirected to the login page"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see a session timeout message"
+        }
+      ]
+    },
+    {
+      "name": "Compliance Dashboard module visibility with minimal screen resolution",
+      "tags": [
+        "@edge-case",
+        "@responsive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am using a device with minimal screen resolution"
+        },
+        {
+          "keyword": "When",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Compliance Dashboard module should still be visible"
+        },
+        {
+          "keyword": "And",
+          "text": "the module should remain clickable"
+        },
+        {
+          "keyword": "And",
+          "text": "the title text should not be truncated or overlapped"
+        }
+      ]
+    },
+    {
+      "name": "Compliance Dashboard module behavior on slow network connection",
+      "tags": [
+        "@edge-case",
+        "@performance"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on a slow network connection"
+        },
+        {
+          "keyword": "When",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Compliance Dashboard module should eventually load"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a loading indicator or progress feedback"
+        },
+        {
+          "keyword": "And",
+          "text": "I should eventually be navigated to the Compliance Dashboard page"
+        }
+      ]
+    },
+    {
+      "name": "Compliance Dashboard module with browser back button navigation",
+      "tags": [
+        "@alternative-flow",
+        "@navigation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "I am navigated to the Compliance Dashboard page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the browser back button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should return to the home page"
+        },
+        {
+          "keyword": "And",
+          "text": "the Compliance Dashboard module should still be visible and functional"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: Access Compliance Dashboard - Client Admin\n  Client Admin users can navigate to the Compliance Dashboard module from the home page\n\n  Background:\n    Given I am on the application home page\n    And I am logged in as a Client Admin user\n\n  @smoke @positive\n  Scenario: Client Admin successfully views Compliance Dashboard module on home page\n    Given I am on the home page\n    Then I should see the Compliance Dashboard module\n    And the module should display the compliance icon\n    And the module should display the \"Compliance Dashboard\" title\n\n  @smoke @positive\n  Scenario: Client Admin successfully navigates to Compliance Dashboard\n    Given I can see the Compliance Dashboard module on the home page\n    When I click on the Compliance Dashboard module\n    Then I should be navigated to the Compliance Dashboard page\n    And the page URL should contain compliance dashboard\n\n  @positive @ui\n  Scenario: Compliance Dashboard module displays correct visual elements\n    Given I am viewing the home page\n    When I locate the Compliance Dashboard module\n    Then the module should be clearly visible\n    And the compliance icon should be displayed prominently\n    And the title text should be readable and properly formatted\n\n  @positive @accessibility\n  Scenario: Client Admin can interact with Compliance Dashboard module using keyboard navigation\n    Given I am on the home page\n    When I navigate to the Compliance Dashboard module using the Tab key\n    Then the module should receive focus\n    When I press the Enter key\n    Then I should be navigated to the Compliance Dashboard page\n\n  @positive @reliability\n  Scenario: Compliance Dashboard module remains accessible after page refresh\n    Given I am on the home page\n    When I refresh the page\n    Then I should still see the Compliance Dashboard module\n    And the module should remain clickable\n    When I click on the Compliance Dashboard module\n    Then I should be navigated to the Compliance Dashboard page\n\n  @positive @interaction\n  Scenario: Multiple clicks on Compliance Dashboard module work correctly\n    Given I am on the home page\n    When I click on the Compliance Dashboard module\n    Then I should be navigated to the Compliance Dashboard page\n    When I navigate back to the home page\n    And I click on the Compliance Dashboard module again\n    Then I should be navigated to the Compliance Dashboard page again\n\n  @negative @authorization\n  Scenario: Non-Client Admin user cannot see Compliance Dashboard module\n    Given I am logged in as a regular user\n    When I am on the home page\n    Then I should not see the Compliance Dashboard module\n    And the compliance icon should not be visible\n    And the \"Compliance Dashboard\" title should not be displayed\n\n  @negative @security\n  Scenario: Unauthenticated user cannot access Compliance Dashboard module\n    Given I am not logged in\n    When I navigate to the home page\n    Then I should not see the Compliance Dashboard module\n    And I should be redirected to the login page\n\n  @negative @error-handling\n  Scenario: Error handling when Compliance Dashboard is temporarily unavailable\n    Given I am on the home page\n    And the Compliance Dashboard service is temporarily unavailable\n    When I click on the Compliance Dashboard module\n    Then I should see an appropriate error message\n    And I should remain on the current page or be shown a fallback\n\n  @negative @session\n  Scenario: Session timeout while accessing Compliance Dashboard\n    Given I am on the home page\n    And my session has expired\n    When I click on the Compliance Dashboard module\n    Then I should be redirected to the login page\n    And I should see a session timeout message\n\n  @edge-case @responsive\n  Scenario: Compliance Dashboard module visibility with minimal screen resolution\n    Given I am using a device with minimal screen resolution\n    When I am on the home page\n    Then the Compliance Dashboard module should still be visible\n    And the module should remain clickable\n    And the title text should not be truncated or overlapped\n\n  @edge-case @performance\n  Scenario: Compliance Dashboard module behavior on slow network connection\n    Given I am on a slow network connection\n    When I am on the home page\n    Then the Compliance Dashboard module should eventually load\n    When I click on the Compliance Dashboard module\n    Then I should see a loading indicator or progress feedback\n    And I should eventually be navigated to the Compliance Dashboard page\n\n  @alternative-flow @navigation\n  Scenario: Compliance Dashboard module with browser back button navigation\n    Given I am on the home page\n    When I click on the Compliance Dashboard module\n    And I am navigated to the Compliance Dashboard page\n    When I click the browser back button\n    Then I should return to the home page\n    And the Compliance Dashboard module should still be visible and functional"
+}

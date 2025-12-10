@@ -1,0 +1,67 @@
+[
+  {
+    "timestamp": "2025-12-02T04:06:19.375938",
+    "test_id": "8f0588f2-55ba-4837-a793-f3f1aa436333",
+    "test_name": "Add Single Item to Cart",
+    "format": "traditional",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": null,
+        "selector_used": "https://www.saucedemo.com",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "user-name",
+        "selector_used": "[data-test=\"username\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "password",
+        "selector_used": "[data-test=\"password\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "login-button",
+        "selector_used": "[data-test=\"login-container\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "add-to-cart-sauce-labs-backpack",
+        "selector_used": "[value=\"secret_sauce\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_text",
+        "target": ".shopping_cart_badge",
+        "selector_used": ".shopping_cart_badge",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": ".shopping_cart_link",
+        "selector_used": ".shopping_cart_link",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_text",
+        "target": ".inventory_item_name",
+        "selector_used": ".inventory_item_name",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

@@ -1,0 +1,464 @@
+{
+  "id": "feature_1764667190.953682",
+  "name": "User Registration and Account Creation",
+  "description": "Users can create new accounts with required personal information, secure passwords, and email verification to access enrollment features",
+  "created_at": "2025-12-05T12:20:16.430349",
+  "updated_at": "2025-12-05T12:50:19.503274",
+  "project_id": "23baf525-d28d-4e55-9f97-26a8f9b661fe",
+  "background": [],
+  "scenarios": [
+    {
+      "name": "User successfully creates account with valid information",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I click the \"Sign Up\" button"
+        },
+        {
+          "keyword": "When",
+          "text": "I fill in the \"First Name\" field with \"John\""
+        },
+        {
+          "keyword": "And",
+          "text": "I fill in the \"Last Name\" field with \"Smith\""
+        },
+        {
+          "keyword": "And",
+          "text": "I fill in the \"Username\" field with \"johnsmith123\""
+        },
+        {
+          "keyword": "And",
+          "text": "I fill in the \"Email\" field with \"john.smith@example.com\""
+        },
+        {
+          "keyword": "And",
+          "text": "I fill in the \"Password\" field with \"SecurePass123!\""
+        },
+        {
+          "keyword": "And",
+          "text": "I fill in the \"Confirm Password\" field with \"SecurePass123!\""
+        },
+        {
+          "keyword": "And",
+          "text": "I click the \"Sign Up\" button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be redirected to the user dashboard"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see a welcome message"
+        }
+      ]
+    },
+    {
+      "name": "User creates account and receives welcome email",
+      "tags": [
+        "@positive",
+        "@email"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the registration form"
+        },
+        {
+          "keyword": "When",
+          "text": "I complete registration with valid information"
+        },
+        {
+          "keyword": "And",
+          "text": "I submit the registration form"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should receive a welcome email"
+        },
+        {
+          "keyword": "And",
+          "text": "the email should contain my account information"
+        }
+      ]
+    },
+    {
+      "name": "Registration succeeds with minimum password requirements",
+      "tags": [
+        "@positive",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the registration form"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter a password with exactly 8 characters, one uppercase, one number, and one special character"
+        },
+        {
+          "keyword": "And",
+          "text": "I fill in all other required fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I submit the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "the account should be created successfully"
+        }
+      ]
+    },
+    {
+      "name": "User registration with special characters in name",
+      "tags": [
+        "@positive",
+        "@edge-case"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the registration form"
+        },
+        {
+          "keyword": "When",
+          "text": "I fill in the \"First Name\" field with \"José\""
+        },
+        {
+          "keyword": "And",
+          "text": "I fill in the \"Last Name\" field with \"O'Connor\""
+        },
+        {
+          "keyword": "And",
+          "text": "I complete the remaining required fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I submit the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "the account should be created successfully"
+        }
+      ]
+    },
+    {
+      "name": "Registration with long but valid input values",
+      "tags": [
+        "@positive",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the registration form"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter maximum length values for all fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I submit the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "the registration should complete successfully"
+        }
+      ]
+    },
+    {
+      "name": "Alternative registration flow using different field order",
+      "tags": [
+        "@positive",
+        "@alternative"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the registration form"
+        },
+        {
+          "keyword": "When",
+          "text": "I fill in the password field first"
+        },
+        {
+          "keyword": "And",
+          "text": "I then complete the email and name fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I submit the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "the registration should complete successfully"
+        }
+      ]
+    },
+    {
+      "name": "Registration fails when required fields are empty",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the registration form"
+        },
+        {
+          "keyword": "When",
+          "text": "I leave the <field> field empty"
+        },
+        {
+          "keyword": "And",
+          "text": "I fill in all other required fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the \"Sign Up\" button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message indicating <field> is required"
+        },
+        {
+          "keyword": "And",
+          "text": "the form should not be submitted"
+        }
+      ]
+    },
+    {
+      "name": "Registration fails with invalid email format",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the registration form"
+        },
+        {
+          "keyword": "When",
+          "text": "I fill in the \"Email\" field with \"invalid-email-format\""
+        },
+        {
+          "keyword": "And",
+          "text": "I complete all other required fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I submit the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message \"Please enter a valid email address\""
+        },
+        {
+          "keyword": "And",
+          "text": "the form should not be submitted"
+        }
+      ]
+    },
+    {
+      "name": "Registration fails with weak password",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the registration form"
+        },
+        {
+          "keyword": "When",
+          "text": "I fill in the \"Password\" field with \"weak\""
+        },
+        {
+          "keyword": "And",
+          "text": "I complete all other required fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I submit the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see password complexity error messages"
+        },
+        {
+          "keyword": "And",
+          "text": "the form should not be submitted"
+        }
+      ]
+    },
+    {
+      "name": "Registration fails with duplicate username",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a user account with username \"existinguser\" already exists"
+        },
+        {
+          "keyword": "And",
+          "text": "I am on the registration form"
+        },
+        {
+          "keyword": "When",
+          "text": "I fill in the \"Username\" field with \"existinguser\""
+        },
+        {
+          "keyword": "And",
+          "text": "I complete all other required fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I submit the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message \"Username already exists\""
+        },
+        {
+          "keyword": "And",
+          "text": "the form should not be submitted"
+        }
+      ]
+    },
+    {
+      "name": "Password validation with various invalid formats",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the registration form"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter <password> in the password field"
+        },
+        {
+          "keyword": "And",
+          "text": "I submit the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see <error_message>"
+        }
+      ]
+    },
+    {
+      "name": "Email field accepts valid email formats",
+      "tags": [
+        "@edge-case",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the registration form"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter <email> in the email field"
+        },
+        {
+          "keyword": "And",
+          "text": "I complete all other required fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I submit the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "the email should be accepted"
+        }
+      ]
+    },
+    {
+      "name": "Username field boundary - minimum length acceptance",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the registration form"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter a username with the minimum allowed length"
+        },
+        {
+          "keyword": "And",
+          "text": "I complete all other required fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I submit the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "the username should be accepted"
+        }
+      ]
+    },
+    {
+      "name": "Form submission disabled until all required fields completed",
+      "tags": [
+        "@edge-case",
+        "@usability"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the registration form"
+        },
+        {
+          "keyword": "When",
+          "text": "I have not filled in all required fields"
+        },
+        {
+          "keyword": "Then",
+          "text": "the \"Sign Up\" button should be disabled"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not be able to submit the form"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: User Registration and Account Creation\n  Users can create new accounts with required personal information, secure passwords, and email verification to access enrollment features\n\n  @smoke @positive\n  Scenario: User successfully creates account with valid information\n    Given I click the \"Sign Up\" button\n    When I fill in the \"First Name\" field with \"John\"\n    And I fill in the \"Last Name\" field with \"Smith\"\n    And I fill in the \"Username\" field with \"johnsmith123\"\n    And I fill in the \"Email\" field with \"john.smith@example.com\"\n    And I fill in the \"Password\" field with \"SecurePass123!\"\n    And I fill in the \"Confirm Password\" field with \"SecurePass123!\"\n    And I click the \"Sign Up\" button\n    Then I should be redirected to the user dashboard\n    And I should see a welcome message\n\n  @positive @email\n  Scenario: User creates account and receives welcome email\n    Given I am on the registration form\n    When I complete registration with valid information\n    And I submit the registration form\n    Then I should receive a welcome email\n    And the email should contain my account information\n\n  @positive @validation\n  Scenario: Registration succeeds with minimum password requirements\n    Given I am on the registration form\n    When I enter a password with exactly 8 characters, one uppercase, one number, and one special character\n    And I fill in all other required fields\n    And I submit the form\n    Then the account should be created successfully\n\n  @positive @edge-case\n  Scenario: User registration with special characters in name\n    Given I am on the registration form\n    When I fill in the \"First Name\" field with \"José\"\n    And I fill in the \"Last Name\" field with \"O'Connor\"\n    And I complete the remaining required fields\n    And I submit the form\n    Then the account should be created successfully\n\n  @positive @boundary\n  Scenario: Registration with long but valid input values\n    Given I am on the registration form\n    When I enter maximum length values for all fields\n    And I submit the form\n    Then the registration should complete successfully\n\n  @positive @alternative\n  Scenario: Alternative registration flow using different field order\n    Given I am on the registration form\n    When I fill in the password field first\n    And I then complete the email and name fields\n    And I submit the form\n    Then the registration should complete successfully\n\n  @negative @validation\n  Scenario: Registration fails when required fields are empty\n    Given I am on the registration form\n    When I leave the <field> field empty\n    And I fill in all other required fields\n    And I click the \"Sign Up\" button\n    Then I should see an error message indicating <field> is required\n    And the form should not be submitted\n\n  @negative @validation\n  Scenario: Registration fails with invalid email format\n    Given I am on the registration form\n    When I fill in the \"Email\" field with \"invalid-email-format\"\n    And I complete all other required fields\n    And I submit the form\n    Then I should see an error message \"Please enter a valid email address\"\n    And the form should not be submitted\n\n  @negative @validation\n  Scenario: Registration fails with weak password\n    Given I am on the registration form\n    When I fill in the \"Password\" field with \"weak\"\n    And I complete all other required fields\n    And I submit the form\n    Then I should see password complexity error messages\n    And the form should not be submitted\n\n  @negative @validation\n  Scenario: Registration fails with duplicate username\n    Given a user account with username \"existinguser\" already exists\n    And I am on the registration form\n    When I fill in the \"Username\" field with \"existinguser\"\n    And I complete all other required fields\n    And I submit the form\n    Then I should see an error message \"Username already exists\"\n    And the form should not be submitted\n\n  @negative @validation\n  Scenario: Password validation with various invalid formats\n    Given I am on the registration form\n    When I enter <password> in the password field\n    And I submit the form\n    Then I should see <error_message>\n\n  @edge-case @validation\n  Scenario: Email field accepts valid email formats\n    Given I am on the registration form\n    When I enter <email> in the email field\n    And I complete all other required fields\n    And I submit the form\n    Then the email should be accepted\n\n  @edge-case @boundary\n  Scenario: Username field boundary - minimum length acceptance\n    Given I am on the registration form\n    When I enter a username with the minimum allowed length\n    And I complete all other required fields\n    And I submit the form\n    Then the username should be accepted\n\n  @edge-case @usability\n  Scenario: Form submission disabled until all required fields completed\n    Given I am on the registration form\n    When I have not filled in all required fields\n    Then the \"Sign Up\" button should be disabled\n    And I should not be able to submit the form"
+}

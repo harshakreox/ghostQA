@@ -1,0 +1,53 @@
+{
+  "version": "1.0",
+  "last_updated": "2025-12-02T15:51:45.912370",
+  "learned_mappings": {
+    "apellido": {
+      "data_type": "last_name",
+      "generator": "generate_last_name",
+      "confidence": 1.0,
+      "source": "heuristic",
+      "learned_at": "2025-12-02T15:51:45.887880",
+      "usage_count": 1
+    },
+    "correo": {
+      "data_type": "email",
+      "generator": "generate_email",
+      "confidence": 1.0,
+      "source": "heuristic",
+      "learned_at": "2025-12-02T15:51:45.894968",
+      "usage_count": 1
+    },
+    "numero_celular": {
+      "data_type": "quantity",
+      "generator": "generate_quantity",
+      "confidence": 0.8,
+      "source": "heuristic",
+      "learned_at": "2025-12-02T15:51:45.897966",
+      "usage_count": 1
+    },
+    "fecha_nacimiento": {
+      "data_type": "date",
+      "generator": "generate_date",
+      "confidence": 0.8,
+      "source": "heuristic",
+      "learned_at": "2025-12-02T15:51:45.897966",
+      "usage_count": 1
+    },
+    "direccion_envio": {
+      "data_type": "street",
+      "generator": "generate_street_address",
+      "confidence": 0.8,
+      "source": "heuristic",
+      "learned_at": "2025-12-02T15:51:45.907766",
+      "usage_count": 1
+    }
+  },
+  "unknown_fields": [
+    {
+      "field_name": "custom_xyz_123",
+      "encountered_at": "2025-12-02T15:51:45.912370",
+      "status": "unknown"
+    }
+  ]
+}

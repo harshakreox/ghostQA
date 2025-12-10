@@ -1,0 +1,37 @@
+{
+  "id": "report_20251127_070549",
+  "project_id": "96a02259-94d8-488e-b799-d5b731b8585c",
+  "project_name": "SauceDemo E2E Tests",
+  "executed_at": "2025-11-27T07:05:49.932578",
+  "total_tests": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "duration": 132.944636,
+  "results": [
+    {
+      "test_case_id": "b7029a2d-35c9-44b2-a115-71c89f4bdb59",
+      "test_case_name": "Successful Login with Standard User",
+      "status": "failed",
+      "duration": 129.212,
+      "error_message": "Step 2: Step execution timed out after 60 seconds",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\b7029a2d-35c9-44b2-a115-71c89f4bdb59_step2_failure.png",
+      "logs": [
+        "Step 1: navigate - passed",
+        "Step 2: type - failed",
+        "Step 3: type - passed",
+        "Step 4: click - failed",
+        "Step 5: assert_url - failed",
+        "Step 6: assert_visible - failed"
+      ]
+    }
+  ],
+  "format": "traditional",
+  "execution_mode": "autonomous",
+  "pass_rate": 0.0,
+  "total_ai_calls": 0,
+  "total_kb_hits": 0,
+  "ai_dependency_percent": 0,
+  "new_selectors_learned": 0,
+  "errors": []
+}

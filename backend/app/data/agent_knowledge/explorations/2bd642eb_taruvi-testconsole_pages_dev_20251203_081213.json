@@ -1,0 +1,117 @@
+{
+  "start_url": "https://2bd642eb.taruvi-testconsole.pages.dev/insurer-claims-dashboard",
+  "domain": "2bd642eb.taruvi-testconsole.pages.dev",
+  "total_pages": 1,
+  "total_elements": 3,
+  "total_forms": 1,
+  "total_links": 0,
+  "detected_frameworks": [
+    "tailwind",
+    "mui"
+  ],
+  "page_types_found": {
+    "login": 1
+  },
+  "sitemap": {
+    "https://2bd642eb.taruvi-testconsole.pages.dev/insurer-claims-dashboard": []
+  },
+  "started_at": "2025-12-03T08:12:11.688479",
+  "completed_at": "2025-12-03T08:12:13.062202",
+  "duration_seconds": 1.373723,
+  "errors": [],
+  "pages": [
+    {
+      "url": "https://2bd642eb.taruvi-testconsole.pages.dev/insurer-claims-dashboard",
+      "title": "FleetLytics",
+      "page_type": "login",
+      "depth": 0,
+      "element_count": 3,
+      "elements": [
+        {
+          "type": "input",
+          "key": "r_1",
+          "selectors": [
+            {
+              "selector": "#_r_1_",
+              "type": "css",
+              "strategy": "id",
+              "confidence": 0.85
+            },
+            {
+              "selector": "[placeholder=\"Enter your email\"]",
+              "type": "css",
+              "strategy": "placeholder",
+              "confidence": 0.7
+            },
+            {
+              "selector": "Enter your email",
+              "type": "placeholder",
+              "strategy": "playwright_placeholder",
+              "confidence": 0.8
+            },
+            {
+              "selector": "input[type=\"email\"]",
+              "type": "css",
+              "strategy": "input_type",
+              "confidence": 0.6
+            }
+          ],
+          "text": ""
+        },
+        {
+          "type": "input",
+          "key": "r_2",
+          "selectors": [
+            {
+              "selector": "#_r_2_",
+              "type": "css",
+              "strategy": "id",
+              "confidence": 0.85
+            },
+            {
+              "selector": "[placeholder=\"Enter your password\"]",
+              "type": "css",
+              "strategy": "placeholder",
+              "confidence": 0.7
+            },
+            {
+              "selector": "Enter your password",
+              "type": "placeholder",
+              "strategy": "playwright_placeholder",
+              "confidence": 0.8
+            },
+            {
+              "selector": "input[type=\"password\"]",
+              "type": "css",
+              "strategy": "input_type",
+              "confidence": 0.6
+            }
+          ],
+          "text": ""
+        },
+        {
+          "type": "button",
+          "key": "sign_in",
+          "selectors": [
+            {
+              "selector": "Sign In",
+              "type": "text",
+              "strategy": "button_text",
+              "confidence": 0.8
+            },
+            {
+              "selector": "button:has-text(\"Sign In\")",
+              "type": "css",
+              "strategy": "button_text_css",
+              "confidence": 0.75
+            }
+          ],
+          "text": "Sign In"
+        }
+      ],
+      "explored_at": "2025-12-03T08:12:11.688479",
+      "exploration_time_ms": 1373,
+      "errors": []
+    }
+  ]
+}

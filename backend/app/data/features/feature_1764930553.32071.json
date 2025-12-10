@@ -1,0 +1,471 @@
+{
+  "id": "feature_1764930553.32071",
+  "name": "Compliance Dashboard View - Alliant Admin",
+  "description": "Dashboard displaying compliance metrics, auto-generated compliance records, and management tools for certificate of insurance tracking",
+  "created_at": "2025-12-05T15:59:13.320710",
+  "updated_at": "2025-12-05T15:59:15.959615",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am logged in as an Alliant Admin"
+    },
+    {
+      "keyword": "And",
+      "text": "I am on the Compliance Dashboard"
+    },
+    {
+      "keyword": "And",
+      "text": "compliance records exist in the system"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Dashboard displays correct header and summary metrics",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the Compliance Dashboard"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the page header \"Compliance Dashboard - <Company Name>\""
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the subtitle \"Manage and track certificate of insurance compliance\""
+        },
+        {
+          "keyword": "And",
+          "text": "I should see three summary metric cards at the top"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the \"Compliance Records\" section below the cards"
+        }
+      ]
+    },
+    {
+      "name": "Compliance Rate card displays correct percentage",
+      "tags": [
+        "@positive",
+        "@metrics"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there are compliance records with various statuses"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the Compliance Rate card"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a percentage value with no decimal places"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the label \"Compliance Rate\""
+        },
+        {
+          "keyword": "And",
+          "text": "the card should have a light blue background"
+        },
+        {
+          "keyword": "And",
+          "text": "the percentage should reflect compliant records divided by total records"
+        }
+      ]
+    },
+    {
+      "name": "Expiring Within 30 Days card shows correct count",
+      "tags": [
+        "@positive",
+        "@metrics"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there are policies expiring within the next 30 days"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the Expiring Within 30 Days card"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a numeric value as a whole number"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the label \"Expiring Within 30 Days\""
+        },
+        {
+          "keyword": "And",
+          "text": "the card should have a light yellow background"
+        },
+        {
+          "keyword": "And",
+          "text": "the count should match policies expiring between today and 30 days from now"
+        }
+      ]
+    },
+    {
+      "name": "Expired Certifications card displays accurate count",
+      "tags": [
+        "@positive",
+        "@metrics"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there are expired certifications in the system"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the Expired Certifications card"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a numeric value as a whole number"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the label \"Expired Certifications\""
+        },
+        {
+          "keyword": "And",
+          "text": "the card should have a light red background"
+        },
+        {
+          "keyword": "And",
+          "text": "the count should match records where policy effective date is before current date"
+        }
+      ]
+    },
+    {
+      "name": "Compliance records list displays all required columns",
+      "tags": [
+        "@positive",
+        "@list-view"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the Compliance Records section"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see columns for Company Name, First Name, Last Name, ID Number, Status, Date Created, Role Type, Policy Effective Date, Policy Expiration Date, and Actions"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see all compliance records from all client companies"
+        },
+        {
+          "keyword": "And",
+          "text": "each record should display appropriate data in each column"
+        }
+      ]
+    },
+    {
+      "name": "Status column shows color-coded compliance badges",
+      "tags": [
+        "@positive",
+        "@status"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there are records with different compliance statuses"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the Status column"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see \"Compliant\" records with green badges"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see \"Non-Compliant\" records with red badges"
+        },
+        {
+          "keyword": "And",
+          "text": "the status should reflect overall compliance based on all individual requirement statuses"
+        }
+      ]
+    },
+    {
+      "name": "Search functionality filters compliance records",
+      "tags": [
+        "@positive",
+        "@search"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the compliance records list"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter a search term in the global search bar"
+        },
+        {
+          "keyword": "Then",
+          "text": "the list should filter to show only matching records"
+        },
+        {
+          "keyword": "And",
+          "text": "the search should work across all visible columns"
+        }
+      ]
+    },
+    {
+      "name": "Export functionality generates Excel file",
+      "tags": [
+        "@positive",
+        "@export"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the compliance records list"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Export button in the top right"
+        },
+        {
+          "keyword": "Then",
+          "text": "an Excel file should be generated"
+        },
+        {
+          "keyword": "And",
+          "text": "the file should contain all visible compliance records"
+        }
+      ]
+    },
+    {
+      "name": "No manual Add Record button is displayed",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the Compliance Dashboard"
+        },
+        {
+          "keyword": "When",
+          "text": "I look for record creation options"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see any \"Add Record\" button"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not see any manual record creation options"
+        },
+        {
+          "keyword": "But",
+          "text": "records should be automatically created via API"
+        }
+      ]
+    },
+    {
+      "name": "Requirements tab data is hidden for non-Back Office users",
+      "tags": [
+        "@negative",
+        "@permissions"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as an Alliant Admin who is not a Back Office user"
+        },
+        {
+          "keyword": "When",
+          "text": "I view compliance record details"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see Requirements tab data"
+        },
+        {
+          "keyword": "And",
+          "text": "Requirements information should be restricted"
+        }
+      ]
+    },
+    {
+      "name": "Search with no results displays appropriate message",
+      "tags": [
+        "@negative",
+        "@search"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the compliance records list"
+        },
+        {
+          "keyword": "When",
+          "text": "I search for a term that matches no records"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a \"No results found\" message"
+        },
+        {
+          "keyword": "And",
+          "text": "the list should be empty"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be able to clear the search to see all records again"
+        }
+      ]
+    },
+    {
+      "name": "Action buttons provide correct functionality",
+      "tags": [
+        "@positive",
+        "@actions"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I look at the Actions column"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a blue View icon (eye icon)"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see a blue Edit icon (pencil icon)"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see a blue Attachments icon (paperclip icon)"
+        },
+        {
+          "keyword": "And",
+          "text": "each icon should be clickable and functional"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard handles empty compliance records gracefully",
+      "tags": [
+        "@edge-case",
+        "@empty-state"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there are no compliance records in the system"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the Compliance Dashboard"
+        },
+        {
+          "keyword": "Then",
+          "text": "the summary metric cards should display zero values"
+        },
+        {
+          "keyword": "And",
+          "text": "the Compliance Rate should show 0%"
+        },
+        {
+          "keyword": "And",
+          "text": "the compliance records list should show an appropriate empty state message"
+        }
+      ]
+    },
+    {
+      "name": "Policy expiration date calculation when not selected",
+      "tags": [
+        "@edge-case",
+        "@date-calculation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a compliance record without a policy expiration date selected"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the Policy Expiration Date column"
+        },
+        {
+          "keyword": "Then",
+          "text": "the date should be calculated as one year from the effective date"
+        },
+        {
+          "keyword": "And",
+          "text": "the date should be displayed in YYYY-MM-DD format"
+        }
+      ]
+    },
+    {
+      "name": "Filter panel opens and provides filtering options",
+      "tags": [
+        "@positive",
+        "@filtering"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the compliance records list"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Filter button"
+        },
+        {
+          "keyword": "Then",
+          "text": "a filter options panel should open"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see various filtering criteria available"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be able to apply filters to narrow down the records"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: Compliance Dashboard View - Alliant Admin\n  Dashboard displaying compliance metrics, auto-generated compliance records, and management tools for certificate of insurance tracking\n\n  Background:\n    Given I am logged in as an Alliant Admin\n    And I am on the Compliance Dashboard\n    And compliance records exist in the system\n\n  @smoke @positive\n  Scenario: Dashboard displays correct header and summary metrics\n    Given I am viewing the Compliance Dashboard\n    Then I should see the page header \"Compliance Dashboard - <Company Name>\"\n    And I should see the subtitle \"Manage and track certificate of insurance compliance\"\n    And I should see three summary metric cards at the top\n    And I should see the \"Compliance Records\" section below the cards\n\n  @positive @metrics\n  Scenario: Compliance Rate card displays correct percentage\n    Given there are compliance records with various statuses\n    When I view the Compliance Rate card\n    Then I should see a percentage value with no decimal places\n    And I should see the label \"Compliance Rate\"\n    And the card should have a light blue background\n    And the percentage should reflect compliant records divided by total records\n\n  @positive @metrics\n  Scenario: Expiring Within 30 Days card shows correct count\n    Given there are policies expiring within the next 30 days\n    When I view the Expiring Within 30 Days card\n    Then I should see a numeric value as a whole number\n    And I should see the label \"Expiring Within 30 Days\"\n    And the card should have a light yellow background\n    And the count should match policies expiring between today and 30 days from now\n\n  @positive @metrics\n  Scenario: Expired Certifications card displays accurate count\n    Given there are expired certifications in the system\n    When I view the Expired Certifications card\n    Then I should see a numeric value as a whole number\n    And I should see the label \"Expired Certifications\"\n    And the card should have a light red background\n    And the count should match records where policy effective date is before current date\n\n  @positive @list-view\n  Scenario: Compliance records list displays all required columns\n    Given I am viewing the Compliance Records section\n    Then I should see columns for Company Name, First Name, Last Name, ID Number, Status, Date Created, Role Type, Policy Effective Date, Policy Expiration Date, and Actions\n    And I should see all compliance records from all client companies\n    And each record should display appropriate data in each column\n\n  @positive @status\n  Scenario: Status column shows color-coded compliance badges\n    Given there are records with different compliance statuses\n    When I view the Status column\n    Then I should see \"Compliant\" records with green badges\n    And I should see \"Non-Compliant\" records with red badges\n    And the status should reflect overall compliance based on all individual requirement statuses\n\n  @positive @search\n  Scenario: Search functionality filters compliance records\n    Given I am viewing the compliance records list\n    When I enter a search term in the global search bar\n    Then the list should filter to show only matching records\n    And the search should work across all visible columns\n\n  @positive @export\n  Scenario: Export functionality generates Excel file\n    Given I am viewing the compliance records list\n    When I click the Export button in the top right\n    Then an Excel file should be generated\n    And the file should contain all visible compliance records\n\n  @negative @validation\n  Scenario: No manual Add Record button is displayed\n    Given I am viewing the Compliance Dashboard\n    When I look for record creation options\n    Then I should not see any \"Add Record\" button\n    And I should not see any manual record creation options\n    But records should be automatically created via API\n\n  @negative @permissions\n  Scenario: Requirements tab data is hidden for non-Back Office users\n    Given I am logged in as an Alliant Admin who is not a Back Office user\n    When I view compliance record details\n    Then I should not see Requirements tab data\n    And Requirements information should be restricted\n\n  @negative @search\n  Scenario: Search with no results displays appropriate message\n    Given I am on the compliance records list\n    When I search for a term that matches no records\n    Then I should see a \"No results found\" message\n    And the list should be empty\n    And I should be able to clear the search to see all records again\n\n  @positive @actions\n  Scenario: Action buttons provide correct functionality\n    Given I am viewing a compliance record in the list\n    When I look at the Actions column\n    Then I should see a blue View icon (eye icon)\n    And I should see a blue Edit icon (pencil icon)\n    And I should see a blue Attachments icon (paperclip icon)\n    And each icon should be clickable and functional\n\n  @edge-case @empty-state\n  Scenario: Dashboard handles empty compliance records gracefully\n    Given there are no compliance records in the system\n    When I view the Compliance Dashboard\n    Then the summary metric cards should display zero values\n    And the Compliance Rate should show 0%\n    And the compliance records list should show an appropriate empty state message\n\n  @edge-case @date-calculation\n  Scenario: Policy expiration date calculation when not selected\n    Given there is a compliance record without a policy expiration date selected\n    When I view the Policy Expiration Date column\n    Then the date should be calculated as one year from the effective date\n    And the date should be displayed in YYYY-MM-DD format\n\n  @positive @filtering\n  Scenario: Filter panel opens and provides filtering options\n    Given I am viewing the compliance records list\n    When I click the Filter button\n    Then a filter options panel should open\n    And I should see various filtering criteria available\n    And I should be able to apply filters to narrow down the records"
+}

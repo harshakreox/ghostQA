@@ -1,0 +1,81 @@
+[
+  {
+    "timestamp": "2025-12-09T06:18:21.064680",
+    "test_id": "feature_1764667190.953682::User successfully creates account with valid information",
+    "test_name": "User successfully creates account with valid information",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

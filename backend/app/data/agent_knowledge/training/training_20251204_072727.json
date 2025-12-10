@@ -1,0 +1,53 @@
+[
+  {
+    "timestamp": "2025-12-04T07:27:27.341208",
+    "test_id": "01bd5b75-2471-4cf4-bc8c-de50a358c04d",
+    "test_name": "Sort Products by Price - Low to High",
+    "format": "traditional",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": null,
+        "selector_used": "https://www.saucedemo.com",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "user-name",
+        "selector_used": "[data-test=\"username\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "password",
+        "selector_used": "password",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "login-button",
+        "selector_used": "[data-test=\"login-container\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "select",
+        "target": ".product_sort_container",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "screenshot",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

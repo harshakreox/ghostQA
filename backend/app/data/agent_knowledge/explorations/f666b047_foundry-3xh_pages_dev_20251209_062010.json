@@ -1,0 +1,100 @@
+{
+  "start_url": "https://f666b047.foundry-3xh.pages.dev/",
+  "domain": "f666b047.foundry-3xh.pages.dev",
+  "total_pages": 1,
+  "total_elements": 3,
+  "total_forms": 0,
+  "total_links": 0,
+  "detected_frameworks": [
+    "angular",
+    "mui",
+    "tailwind"
+  ],
+  "page_types_found": {
+    "detail": 1
+  },
+  "sitemap": {
+    "https://f666b047.foundry-3xh.pages.dev/": []
+  },
+  "started_at": "2025-12-09T06:20:09.537432",
+  "completed_at": "2025-12-09T06:20:10.617609",
+  "duration_seconds": 1.080177,
+  "errors": [],
+  "pages": [
+    {
+      "url": "https://f666b047.foundry-3xh.pages.dev/",
+      "title": "Refine",
+      "page_type": "detail",
+      "depth": 0,
+      "element_count": 3,
+      "elements": [
+        {
+          "type": "button",
+          "key": "sign_in",
+          "selectors": [
+            {
+              "selector": "Sign In",
+              "type": "text",
+              "strategy": "button_text",
+              "confidence": 0.8
+            },
+            {
+              "selector": "button:has-text(\"Sign In\")",
+              "type": "css",
+              "strategy": "button_text_css",
+              "confidence": 0.75
+            }
+          ],
+          "text": "Sign In"
+        },
+        {
+          "type": "button",
+          "key": "sign_up",
+          "selectors": [
+            {
+              "selector": "Sign Up",
+              "type": "text",
+              "strategy": "button_text",
+              "confidence": 0.8
+            },
+            {
+              "selector": "button:has-text(\"Sign Up\")",
+              "type": "css",
+              "strategy": "button_text_css",
+              "confidence": 0.75
+            }
+          ],
+          "text": "Sign Up"
+        },
+        {
+          "type": "input",
+          "key": "r_2",
+          "selectors": [
+            {
+              "selector": "#_r_2_",
+              "type": "css",
+              "strategy": "id",
+              "confidence": 0.85
+            },
+            {
+              "selector": "[placeholder=\"Search by title, description, or location...\"]",
+              "type": "css",
+              "strategy": "placeholder",
+              "confidence": 0.7
+            },
+            {
+              "selector": "Search by title, description, or location...",
+              "type": "placeholder",
+              "strategy": "playwright_placeholder",
+              "confidence": 0.8
+            }
+          ],
+          "text": ""
+        }
+      ],
+      "explored_at": "2025-12-09T06:20:09.537432",
+      "exploration_time_ms": 1080,
+      "errors": []
+    }
+  ]
+}

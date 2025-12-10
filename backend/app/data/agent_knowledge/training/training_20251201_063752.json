@@ -1,0 +1,478 @@
+[
+  {
+    "timestamp": "2025-12-01T06:34:19.103079",
+    "test_id": "feature_1764247133.226963_Checkout_fails_with_missing_required_information",
+    "test_name": "Checkout fails with missing required information",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "first",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "last",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "postal",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "continue button",
+        "selector_used": "[data-test=\"login-button\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "error message <error_message>",
+        "selector_used": "[data-test=\"error\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-01T06:34:27.485810",
+    "test_id": "feature_1764247133.226963_Locked_user_cannot_login",
+    "test_name": "Locked user cannot login",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "username field",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "password field",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "login button",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "error message ",
+        "selector_used": ".error-message-container",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-01T06:36:31.339140",
+    "test_id": "feature_1764247133.226963_Add_multiple_products_to_cart_and_verify_cart_contents",
+    "test_name": "Add multiple products to cart and verify cart contents",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "shopping cart icon",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "3 items in the cart",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "all three product names in the cart list",
+        "selector_used": "#user-name",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-01T06:36:35.541201",
+    "test_id": "feature_1764247133.226963_Empty_cart_checkout_attempt",
+    "test_name": "Empty cart checkout attempt",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "shopping cart icon",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "an empty cart page",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "continue shopping",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-01T06:36:40.537653",
+    "test_id": "feature_1764247133.226963_Remove_item_from_cart_and_verify_updated_total",
+    "test_name": "Remove item from cart and verify updated total",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "remove button for",
+        "selector_used": "[data-test=\"login-button\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-01T06:37:43.790544",
+    "test_id": "feature_1764247133.226963_Maximum_items_in_cart_boundary_test",
+    "test_name": "Maximum items in cart boundary test",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "all 6 items listed in the cart",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-01T06:37:51.952804",
+    "test_id": "feature_1764247133.226963_Navigate_back_from_checkout_without_completing_purchase",
+    "test_name": "Navigate back from checkout without completing purchase",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "cancel button",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

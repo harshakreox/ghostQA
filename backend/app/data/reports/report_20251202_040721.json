@@ -1,0 +1,37 @@
+{
+  "id": "report_20251202_040721",
+  "project_id": "96a02259-94d8-488e-b799-d5b731b8585c",
+  "project_name": "SauceDemo E2E Tests",
+  "executed_at": "2025-12-02T04:07:21.496276",
+  "total_tests": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "duration": 81.919305,
+  "results": [
+    {
+      "test_case_id": "b7029a2d-35c9-44b2-a115-71c89f4bdb59",
+      "test_case_name": "Successful Login with Standard User",
+      "status": "failed",
+      "duration": 78.458,
+      "error_message": "Step 5: URL assertion failed. Expected 'inventory.html' (contains) but got 'https://www.saucedemo.com/'",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\b7029a2d-35c9-44b2-a115-71c89f4bdb59_step5_failure.png",
+      "logs": [
+        "Step 1: Navigate to https://www.saucedemo.com - passed",
+        "Step 2: Type 'standard_user' into 'user-name' - passed",
+        "Step 3: Type 'secret_sauce' into 'password' - passed",
+        "Step 4: Click on 'login-button' - passed",
+        "Step 5: Assert URL contains 'inventory.html' - failed",
+        "Step 6: Assert '.inventory_list' is visible - failed"
+      ]
+    }
+  ],
+  "format": "traditional",
+  "execution_mode": "guided",
+  "pass_rate": 0.0,
+  "total_ai_calls": 0,
+  "total_kb_hits": 3,
+  "ai_dependency_percent": 0.0,
+  "new_selectors_learned": 0,
+  "errors": []
+}

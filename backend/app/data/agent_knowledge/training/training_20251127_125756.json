@@ -1,0 +1,53 @@
+[
+  {
+    "timestamp": "2025-11-27T12:57:56.326650",
+    "test_id": "b7029a2d-35c9-44b2-a115-71c89f4bdb59",
+    "test_name": "Successful Login with Standard User",
+    "format": "traditional",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": null,
+        "selector_used": "https://www.saucedemo.com",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "user-name",
+        "selector_used": "[data-test=\"username\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "password",
+        "selector_used": "[data-test=\"password\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "login-button",
+        "selector_used": "[data-test=\"login-container\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_url",
+        "target": null,
+        "selector_used": "inventory.html",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": ".inventory_list",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

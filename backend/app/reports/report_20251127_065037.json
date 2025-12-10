@@ -1,0 +1,37 @@
+{
+  "id": "report_20251127_065037",
+  "project_id": "96a02259-94d8-488e-b799-d5b731b8585c",
+  "project_name": "SauceDemo E2E Tests",
+  "executed_at": "2025-11-27T06:50:37.562491",
+  "total_tests": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "duration": 129.732783,
+  "results": [
+    {
+      "test_case_id": "b7029a2d-35c9-44b2-a115-71c89f4bdb59",
+      "test_case_name": "Successful Login with Standard User",
+      "status": "failed",
+      "duration": 125.661,
+      "error_message": "Step 2: Target page, context or browser has been closed",
+      "screenshot_path": null,
+      "logs": [
+        "Step 1: navigate - passed",
+        "Step 2: type - failed",
+        "Step 3: type - failed",
+        "Step 4: click - failed",
+        "Step 5: assert_url - failed",
+        "Step 6: assert_visible - failed"
+      ]
+    }
+  ],
+  "format": "traditional",
+  "execution_mode": "guided",
+  "pass_rate": 0.0,
+  "total_ai_calls": 0,
+  "total_kb_hits": 0,
+  "ai_dependency_percent": 0,
+  "new_selectors_learned": 0,
+  "errors": []
+}

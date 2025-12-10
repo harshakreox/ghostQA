@@ -1,0 +1,46 @@
+[
+  {
+    "timestamp": "2025-12-09T06:20:29.618309",
+    "test_id": "feature_1764667190.953682::Username field boundary - minimum length acceptance",
+    "test_name": "Username field boundary - minimum length acceptance",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

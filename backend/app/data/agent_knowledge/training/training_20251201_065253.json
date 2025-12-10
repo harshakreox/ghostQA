@@ -1,0 +1,32 @@
+[
+  {
+    "timestamp": "2025-12-01T06:52:52.938652",
+    "test_id": "test_feature_p2_Login_without_explicit_data-testid",
+    "test_name": "Login without explicit data-testid",
+    "format": "gherkin",
+    "status": "passed",
+    "steps": [
+      {
+        "action": "type",
+        "target": "username",
+        "selector_used": "[data-test=\"username\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "password",
+        "selector_used": "[data-test=\"password\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "login button",
+        "selector_used": "[data-test=\"login-button\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

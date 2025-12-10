@@ -1,0 +1,37 @@
+{
+  "id": "report_20251127_065734",
+  "project_id": "96a02259-94d8-488e-b799-d5b731b8585c",
+  "project_name": "SauceDemo E2E Tests",
+  "executed_at": "2025-11-27T06:57:34.972946",
+  "total_tests": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "duration": 233.213698,
+  "results": [
+    {
+      "test_case_id": "b7029a2d-35c9-44b2-a115-71c89f4bdb59",
+      "test_case_name": "Successful Login with Standard User",
+      "status": "failed",
+      "duration": 228.646,
+      "error_message": "Step 2: Error: strict mode violation: locator(\"*:has-text(\\\"username\\\")\") resolved to 9 elements:\n    1) <html lang=\"en\">\u2026</html> aka locator(\"html\")\n    2) <body>\u2026</body> aka locator(\"body\")\n    3) <div id=\"root\">\u2026</div> aka locator(\"#root\")\n    4) <div class=\"login_container\">\u2026</div> aka get_by_text(\"Swag LabsLoginAccepted\")\n    5) <div class=\"login_wrapper\" data-test=\"login-container\">\u2026</div> aka locator(\"[data-test=\\\"login-container\\\"]\")\n    6) <div class=\"login_credentials_wrap\" data-test=\"login-\u2026>\u2026</div> aka locator(\"[data-test=\\\"login-credentials-container\\\"]\")\n    7) <div class=\"login_credentials_wrap-inner\">\u2026</div> aka locator(\"[data-test=\\\"login-credentials-container\\\"] div\").first\n    8) <div id=\"login_credentials\" class=\"login_credentials\"\u2026>\u2026</div> aka locator(\"[data-test=\\\"login-credentials\\\"]\")\n    9) <h4>Accepted usernames are:</h4> aka get_by_role(\"heading\", name=\"Accepted usernames are:\")\n",
+      "screenshot_path": null,
+      "logs": [
+        "Step 1: navigate - passed",
+        "Step 2: type - failed",
+        "Step 3: type - failed",
+        "Step 4: click - failed",
+        "Step 5: assert_url - failed",
+        "Step 6: assert_visible - failed"
+      ]
+    }
+  ],
+  "format": "traditional",
+  "execution_mode": "autonomous",
+  "pass_rate": 0.0,
+  "total_ai_calls": 0,
+  "total_kb_hits": 0,
+  "ai_dependency_percent": 0,
+  "new_selectors_learned": 0,
+  "errors": []
+}

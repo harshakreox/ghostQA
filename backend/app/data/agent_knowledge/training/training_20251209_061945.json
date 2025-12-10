@@ -1,0 +1,60 @@
+[
+  {
+    "timestamp": "2025-12-09T06:19:45.725354",
+    "test_id": "feature_1764667190.953682::Registration fails with duplicate username",
+    "test_name": "Registration fails with duplicate username",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

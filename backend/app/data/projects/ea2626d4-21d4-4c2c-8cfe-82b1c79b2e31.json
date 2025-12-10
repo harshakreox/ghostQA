@@ -1,0 +1,42 @@
+{
+  "id": "ea2626d4-21d4-4c2c-8cfe-82b1c79b2e31",
+  "name": "Foundry",
+  "description": "",
+  "base_url": "https://f666b047.foundry-3xh.pages.dev/",
+  "test_cases": [],
+  "created_at": "2025-12-08T09:47:52.112232",
+  "updated_at": "2025-12-09T09:40:56.432081",
+  "owner_id": "39ed552e-51a1-4f91-8f05-5cf849cca8a8",
+  "credentials": [
+    {
+      "role_name": "Admin",
+      "username": "alakshmisha@eoxvantage.com",
+      "password": "Summer@2024"
+    },
+    {
+      "role_name": "Staff",
+      "username": "vreddy@eoxvantage.com",
+      "password": "password123"
+    },
+    {
+      "role_name": "User",
+      "username": "alakshmishaeox@gmail.com",
+      "password": "Summer@2024"
+    }
+  ],
+  "test_username": null,
+  "test_password": null,
+  "test_email": null,
+  "test_admin_username": null,
+  "test_admin_password": null,
+  "auto_test_data": true,
+  "ui_config": {
+    "frameworks": [
+      "react",
+      "material-ui",
+      "tailwind"
+    ],
+    "primary_framework": "react",
+    "testing_library": "playwright"
+  }
+}

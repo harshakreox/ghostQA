@@ -1,0 +1,403 @@
+{
+  "id": "feature_1765273355.920389",
+  "name": "Compliance Dashboard - Contractor View",
+  "description": "Contractors can view compliance dashboard with summary metrics and compliance records filtered to their company only",
+  "created_at": "2025-12-09T15:12:35.920389",
+  "updated_at": "2025-12-09T15:13:41.357104",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am on the application"
+    },
+    {
+      "keyword": "And",
+      "text": "I log in as admin"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Contractor views compliance dashboard with correct page header",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the compliance dashboard"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the page header \"Compliance Dashboard - [Company Name]\""
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the subtitle \"Certificate of insurance compliance overview\""
+        }
+      ]
+    },
+    {
+      "name": "Dashboard displays three summary metric cards",
+      "tags": [
+        "@positive",
+        "@ui"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the compliance dashboard"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the \"Compliance Rate\" card"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the \"Expiring Within 30 Days\" card"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the \"Expired Certifications\" card"
+        }
+      ]
+    },
+    {
+      "name": "Compliance records section displays with list view",
+      "tags": [
+        "@positive",
+        "@ui"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the compliance dashboard"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the \"Compliance Records\" section"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the compliance records list view"
+        },
+        {
+          "keyword": "And",
+          "text": "the list should only display records from my company"
+        }
+      ]
+    },
+    {
+      "name": "List view displays correct columns for contractor role",
+      "tags": [
+        "@positive",
+        "@data"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the compliance records list"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the \"First Name\" column"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the \"Last Name\" column"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the \"ID Number\" column"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the \"Status\" column"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the \"Date Created\" column"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the \"Policy Effective Date\" column"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the \"Policy Expiration Date\" column"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the \"Actions\" column"
+        }
+      ]
+    },
+    {
+      "name": "Compliance status displays with correct color-coded badges",
+      "tags": [
+        "@positive",
+        "@visual"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing compliance records with different statuses"
+        },
+        {
+          "keyword": "Then",
+          "text": "compliant records should display a green \"Compliant\" badge"
+        },
+        {
+          "keyword": "And",
+          "text": "non-compliant records should display a red \"Non-Compliant\" badge"
+        }
+      ]
+    },
+    {
+      "name": "Actions column shows only view and attachments icons",
+      "tags": [
+        "@positive",
+        "@permissions"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the compliance records list"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the blue eye icon for viewing records"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the blue paperclip icon for attachments"
+        },
+        {
+          "keyword": "But",
+          "text": "I should not see any edit buttons"
+        }
+      ]
+    },
+    {
+      "name": "Requirements tab is hidden for contractor users",
+      "tags": [
+        "@negative",
+        "@permissions"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the compliance dashboard"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see the \"Requirements\" tab"
+        }
+      ]
+    },
+    {
+      "name": "Add Record button is not displayed for contractors",
+      "tags": [
+        "@negative",
+        "@permissions"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the compliance records section"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see an \"Add Record\" button"
+        },
+        {
+          "keyword": "And",
+          "text": "records should be auto-generated only"
+        }
+      ]
+    },
+    {
+      "name": "Export functionality is disabled for contractors",
+      "tags": [
+        "@negative",
+        "@permissions"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the compliance records list"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see an export button"
+        },
+        {
+          "keyword": "And",
+          "text": "export functionality should be disabled"
+        }
+      ]
+    },
+    {
+      "name": "Contractor cannot edit compliance records",
+      "tags": [
+        "@negative",
+        "@permissions"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "I attempt to modify any field"
+        },
+        {
+          "keyword": "Then",
+          "text": "the fields should be read-only"
+        },
+        {
+          "keyword": "And",
+          "text": "I should have view-only access"
+        }
+      ]
+    },
+    {
+      "name": "Contractor cannot delete compliance records",
+      "tags": [
+        "@negative",
+        "@permissions"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing compliance records"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see any delete options"
+        },
+        {
+          "keyword": "And",
+          "text": "no delete functionality should be available"
+        }
+      ]
+    },
+    {
+      "name": "Policy expiration date defaults to one year from effective date when not specified",
+      "tags": [
+        "@edge-case",
+        "@calculation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record without a specified policy expiration date"
+        },
+        {
+          "keyword": "Then",
+          "text": "the policy expiration date should display as one year from the effective date"
+        },
+        {
+          "keyword": "And",
+          "text": "the date should be in YYYY-MM-DD format"
+        }
+      ]
+    },
+    {
+      "name": "Empty state when no compliance records exist for contractor company",
+      "tags": [
+        "@edge-case",
+        "@empty-state"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "my company has no compliance records"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the compliance dashboard"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an appropriate empty state message"
+        },
+        {
+          "keyword": "And",
+          "text": "the summary metric cards should display zero values"
+        }
+      ]
+    },
+    {
+      "name": "Date fields display in correct YYYY-MM-DD format",
+      "tags": [
+        "@edge-case",
+        "@format"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing compliance records with date fields"
+        },
+        {
+          "keyword": "Then",
+          "text": "the \"Date Created\" field should display in YYYY-MM-DD format"
+        },
+        {
+          "keyword": "And",
+          "text": "the \"Policy Effective Date\" field should display in YYYY-MM-DD format"
+        },
+        {
+          "keyword": "And",
+          "text": "the \"Policy Expiration Date\" field should display in YYYY-MM-DD format"
+        }
+      ]
+    },
+    {
+      "name": "Summary metrics calculate correctly for contractor company only",
+      "tags": [
+        "@positive",
+        "@calculation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "my company has multiple compliance records with different statuses"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the summary metric cards"
+        },
+        {
+          "keyword": "Then",
+          "text": "the compliance rate should calculate based only on my company's records"
+        },
+        {
+          "keyword": "And",
+          "text": "the expiring certifications count should include only my company's records"
+        },
+        {
+          "keyword": "And",
+          "text": "the expired certifications count should include only my company's records"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: Compliance Dashboard - Contractor View\n  Contractors can view compliance dashboard with summary metrics and compliance records filtered to their company only\n\n  Background:\n    Given I am on the application\n    And I log in as admin\n\n  @smoke @positive\n  Scenario: Contractor views compliance dashboard with correct page header\n    Given I am on the compliance dashboard\n    Then I should see the page header \"Compliance Dashboard - [Company Name]\"\n    And I should see the subtitle \"Certificate of insurance compliance overview\"\n\n  @positive @ui\n  Scenario: Dashboard displays three summary metric cards\n    Given I am on the compliance dashboard\n    Then I should see the \"Compliance Rate\" card\n    And I should see the \"Expiring Within 30 Days\" card\n    And I should see the \"Expired Certifications\" card\n\n  @positive @ui\n  Scenario: Compliance records section displays with list view\n    Given I am on the compliance dashboard\n    Then I should see the \"Compliance Records\" section\n    And I should see the compliance records list view\n    And the list should only display records from my company\n\n  @positive @data\n  Scenario: List view displays correct columns for contractor role\n    Given I am viewing the compliance records list\n    Then I should see the \"First Name\" column\n    And I should see the \"Last Name\" column\n    And I should see the \"ID Number\" column\n    And I should see the \"Status\" column\n    And I should see the \"Date Created\" column\n    And I should see the \"Policy Effective Date\" column\n    And I should see the \"Policy Expiration Date\" column\n    And I should see the \"Actions\" column\n\n  @positive @visual\n  Scenario: Compliance status displays with correct color-coded badges\n    Given I am viewing compliance records with different statuses\n    Then compliant records should display a green \"Compliant\" badge\n    And non-compliant records should display a red \"Non-Compliant\" badge\n\n  @positive @permissions\n  Scenario: Actions column shows only view and attachments icons\n    Given I am viewing the compliance records list\n    Then I should see the blue eye icon for viewing records\n    And I should see the blue paperclip icon for attachments\n    But I should not see any edit buttons\n\n  @negative @permissions\n  Scenario: Requirements tab is hidden for contractor users\n    Given I am on the compliance dashboard\n    Then I should not see the \"Requirements\" tab\n\n  @negative @permissions\n  Scenario: Add Record button is not displayed for contractors\n    Given I am viewing the compliance records section\n    Then I should not see an \"Add Record\" button\n    And records should be auto-generated only\n\n  @negative @permissions\n  Scenario: Export functionality is disabled for contractors\n    Given I am viewing the compliance records list\n    Then I should not see an export button\n    And export functionality should be disabled\n\n  @negative @permissions\n  Scenario: Contractor cannot edit compliance records\n    Given I am viewing a compliance record\n    When I attempt to modify any field\n    Then the fields should be read-only\n    And I should have view-only access\n\n  @negative @permissions\n  Scenario: Contractor cannot delete compliance records\n    Given I am viewing compliance records\n    Then I should not see any delete options\n    And no delete functionality should be available\n\n  @edge-case @calculation\n  Scenario: Policy expiration date defaults to one year from effective date when not specified\n    Given I am viewing a compliance record without a specified policy expiration date\n    Then the policy expiration date should display as one year from the effective date\n    And the date should be in YYYY-MM-DD format\n\n  @edge-case @empty-state\n  Scenario: Empty state when no compliance records exist for contractor company\n    Given my company has no compliance records\n    When I view the compliance dashboard\n    Then I should see an appropriate empty state message\n    And the summary metric cards should display zero values\n\n  @edge-case @format\n  Scenario: Date fields display in correct YYYY-MM-DD format\n    Given I am viewing compliance records with date fields\n    Then the \"Date Created\" field should display in YYYY-MM-DD format\n    And the \"Policy Effective Date\" field should display in YYYY-MM-DD format\n    And the \"Policy Expiration Date\" field should display in YYYY-MM-DD format\n\n  @positive @calculation\n  Scenario: Summary metrics calculate correctly for contractor company only\n    Given my company has multiple compliance records with different statuses\n    When I view the summary metric cards\n    Then the compliance rate should calculate based only on my company's records\n    And the expiring certifications count should include only my company's records\n    And the expired certifications count should include only my company's records"
+}

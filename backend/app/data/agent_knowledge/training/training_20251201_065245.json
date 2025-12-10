@@ -1,0 +1,46 @@
+[
+  {
+    "timestamp": "2025-12-01T06:52:45.621907",
+    "test_id": "test_feature_Successful_login_with_valid_credentials",
+    "test_name": "Successful login with valid credentials",
+    "format": "gherkin",
+    "status": "passed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "username",
+        "selector_used": "[data-test=\"username\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "password",
+        "selector_used": "[data-test=\"password\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "login-button",
+        "selector_used": "[data-test=\"login-button\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_url",
+        "target": "inventory",
+        "selector_used": "inventory",
+        "status": "passed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

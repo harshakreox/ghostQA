@@ -1,0 +1,383 @@
+[
+  {
+    "timestamp": "2025-12-01T05:22:24.062733",
+    "test_id": "feature_1764247133.226963_Successful_login_with_valid_credentials",
+    "test_name": "Successful login with valid credentials",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "u",
+        "selector_used": "[data-test=\"username\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "p",
+        "selector_used": "[data-test=\"password\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "l",
+        "selector_used": "[data-test=\"login-container\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "the products container with data-testid ",
+        "selector_used": "[data-test=\"login-container\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-01T05:23:48.618374",
+    "test_id": "feature_1764247133.226963_Complete_product_purchase_with_single_item",
+    "test_name": "Complete product purchase with single item",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "A",
+        "selector_used": "[data-test=\"login-container\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "s",
+        "selector_used": "[data-test=\"username\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "c",
+        "selector_used": "[data-test=\"login-container\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "f",
+        "selector_used": ".form_column",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "l",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "p",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "c",
+        "selector_used": "[data-test=\"login-container\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "f",
+        "selector_used": ".form_column",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "order confirmation with text ",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "completion message with data-testid ",
+        "selector_used": ".error-message-container",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-01T05:24:58.500440",
+    "test_id": "feature_1764247133.226963_Add_multiple_products_to_cart_and_verify_cart_contents",
+    "test_name": "Add multiple products to cart and verify cart contents",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "s",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "3 items in the cart",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "all three product names in the cart list",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-01T05:25:07.472615",
+    "test_id": "feature_1764247133.226963_Remove_item_from_cart_and_verify_updated_total",
+    "test_name": "Remove item from cart and verify updated total",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "r",
+        "selector_used": "[data-test=\"login-container\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-01T05:26:16.775502",
+    "test_id": "feature_1764247133.226963_View_product_details_and_return_to_inventory",
+    "test_name": "View product details and return to inventory",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "S",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "the product detail page",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "product description and price details",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "b",
+        "selector_used": "[data-test=\"login-button\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

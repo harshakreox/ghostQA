@@ -1,0 +1,37 @@
+{
+  "id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "name": "Alliant Insurance",
+  "description": "This is the Alliant project ",
+  "base_url": "https://2bd642eb.taruvi-testconsole.pages.dev/insurer-claims-dashboard",
+  "test_cases": [],
+  "created_at": "2025-11-25T12:27:51.351891",
+  "updated_at": "2025-12-08T16:10:01.465878",
+  "owner_id": null,
+  "credentials": [
+    {
+      "role_name": "admin",
+      "username": "alliant@admin.com",
+      "password": "Welcome2eox!"
+    },
+    {
+      "role_name": "super admin",
+      "username": "mohankarunanidhi@eoxvantage.com",
+      "password": "Welcome2eox!"
+    }
+  ],
+  "test_username": null,
+  "test_password": null,
+  "test_email": null,
+  "test_admin_username": null,
+  "test_admin_password": null,
+  "auto_test_data": false,
+  "ui_config": {
+    "frameworks": [
+      "react",
+      "material-ui",
+      "tailwind"
+    ],
+    "primary_framework": "react",
+    "testing_library": "playwright"
+  }
+}

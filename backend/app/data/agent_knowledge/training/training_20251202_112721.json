@@ -1,0 +1,645 @@
+[
+  {
+    "timestamp": "2025-12-02T11:26:23.211691",
+    "test_id": "feature_1764667190.953682_User_successfully_creates_account_with_valid_information",
+    "test_name": "User successfully creates account with valid information",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "Sign Up",
+        "selector_used": "Sign Up",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "Sign Up",
+        "selector_used": "Sign Up",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_url",
+        "target": "user",
+        "selector_used": "user",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "a welcome message",
+        "selector_used": "[data-test*=\"welcome\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-02T11:26:28.017048",
+    "test_id": "feature_1764667190.953682_User_creates_account_and_receives_welcome_email",
+    "test_name": "User creates account and receives welcome email",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-02T11:26:32.704121",
+    "test_id": "feature_1764667190.953682_Registration_succeeds_with_minimum_password_requirements",
+    "test_name": "Registration succeeds with minimum password requirements",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-02T11:26:38.066418",
+    "test_id": "feature_1764667190.953682_User_registration_with_special_characters_in_name",
+    "test_name": "User registration with special characters in name",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-02T11:26:42.418433",
+    "test_id": "feature_1764667190.953682_Registration_with_long_but_valid_input_values",
+    "test_name": "Registration with long but valid input values",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-02T11:26:47.335392",
+    "test_id": "feature_1764667190.953682_Alternative_registration_flow_using_different_field_order",
+    "test_name": "Alternative registration flow using different field order",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-02T11:26:58.970310",
+    "test_id": "feature_1764667190.953682_Registration_fails_when_required_fields_are_empty",
+    "test_name": "Registration fails when required fields are empty",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "Sign Up",
+        "selector_used": "Sign Up",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "an error message indicating <field> is required",
+        "selector_used": "input[type='email']",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-02T11:27:07.380756",
+    "test_id": "feature_1764667190.953682_Registration_fails_with_invalid_email_format",
+    "test_name": "Registration fails with invalid email format",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "an error message ",
+        "selector_used": "[data-test*=\"error\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-02T11:27:15.833044",
+    "test_id": "feature_1764667190.953682_Registration_fails_with_weak_password",
+    "test_name": "Registration fails with weak password",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "password complexity error messages",
+        "selector_used": "[data-test=\"password\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-02T11:27:21.789762",
+    "test_id": "feature_1764667190.953682_Registration_fails_with_duplicate_username",
+    "test_name": "Registration fails with duplicate username",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "an error message ",
+        "selector_used": "[data-test*=\"error\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

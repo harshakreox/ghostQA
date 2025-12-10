@@ -1,0 +1,439 @@
+{
+  "id": "feature_1765264332.69572",
+  "name": "View Compliance Record Detail",
+  "description": "Back Office Users can access detailed compliance records with complete requirement statuses and contractor information",
+  "created_at": "2025-12-09T12:42:12.695720",
+  "updated_at": "2025-12-09T12:42:18.765077",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am on the application"
+    },
+    {
+      "keyword": "And",
+      "text": "I am logged in as admin"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Successfully navigate to compliance record detail page",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the compliance dashboard"
+        },
+        {
+          "keyword": "And",
+          "text": "there are compliance records in the list view"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button for a compliance record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to the Compliance Record Detail page"
+        },
+        {
+          "keyword": "And",
+          "text": "the page header should display \"Compliance Record Detail\""
+        },
+        {
+          "keyword": "And",
+          "text": "the page should display in read only mode"
+        }
+      ]
+    },
+    {
+      "name": "Display contractor information correctly in header section",
+      "tags": [
+        "@positive",
+        "@data-display"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on a compliance record detail page"
+        },
+        {
+          "keyword": "Then",
+          "text": "the contractor name should be displayed as \"First Name Last Name\""
+        },
+        {
+          "keyword": "And",
+          "text": "the overall compliance status should be displayed with appropriate color badge"
+        },
+        {
+          "keyword": "And",
+          "text": "all auto-populated fields from Focus should be visible"
+        },
+        {
+          "keyword": "And",
+          "text": "the contractor ID should be displayed"
+        },
+        {
+          "keyword": "And",
+          "text": "the email ID should be displayed"
+        }
+      ]
+    },
+    {
+      "name": "Overall compliance status shows green badge when all requirements are compliant",
+      "tags": [
+        "@positive",
+        "@status-calculation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record where all requirements are compliant"
+        },
+        {
+          "keyword": "Then",
+          "text": "the overall status should display \"Compliant\" with a green badge"
+        },
+        {
+          "keyword": "And",
+          "text": "all individual requirement statuses should show green badges"
+        }
+      ]
+    },
+    {
+      "name": "Overall compliance status shows red badge when any requirement is non-compliant",
+      "tags": [
+        "@positive",
+        "@status-calculation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record where at least one requirement is non-compliant"
+        },
+        {
+          "keyword": "Then",
+          "text": "the overall status should display \"Non-Compliant\" with a red badge"
+        },
+        {
+          "keyword": "And",
+          "text": "the non-compliant requirements should show red badges"
+        },
+        {
+          "keyword": "And",
+          "text": "the compliant requirements should show green badges"
+        }
+      ]
+    },
+    {
+      "name": "Requirements section displays all requirements with correct status badges",
+      "tags": [
+        "@positive",
+        "@requirements-display"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on a compliance record detail page"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Requirements section should have \"Requirement\" column header left aligned"
+        },
+        {
+          "keyword": "And",
+          "text": "the Requirements section should have \"Status\" column header right aligned"
+        },
+        {
+          "keyword": "And",
+          "text": "all 31 insurance requirements should be displayed as rows"
+        },
+        {
+          "keyword": "And",
+          "text": "each requirement should show appropriate compliance status badge"
+        },
+        {
+          "keyword": "And",
+          "text": "all requirement fields should be read-only"
+        }
+      ]
+    },
+    {
+      "name": "Back navigation button returns to compliance dashboard",
+      "tags": [
+        "@positive",
+        "@navigation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on a compliance record detail page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the back navigation button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be returned to the compliance dashboard list view"
+        },
+        {
+          "keyword": "And",
+          "text": "the compliance records list should be displayed"
+        }
+      ]
+    },
+    {
+      "name": "Specific insurance requirements are properly displayed",
+      "tags": [
+        "@positive",
+        "@detailed-requirements"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record detail page"
+        },
+        {
+          "keyword": "Then",
+          "text": "the VIN Listed requirement should be displayed with status badge"
+        },
+        {
+          "keyword": "And",
+          "text": "the Hired requirement should be displayed with status badge"
+        },
+        {
+          "keyword": "And",
+          "text": "the Combined Single Limit requirements should be displayed with status badges"
+        },
+        {
+          "keyword": "And",
+          "text": "the Worker's Compensation coverage requirement should be displayed with status badge"
+        },
+        {
+          "keyword": "And",
+          "text": "the ACORD 25 Version requirement should be displayed with status badge"
+        }
+      ]
+    },
+    {
+      "name": "Error handling when compliance record data is missing",
+      "tags": [
+        "@negative",
+        "@error-handling"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I attempt to view a compliance record with missing data"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button for the incomplete record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an appropriate error message"
+        },
+        {
+          "keyword": "And",
+          "text": "the page should handle missing fields gracefully"
+        }
+      ]
+    },
+    {
+      "name": "View button is not accessible for invalid compliance record",
+      "tags": [
+        "@negative",
+        "@access-control"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the compliance dashboard"
+        },
+        {
+          "keyword": "When",
+          "text": "I attempt to access a non-existent compliance record detail"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message indicating the record was not found"
+        },
+        {
+          "keyword": "And",
+          "text": "I should remain on the dashboard or be redirected appropriately"
+        }
+      ]
+    },
+    {
+      "name": "Page maintains read-only state for all fields",
+      "tags": [
+        "@negative",
+        "@data-integrity"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on a compliance record detail page"
+        },
+        {
+          "keyword": "When",
+          "text": "I attempt to modify any displayed field"
+        },
+        {
+          "keyword": "Then",
+          "text": "all fields should remain read-only"
+        },
+        {
+          "keyword": "And",
+          "text": "no edit functionality should be available"
+        },
+        {
+          "keyword": "And",
+          "text": "the data should remain unchanged"
+        }
+      ]
+    },
+    {
+      "name": "Requirements display validation with various status combinations",
+      "tags": [
+        "@edge-case",
+        "@status-validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record with <scenario> requirements"
+        },
+        {
+          "keyword": "Then",
+          "text": "the overall status should show <overall_status>"
+        },
+        {
+          "keyword": "And",
+          "text": "the status badge should be <badge_color>"
+        }
+      ]
+    },
+    {
+      "name": "Display handles maximum number of requirements correctly",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record with all 31 requirements populated"
+        },
+        {
+          "keyword": "Then",
+          "text": "all requirements should be displayed without truncation"
+        },
+        {
+          "keyword": "And",
+          "text": "the page should render all requirement rows properly"
+        },
+        {
+          "keyword": "And",
+          "text": "scroll functionality should work correctly if needed"
+        }
+      ]
+    },
+    {
+      "name": "Attachment display for COI documents",
+      "tags": [
+        "@edge-case",
+        "@attachments"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record with COI attachments"
+        },
+        {
+          "keyword": "Then",
+          "text": "the COI attachments should be displayed in read-only format"
+        },
+        {
+          "keyword": "And",
+          "text": "attachment information should be visible but not editable"
+        }
+      ]
+    },
+    {
+      "name": "Alternative navigation using browser back button",
+      "tags": [
+        "@alternative-flow",
+        "@navigation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on a compliance record detail page"
+        },
+        {
+          "keyword": "When",
+          "text": "I use the browser back button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be returned to the previous page"
+        },
+        {
+          "keyword": "And",
+          "text": "the application state should be maintained correctly"
+        }
+      ]
+    },
+    {
+      "name": "Page refresh maintains compliance record display",
+      "tags": [
+        "@alternative-flow",
+        "@data-persistence"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record detail page"
+        },
+        {
+          "keyword": "When",
+          "text": "I refresh the page"
+        },
+        {
+          "keyword": "Then",
+          "text": "the same compliance record details should be displayed"
+        },
+        {
+          "keyword": "And",
+          "text": "all requirement statuses should remain unchanged"
+        },
+        {
+          "keyword": "And",
+          "text": "the page should maintain read-only mode"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: View Compliance Record Detail\n  Back Office Users can access detailed compliance records with complete requirement statuses and contractor information\n\n  Background:\n    Given I am on the application\n    And I am logged in as admin\n\n  @smoke @positive\n  Scenario: Successfully navigate to compliance record detail page\n    Given I am on the compliance dashboard\n    And there are compliance records in the list view\n    When I click the View button for a compliance record\n    Then I should be navigated to the Compliance Record Detail page\n    And the page header should display \"Compliance Record Detail\"\n    And the page should display in read only mode\n\n  @positive @data-display\n  Scenario: Display contractor information correctly in header section\n    Given I am on a compliance record detail page\n    Then the contractor name should be displayed as \"First Name Last Name\"\n    And the overall compliance status should be displayed with appropriate color badge\n    And all auto-populated fields from Focus should be visible\n    And the contractor ID should be displayed\n    And the email ID should be displayed\n\n  @positive @status-calculation\n  Scenario: Overall compliance status shows green badge when all requirements are compliant\n    Given I am viewing a compliance record where all requirements are compliant\n    Then the overall status should display \"Compliant\" with a green badge\n    And all individual requirement statuses should show green badges\n\n  @positive @status-calculation\n  Scenario: Overall compliance status shows red badge when any requirement is non-compliant\n    Given I am viewing a compliance record where at least one requirement is non-compliant\n    Then the overall status should display \"Non-Compliant\" with a red badge\n    And the non-compliant requirements should show red badges\n    And the compliant requirements should show green badges\n\n  @positive @requirements-display\n  Scenario: Requirements section displays all requirements with correct status badges\n    Given I am on a compliance record detail page\n    Then the Requirements section should have \"Requirement\" column header left aligned\n    And the Requirements section should have \"Status\" column header right aligned\n    And all 31 insurance requirements should be displayed as rows\n    And each requirement should show appropriate compliance status badge\n    And all requirement fields should be read-only\n\n  @positive @navigation\n  Scenario: Back navigation button returns to compliance dashboard\n    Given I am on a compliance record detail page\n    When I click the back navigation button\n    Then I should be returned to the compliance dashboard list view\n    And the compliance records list should be displayed\n\n  @positive @detailed-requirements\n  Scenario: Specific insurance requirements are properly displayed\n    Given I am viewing a compliance record detail page\n    Then the VIN Listed requirement should be displayed with status badge\n    And the Hired requirement should be displayed with status badge\n    And the Combined Single Limit requirements should be displayed with status badges\n    And the Worker's Compensation coverage requirement should be displayed with status badge\n    And the ACORD 25 Version requirement should be displayed with status badge\n\n  @negative @error-handling\n  Scenario: Error handling when compliance record data is missing\n    Given I attempt to view a compliance record with missing data\n    When I click the View button for the incomplete record\n    Then I should see an appropriate error message\n    And the page should handle missing fields gracefully\n\n  @negative @access-control\n  Scenario: View button is not accessible for invalid compliance record\n    Given I am on the compliance dashboard\n    When I attempt to access a non-existent compliance record detail\n    Then I should see an error message indicating the record was not found\n    And I should remain on the dashboard or be redirected appropriately\n\n  @negative @data-integrity\n  Scenario: Page maintains read-only state for all fields\n    Given I am on a compliance record detail page\n    When I attempt to modify any displayed field\n    Then all fields should remain read-only\n    And no edit functionality should be available\n    And the data should remain unchanged\n\n  @edge-case @status-validation\n  Scenario: Requirements display validation with various status combinations\n    Given I am viewing a compliance record with <scenario> requirements\n    Then the overall status should show <overall_status>\n    And the status badge should be <badge_color>\n\n  @edge-case @boundary\n  Scenario: Display handles maximum number of requirements correctly\n    Given I am viewing a compliance record with all 31 requirements populated\n    Then all requirements should be displayed without truncation\n    And the page should render all requirement rows properly\n    And scroll functionality should work correctly if needed\n\n  @edge-case @attachments\n  Scenario: Attachment display for COI documents\n    Given I am viewing a compliance record with COI attachments\n    Then the COI attachments should be displayed in read-only format\n    And attachment information should be visible but not editable\n\n  @alternative-flow @navigation\n  Scenario: Alternative navigation using browser back button\n    Given I am on a compliance record detail page\n    When I use the browser back button\n    Then I should be returned to the previous page\n    And the application state should be maintained correctly\n\n  @alternative-flow @data-persistence\n  Scenario: Page refresh maintains compliance record display\n    Given I am viewing a compliance record detail page\n    When I refresh the page\n    Then the same compliance record details should be displayed\n    And all requirement statuses should remain unchanged\n    And the page should maintain read-only mode"
+}

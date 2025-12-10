@@ -1,0 +1,554 @@
+{
+  "version": "1.0",
+  "domain": "f666b047.foundry-3xh.pages.dev",
+  "last_updated": "2025-12-09T11:50:57.907457",
+  "pages": {
+    "/": {
+      "elements": {
+        "sign_in": {
+          "selectors": [
+            {
+              "value": "Sign In",
+              "type": "text",
+              "confidence": 1.0,
+              "successes": 16,
+              "failures": 0,
+              "last_used": "2025-12-09T11:50:32.994582",
+              "learned_from": "execution"
+            },
+            {
+              "value": "button:has-text(\"Sign In\")",
+              "type": "css",
+              "confidence": 1.0,
+              "successes": 15,
+              "failures": 0,
+              "last_used": "2025-12-09T11:50:32.995583",
+              "learned_from": "execution"
+            }
+          ],
+          "best_selector": "Sign In",
+          "element_type": "button",
+          "context": {
+            "source": "exploration"
+          },
+          "last_success": "2025-12-09T11:50:32.995583"
+        },
+        "sign_up": {
+          "selectors": [
+            {
+              "value": "Sign Up",
+              "type": "text",
+              "confidence": 1.0,
+              "successes": 16,
+              "failures": 0,
+              "last_used": "2025-12-09T11:50:32.995583",
+              "learned_from": "execution"
+            },
+            {
+              "value": "button:has-text(\"Sign Up\")",
+              "type": "css",
+              "confidence": 1.0,
+              "successes": 15,
+              "failures": 0,
+              "last_used": "2025-12-09T11:50:32.996579",
+              "learned_from": "execution"
+            }
+          ],
+          "best_selector": "Sign Up",
+          "element_type": "button",
+          "context": {
+            "source": "exploration"
+          },
+          "last_success": "2025-12-09T11:50:32.996579"
+        },
+        "r_2": {
+          "selectors": [
+            {
+              "value": "#_r_2_",
+              "type": "css",
+              "confidence": 1.0,
+              "successes": 16,
+              "failures": 0,
+              "last_used": "2025-12-09T11:50:32.996579",
+              "learned_from": "execution"
+            },
+            {
+              "value": "Search by title, description, or location...",
+              "type": "placeholder",
+              "confidence": 1.0,
+              "successes": 16,
+              "failures": 0,
+              "last_used": "2025-12-09T11:50:32.997584",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[placeholder=\"Search by title, description, or location...\"]",
+              "type": "css",
+              "confidence": 1.0,
+              "successes": 15,
+              "failures": 0,
+              "last_used": "2025-12-09T11:50:32.996579",
+              "learned_from": "execution"
+            }
+          ],
+          "best_selector": "#_r_2_",
+          "element_type": "input",
+          "context": {
+            "source": "exploration"
+          },
+          "last_success": "2025-12-09T11:50:32.997584"
+        },
+        "email": {
+          "selectors": [
+            {
+              "value": "input[placeholder*=\"email\" i]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-02T18:25:54.024905",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[aria-label*=\"email\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-02T18:25:54.024905",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[name*=\"email\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-02T18:25:54.024905",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[id*=\"email\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-02T18:25:54.024905",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-qa*=\"email\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-02T18:25:54.024905",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-cy*=\"email\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-02T18:25:54.020672",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-testid*=\"email\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-02T18:25:54.020672",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-test*=\"email\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-02T18:25:54.020672",
+              "learned_from": "execution"
+            },
+            {
+              "value": "#VerifiedUserIcon",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 5,
+              "last_used": "2025-12-02T12:15:22.477993",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-testid=\"VerifiedUserIcon\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 10,
+              "last_used": "2025-12-02T12:15:22.477993",
+              "learned_from": "execution"
+            }
+          ],
+          "best_selector": "input[placeholder*=\"email\" i]",
+          "element_type": "unknown",
+          "context": {},
+          "last_success": null
+        },
+        "username": {
+          "selectors": [
+            {
+              "value": "#VerifiedUserIcon",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 2,
+              "last_used": "2025-12-02T11:54:18.117831",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-testid=\"VerifiedUserIcon\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-02T11:54:18.117831",
+              "learned_from": "execution"
+            }
+          ],
+          "best_selector": "#VerifiedUserIcon",
+          "element_type": "unknown",
+          "context": {},
+          "last_success": null
+        },
+        "Already have an account": {
+          "selectors": [
+            {
+              "value": "#VerifiedUserIcon",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 2,
+              "last_used": "2025-12-02T11:58:14.366397",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-testid=\"VerifiedUserIcon\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 2,
+              "last_used": "2025-12-02T11:58:14.366397",
+              "learned_from": "execution"
+            }
+          ],
+          "best_selector": "#VerifiedUserIcon",
+          "element_type": "unknown",
+          "context": {},
+          "last_success": null
+        },
+        "password": {
+          "selectors": [
+            {
+              "value": "[aria-label*=\"password\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 2,
+              "last_used": "2025-12-03T13:03:02.527127",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[name*=\"password\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 2,
+              "last_used": "2025-12-03T13:03:02.527127",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[id*=\"password\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 2,
+              "last_used": "2025-12-03T13:03:02.527127",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-qa*=\"password\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 2,
+              "last_used": "2025-12-03T13:03:02.527127",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-cy*=\"password\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 2,
+              "last_used": "2025-12-03T13:03:02.527127",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-testid*=\"password\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 2,
+              "last_used": "2025-12-03T13:03:02.527127",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-test*=\"password\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 2,
+              "last_used": "2025-12-03T13:03:02.526674",
+              "learned_from": "execution"
+            },
+            {
+              "value": "input[placeholder*=\"password\" i]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-03T13:03:02.528134",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-test=\"password\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 5,
+              "last_used": "2025-12-02T18:25:45.677527",
+              "learned_from": "execution"
+            }
+          ],
+          "best_selector": "[aria-label*=\"password\"]",
+          "element_type": "unknown",
+          "context": {},
+          "last_success": null
+        },
+        "registration_form": {
+          "selectors": [
+            {
+              "value": ".MuiFormControl-fullWidth",
+              "type": "css",
+              "confidence": 0.5,
+              "successes": 1,
+              "failures": 1,
+              "last_used": "2025-12-03T15:33:19.210561",
+              "learned_from": "execution"
+            },
+            {
+              "value": ".MuiInputBase-formControl",
+              "type": "css",
+              "confidence": 0.2,
+              "successes": 0,
+              "failures": 1,
+              "last_used": "2025-12-03T15:23:15.669142",
+              "learned_from": "execution"
+            },
+            {
+              "value": ".MuiFormLabel-root",
+              "type": "css",
+              "confidence": 0.2,
+              "successes": 0,
+              "failures": 1,
+              "last_used": "2025-12-03T15:23:15.669142",
+              "learned_from": "execution"
+            },
+            {
+              "value": ".MuiInputLabel-formControl",
+              "type": "css",
+              "confidence": 0.2,
+              "successes": 0,
+              "failures": 1,
+              "last_used": "2025-12-03T15:23:15.669142",
+              "learned_from": "execution"
+            },
+            {
+              "value": ".MuiFormLabel-colorPrimary",
+              "type": "css",
+              "confidence": 0.2,
+              "successes": 0,
+              "failures": 1,
+              "last_used": "2025-12-03T15:23:15.669142",
+              "learned_from": "execution"
+            },
+            {
+              "value": ".MuiFormLabel-filled",
+              "type": "css",
+              "confidence": 0.2,
+              "successes": 0,
+              "failures": 1,
+              "last_used": "2025-12-03T15:23:15.669142",
+              "learned_from": "execution"
+            },
+            {
+              "value": ".MuiFormControl-root",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 2,
+              "last_used": "2025-12-03T15:33:19.208553",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[placeholder*=\"registration\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-03T15:23:15.682188",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[aria-label*=\"registration\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-03T15:23:15.682188",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[name*=\"registration\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-03T15:23:15.682188",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[id*=\"registration\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-03T15:23:15.680179",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-qa*=\"registration\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-03T15:23:15.680179",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-cy*=\"registration\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-03T15:23:15.680179",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-testid*=\"registration\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-03T15:23:15.680179",
+              "learned_from": "execution"
+            },
+            {
+              "value": "[data-test*=\"registration\"]",
+              "type": "css",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-03T15:23:15.680179",
+              "learned_from": "execution"
+            }
+          ],
+          "best_selector": ".MuiFormControl-fullWidth",
+          "element_type": "unknown",
+          "context": {},
+          "last_success": "2025-12-03T15:33:19.210561"
+        },
+        "submit": {
+          "selectors": [
+            {
+              "value": "button:has-text('Submit')",
+              "type": "css",
+              "confidence": 0.2,
+              "successes": 0,
+              "failures": 1,
+              "last_used": "2025-12-03T15:33:19.210561",
+              "learned_from": "execution"
+            },
+            {
+              "value": "Sign In",
+              "type": "text",
+              "confidence": 0.0,
+              "successes": 0,
+              "failures": 4,
+              "last_used": "2025-12-03T15:23:15.682188",
+              "learned_from": "execution"
+            }
+          ],
+          "best_selector": "button:has-text('Submit')",
+          "element_type": "unknown",
+          "context": {},
+          "last_success": null
+        }
+      }
+    },
+    "/login": {
+      "elements": {
+        "Log In": {
+          "selectors": [
+            {
+              "value": "[data-testid=\"LoginIcon\"]",
+              "type": "css",
+              "confidence": 0.7272727272727273,
+              "successes": 8,
+              "failures": 3,
+              "last_used": "2025-12-02T12:16:54.877562",
+              "learned_from": "execution"
+            }
+          ],
+          "best_selector": "[data-testid=\"LoginIcon\"]",
+          "element_type": "unknown",
+          "context": {},
+          "last_success": "2025-12-02T12:16:54.877562"
+        }
+      }
+    },
+    "/register": {
+      "elements": {
+        "Sign Up": {
+          "selectors": [
+            {
+              "value": "Sign Up",
+              "type": "text",
+              "confidence": 1.0,
+              "successes": 12,
+              "failures": 0,
+              "last_used": "2025-12-03T13:12:48.271170",
+              "learned_from": "execution"
+            }
+          ],
+          "best_selector": "Sign Up",
+          "element_type": "unknown",
+          "context": {},
+          "last_success": "2025-12-03T13:12:48.271170"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,443 @@
+{
+  "id": "feature_1764141243.515681",
+  "name": "Policy Reinstatement from Pending Cancellation or Cancelled Status",
+  "description": "As an Underwriter, I can reinstate policies that are pending cancellation or have been cancelled to restore them to active bound status with IMS synchronization",
+  "created_at": "2025-11-26T11:48:42.182897",
+  "updated_at": "2025-11-26T12:44:03.515681",
+  "project_id": "952981ca-9688-48c0-b59b-3d35eeea6494",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am logged in as an Underwriter"
+    },
+    {
+      "keyword": "And",
+      "text": "I have access to the policy management system"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Successfully reinstate policy from Pending Cancellation status",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the applications list"
+        },
+        {
+          "keyword": "And",
+          "text": "there is an application with 'Pending Cancellation' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the application"
+        },
+        {
+          "keyword": "And",
+          "text": "I click on the 'Reinstate' action button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Application Status should change to 'Reinstated'"
+        },
+        {
+          "keyword": "And",
+          "text": "the reinstatement process should be initiated"
+        }
+      ]
+    },
+    {
+      "name": "Successfully reinstate policy from Cancelled status",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the applications list"
+        },
+        {
+          "keyword": "And",
+          "text": "there is an application with 'Cancelled' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the application"
+        },
+        {
+          "keyword": "And",
+          "text": "I click on the 'Reinstate' action button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Application Status should change to 'Reinstated'"
+        },
+        {
+          "keyword": "And",
+          "text": "the reinstatement process should be initiated"
+        }
+      ]
+    },
+    {
+      "name": "Application status updates to Bound after IMS binding completion",
+      "tags": [
+        "@positive",
+        "@integration"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have successfully initiated reinstatement for an application"
+        },
+        {
+          "keyword": "And",
+          "text": "the Application Status is 'Reinstated'"
+        },
+        {
+          "keyword": "When",
+          "text": "the reinstatement is bound in IMS"
+        },
+        {
+          "keyword": "And",
+          "text": "IMS Status changes to 'Bound'"
+        },
+        {
+          "keyword": "Then",
+          "text": "the system should fetch the IMS status"
+        },
+        {
+          "keyword": "And",
+          "text": "the Application Status should change to 'Bound'"
+        }
+      ]
+    },
+    {
+      "name": "Reinstate action is visible for Pending Cancellation applications",
+      "tags": [
+        "@positive",
+        "@ui"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the applications list"
+        },
+        {
+          "keyword": "And",
+          "text": "there is an application with 'Pending Cancellation' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the application"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see 'Reinstate' as one of the action buttons"
+        },
+        {
+          "keyword": "And",
+          "text": "the 'Reinstate' button should be clickable"
+        }
+      ]
+    },
+    {
+      "name": "Reinstate action is visible for Cancelled applications",
+      "tags": [
+        "@positive",
+        "@ui"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the applications list"
+        },
+        {
+          "keyword": "And",
+          "text": "there is an application with 'Cancelled' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the application"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see 'Reinstate' as one of the action buttons"
+        },
+        {
+          "keyword": "And",
+          "text": "the 'Reinstate' button should be clickable"
+        }
+      ]
+    },
+    {
+      "name": "Multiple applications can be reinstated successfully",
+      "tags": [
+        "@positive",
+        "@bulk"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the applications list"
+        },
+        {
+          "keyword": "And",
+          "text": "there are multiple applications with 'Pending Cancellation' or 'Cancelled' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I reinstate the first application"
+        },
+        {
+          "keyword": "And",
+          "text": "I reinstate the second application"
+        },
+        {
+          "keyword": "Then",
+          "text": "both applications should show 'Reinstated' status"
+        },
+        {
+          "keyword": "And",
+          "text": "both reinstatement processes should be initiated"
+        }
+      ]
+    },
+    {
+      "name": "Reinstate action not available for applications with Active status",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the applications list"
+        },
+        {
+          "keyword": "And",
+          "text": "there is an application with 'Active' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the application"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see 'Reinstate' as an action button"
+        },
+        {
+          "keyword": "And",
+          "text": "only appropriate actions for Active status should be displayed"
+        }
+      ]
+    },
+    {
+      "name": "Reinstate action not available for applications with Bound status",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the applications list"
+        },
+        {
+          "keyword": "And",
+          "text": "there is an application with 'Bound' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the application"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see 'Reinstate' as an action button"
+        },
+        {
+          "keyword": "And",
+          "text": "only appropriate actions for Bound status should be displayed"
+        }
+      ]
+    },
+    {
+      "name": "System handles IMS synchronization failure gracefully",
+      "tags": [
+        "@negative",
+        "@error-handling"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have initiated reinstatement for an application"
+        },
+        {
+          "keyword": "And",
+          "text": "the Application Status is 'Reinstated'"
+        },
+        {
+          "keyword": "When",
+          "text": "IMS synchronization fails"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message indicating synchronization failure"
+        },
+        {
+          "keyword": "And",
+          "text": "the application should remain in 'Reinstated' status until sync succeeds"
+        }
+      ]
+    },
+    {
+      "name": "Cannot reinstate application that is already being processed",
+      "tags": [
+        "@negative",
+        "@concurrency"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing an application with 'Pending Cancellation' status"
+        },
+        {
+          "keyword": "And",
+          "text": "another user is currently processing the same application"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the application"
+        },
+        {
+          "keyword": "And",
+          "text": "I attempt to click 'Reinstate'"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a message indicating the application is being processed"
+        },
+        {
+          "keyword": "And",
+          "text": "the reinstatement should not be initiated"
+        }
+      ]
+    },
+    {
+      "name": "Application that was cancelled for exactly 30 days can be reinstated",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is an application that was cancelled exactly 30 days ago"
+        },
+        {
+          "keyword": "And",
+          "text": "I am viewing the applications list"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the cancelled application"
+        },
+        {
+          "keyword": "And",
+          "text": "I click on 'Reinstate'"
+        },
+        {
+          "keyword": "Then",
+          "text": "the reinstatement should be successful"
+        },
+        {
+          "keyword": "And",
+          "text": "the Application Status should change to 'Reinstated'"
+        }
+      ]
+    },
+    {
+      "name": "Application cancelled for more than maximum allowed period cannot be reinstated",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is an application that was cancelled for more than the maximum allowed period"
+        },
+        {
+          "keyword": "And",
+          "text": "I am viewing the applications list"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the cancelled application"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see 'Reinstate' as an available action"
+        },
+        {
+          "keyword": "But",
+          "text": "I should see a message indicating the reinstatement period has expired"
+        }
+      ]
+    },
+    {
+      "name": "Reinstate application through keyboard navigation",
+      "tags": [
+        "@alternative-flow",
+        "@accessibility"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the applications list"
+        },
+        {
+          "keyword": "And",
+          "text": "there is an application with 'Cancelled' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I select the application using keyboard navigation"
+        },
+        {
+          "keyword": "And",
+          "text": "I press the context menu key"
+        },
+        {
+          "keyword": "And",
+          "text": "I select 'Reinstate' using arrow keys and Enter"
+        },
+        {
+          "keyword": "Then",
+          "text": "the reinstatement should be initiated successfully"
+        },
+        {
+          "keyword": "And",
+          "text": "the Application Status should change to 'Reinstated'"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: Policy Reinstatement from Pending Cancellation or Cancelled Status\n  As an Underwriter, I can reinstate policies that are pending cancellation or have been cancelled to restore them to active bound status with IMS synchronization\n\n  Background:\n    Given I am logged in as an Underwriter\n    And I have access to the policy management system\n\n  @smoke @positive\n  Scenario: Successfully reinstate policy from Pending Cancellation status\n    Given I am viewing the applications list\n    And there is an application with 'Pending Cancellation' status\n    When I right-click on the application\n    And I click on the 'Reinstate' action button\n    Then the Application Status should change to 'Reinstated'\n    And the reinstatement process should be initiated\n\n  @smoke @positive\n  Scenario: Successfully reinstate policy from Cancelled status\n    Given I am viewing the applications list\n    And there is an application with 'Cancelled' status\n    When I right-click on the application\n    And I click on the 'Reinstate' action button\n    Then the Application Status should change to 'Reinstated'\n    And the reinstatement process should be initiated\n\n  @positive @integration\n  Scenario: Application status updates to Bound after IMS binding completion\n    Given I have successfully initiated reinstatement for an application\n    And the Application Status is 'Reinstated'\n    When the reinstatement is bound in IMS\n    And IMS Status changes to 'Bound'\n    Then the system should fetch the IMS status\n    And the Application Status should change to 'Bound'\n\n  @positive @ui\n  Scenario: Reinstate action is visible for Pending Cancellation applications\n    Given I am viewing the applications list\n    And there is an application with 'Pending Cancellation' status\n    When I right-click on the application\n    Then I should see 'Reinstate' as one of the action buttons\n    And the 'Reinstate' button should be clickable\n\n  @positive @ui\n  Scenario: Reinstate action is visible for Cancelled applications\n    Given I am viewing the applications list\n    And there is an application with 'Cancelled' status\n    When I right-click on the application\n    Then I should see 'Reinstate' as one of the action buttons\n    And the 'Reinstate' button should be clickable\n\n  @positive @bulk\n  Scenario: Multiple applications can be reinstated successfully\n    Given I am viewing the applications list\n    And there are multiple applications with 'Pending Cancellation' or 'Cancelled' status\n    When I reinstate the first application\n    And I reinstate the second application\n    Then both applications should show 'Reinstated' status\n    And both reinstatement processes should be initiated\n\n  @negative @validation\n  Scenario: Reinstate action not available for applications with Active status\n    Given I am viewing the applications list\n    And there is an application with 'Active' status\n    When I right-click on the application\n    Then I should not see 'Reinstate' as an action button\n    And only appropriate actions for Active status should be displayed\n\n  @negative @validation\n  Scenario: Reinstate action not available for applications with Bound status\n    Given I am viewing the applications list\n    And there is an application with 'Bound' status\n    When I right-click on the application\n    Then I should not see 'Reinstate' as an action button\n    And only appropriate actions for Bound status should be displayed\n\n  @negative @error-handling\n  Scenario: System handles IMS synchronization failure gracefully\n    Given I have initiated reinstatement for an application\n    And the Application Status is 'Reinstated'\n    When IMS synchronization fails\n    Then I should see an error message indicating synchronization failure\n    And the application should remain in 'Reinstated' status until sync succeeds\n\n  @negative @concurrency\n  Scenario: Cannot reinstate application that is already being processed\n    Given I am viewing an application with 'Pending Cancellation' status\n    And another user is currently processing the same application\n    When I right-click on the application\n    And I attempt to click 'Reinstate'\n    Then I should see a message indicating the application is being processed\n    And the reinstatement should not be initiated\n\n  @edge-case @boundary\n  Scenario: Application that was cancelled for exactly 30 days can be reinstated\n    Given there is an application that was cancelled exactly 30 days ago\n    And I am viewing the applications list\n    When I right-click on the cancelled application\n    And I click on 'Reinstate'\n    Then the reinstatement should be successful\n    And the Application Status should change to 'Reinstated'\n\n  @edge-case @boundary\n  Scenario: Application cancelled for more than maximum allowed period cannot be reinstated\n    Given there is an application that was cancelled for more than the maximum allowed period\n    And I am viewing the applications list\n    When I right-click on the cancelled application\n    Then I should not see 'Reinstate' as an available action\n    But I should see a message indicating the reinstatement period has expired\n\n  @alternative-flow @accessibility\n  Scenario: Reinstate application through keyboard navigation\n    Given I am viewing the applications list\n    And there is an application with 'Cancelled' status\n    When I select the application using keyboard navigation\n    And I press the context menu key\n    And I select 'Reinstate' using arrow keys and Enter\n    Then the reinstatement should be initiated successfully\n    And the Application Status should change to 'Reinstated'"
+}

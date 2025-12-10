@@ -1,0 +1,366 @@
+{
+  "id": "feature_1764928595.945442",
+  "name": "Access Compliance Dashboard - Back Office User",
+  "description": "As a Back Office User, I need to access the Compliance Dashboard module to view and manage compliance information for all companies",
+  "created_at": "2025-12-05T15:26:35.945442",
+  "updated_at": "2025-12-05T15:26:38.793707",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am on the application home page"
+    },
+    {
+      "keyword": "And",
+      "text": "I am logged in as a Back Office User"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Back Office User successfully navigates to Compliance Dashboard",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I can see the Compliance Dashboard module on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to the Compliance Dashboard"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the companies list view"
+        }
+      ]
+    },
+    {
+      "name": "Compliance Dashboard module displays correct title",
+      "tags": [
+        "@positive",
+        "@ui"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I look at the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the title displayed as \"Compliance Dashboard\""
+        }
+      ]
+    },
+    {
+      "name": "Companies list view displays all company records",
+      "tags": [
+        "@positive",
+        "@data"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have navigated to the Compliance Dashboard"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the companies list"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see records of all companies"
+        },
+        {
+          "keyword": "And",
+          "text": "each record should display the company name"
+        },
+        {
+          "keyword": "And",
+          "text": "each record should have a View Details action button"
+        }
+      ]
+    },
+    {
+      "name": "View Details action navigates to company-specific compliance details",
+      "tags": [
+        "@positive",
+        "@navigation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the companies list in the Compliance Dashboard"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the \"View Details\" button for a specific company"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be directed to the Compliance Dashboard for that company"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see compliance details related to that company only"
+        }
+      ]
+    },
+    {
+      "name": "Company Name column displays correct data from compliance records",
+      "tags": [
+        "@positive",
+        "@data-integrity"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the companies list"
+        },
+        {
+          "keyword": "When",
+          "text": "I examine the Company Name column"
+        },
+        {
+          "keyword": "Then",
+          "text": "each entry should display the client company name from compliance records"
+        },
+        {
+          "keyword": "And",
+          "text": "the company names should be properly formatted"
+        }
+      ]
+    },
+    {
+      "name": "Action column displays View Details button for each company",
+      "tags": [
+        "@positive",
+        "@ui-elements"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the companies list view"
+        },
+        {
+          "keyword": "When",
+          "text": "I look at the Action column"
+        },
+        {
+          "keyword": "Then",
+          "text": "each row should display \"View Details\" as the action"
+        },
+        {
+          "keyword": "And",
+          "text": "all View Details buttons should be clickable"
+        }
+      ]
+    },
+    {
+      "name": "Non-Back Office User cannot see Compliance Dashboard module",
+      "tags": [
+        "@negative",
+        "@access-control"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a user without Back Office role"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not have access to compliance information"
+        }
+      ]
+    },
+    {
+      "name": "Direct URL access to Compliance Dashboard without proper role",
+      "tags": [
+        "@negative",
+        "@security"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a user without Back Office role"
+        },
+        {
+          "keyword": "When",
+          "text": "I attempt to access the Compliance Dashboard URL directly"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an access denied message"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be redirected to an appropriate page"
+        }
+      ]
+    },
+    {
+      "name": "Compliance Dashboard handles empty companies list",
+      "tags": [
+        "@negative",
+        "@empty-state"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there are no companies in the system"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the Compliance Dashboard"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an appropriate empty state message"
+        },
+        {
+          "keyword": "And",
+          "text": "the list view should display properly without errors"
+        }
+      ]
+    },
+    {
+      "name": "View Details button handles companies with missing compliance data",
+      "tags": [
+        "@negative",
+        "@data-handling"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a company with incomplete compliance data"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the \"View Details\" button for that company"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should still be directed to the company-specific dashboard"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see an appropriate message about missing data"
+        }
+      ]
+    },
+    {
+      "name": "Companies list displays correctly with maximum number of companies",
+      "tags": [
+        "@edge-case",
+        "@performance"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "the system contains the maximum allowed number of companies"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the Compliance Dashboard"
+        },
+        {
+          "keyword": "Then",
+          "text": "the companies list should load completely"
+        },
+        {
+          "keyword": "And",
+          "text": "all company records should be displayed correctly"
+        },
+        {
+          "keyword": "But",
+          "text": "the page should remain responsive"
+        }
+      ]
+    },
+    {
+      "name": "Companies list handles single company record",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is only one company in the system"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the Compliance Dashboard"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see exactly one company record"
+        },
+        {
+          "keyword": "And",
+          "text": "the list view should display properly with single entry"
+        },
+        {
+          "keyword": "And",
+          "text": "the View Details button should work correctly"
+        }
+      ]
+    },
+    {
+      "name": "Alternative access through main navigation menu",
+      "tags": [
+        "@alternative-flow"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a Back Office User"
+        },
+        {
+          "keyword": "When",
+          "text": "I access the Compliance Dashboard through the main navigation menu"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should reach the same companies list view"
+        },
+        {
+          "keyword": "And",
+          "text": "all functionality should work identically"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: Access Compliance Dashboard - Back Office User\n  As a Back Office User, I need to access the Compliance Dashboard module to view and manage compliance information for all companies\n\n  Background:\n    Given I am on the application home page\n    And I am logged in as a Back Office User\n\n  @smoke @positive\n  Scenario: Back Office User successfully navigates to Compliance Dashboard\n    Given I can see the Compliance Dashboard module on the home page\n    When I click on the Compliance Dashboard module\n    Then I should be navigated to the Compliance Dashboard\n    And I should see the companies list view\n\n  @positive @ui\n  Scenario: Compliance Dashboard module displays correct title\n    Given I am on the home page\n    When I look at the Compliance Dashboard module\n    Then I should see the title displayed as \"Compliance Dashboard\"\n\n  @positive @data\n  Scenario: Companies list view displays all company records\n    Given I have navigated to the Compliance Dashboard\n    When I view the companies list\n    Then I should see records of all companies\n    And each record should display the company name\n    And each record should have a View Details action button\n\n  @positive @navigation\n  Scenario: View Details action navigates to company-specific compliance details\n    Given I am viewing the companies list in the Compliance Dashboard\n    When I click the \"View Details\" button for a specific company\n    Then I should be directed to the Compliance Dashboard for that company\n    And I should see compliance details related to that company only\n\n  @positive @data-integrity\n  Scenario: Company Name column displays correct data from compliance records\n    Given I am viewing the companies list\n    When I examine the Company Name column\n    Then each entry should display the client company name from compliance records\n    And the company names should be properly formatted\n\n  @positive @ui-elements\n  Scenario: Action column displays View Details button for each company\n    Given I am on the companies list view\n    When I look at the Action column\n    Then each row should display \"View Details\" as the action\n    And all View Details buttons should be clickable\n\n  @negative @access-control\n  Scenario: Non-Back Office User cannot see Compliance Dashboard module\n    Given I am logged in as a user without Back Office role\n    When I view the home page\n    Then I should not see the Compliance Dashboard module\n    And I should not have access to compliance information\n\n  @negative @security\n  Scenario: Direct URL access to Compliance Dashboard without proper role\n    Given I am logged in as a user without Back Office role\n    When I attempt to access the Compliance Dashboard URL directly\n    Then I should see an access denied message\n    And I should be redirected to an appropriate page\n\n  @negative @empty-state\n  Scenario: Compliance Dashboard handles empty companies list\n    Given there are no companies in the system\n    When I navigate to the Compliance Dashboard\n    Then I should see an appropriate empty state message\n    And the list view should display properly without errors\n\n  @negative @data-handling\n  Scenario: View Details button handles companies with missing compliance data\n    Given I am viewing a company with incomplete compliance data\n    When I click the \"View Details\" button for that company\n    Then I should still be directed to the company-specific dashboard\n    And I should see an appropriate message about missing data\n\n  @edge-case @performance\n  Scenario: Companies list displays correctly with maximum number of companies\n    Given the system contains the maximum allowed number of companies\n    When I navigate to the Compliance Dashboard\n    Then the companies list should load completely\n    And all company records should be displayed correctly\n    But the page should remain responsive\n\n  @edge-case @boundary\n  Scenario: Companies list handles single company record\n    Given there is only one company in the system\n    When I navigate to the Compliance Dashboard\n    Then I should see exactly one company record\n    And the list view should display properly with single entry\n    And the View Details button should work correctly\n\n  @alternative-flow\n  Scenario: Alternative access through main navigation menu\n    Given I am logged in as a Back Office User\n    When I access the Compliance Dashboard through the main navigation menu\n    Then I should reach the same companies list view\n    And all functionality should work identically"
+}

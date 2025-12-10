@@ -1,0 +1,224 @@
+{
+  "id": "report_20251127_075821",
+  "project_id": "96a02259-94d8-488e-b799-d5b731b8585c",
+  "project_name": "SauceDemo E2E Tests",
+  "executed_at": "2025-11-27T07:58:21.206778",
+  "total_tests": 11,
+  "passed": 0,
+  "failed": 11,
+  "skipped": 0,
+  "duration": 3028.409842,
+  "results": [
+    {
+      "test_case_id": "b7029a2d-35c9-44b2-a115-71c89f4bdb59",
+      "test_case_name": "Successful Login with Standard User",
+      "status": "failed",
+      "duration": 128.224,
+      "error_message": "Step 2: Step execution timed out after 60 seconds",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\b7029a2d-35c9-44b2-a115-71c89f4bdb59_step2_failure.png",
+      "logs": [
+        "Step 1: navigate - passed",
+        "Step 2: type - failed",
+        "Step 3: type - passed",
+        "Step 4: click - failed",
+        "Step 5: assert_url - failed",
+        "Step 6: assert_visible - failed"
+      ]
+    },
+    {
+      "test_case_id": "b58a4fbd-e564-4e78-aabd-3714c794d38e",
+      "test_case_name": "Login Failure with Invalid Credentials",
+      "status": "failed",
+      "duration": 128.454,
+      "error_message": "Step 2: Step execution timed out after 60 seconds",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\b58a4fbd-e564-4e78-aabd-3714c794d38e_step2_failure.png",
+      "logs": [
+        "Step 1: navigate - passed",
+        "Step 2: type - failed",
+        "Step 3: type - passed",
+        "Step 4: click - failed",
+        "Step 5: assert_visible - failed",
+        "Step 6: assert_text - failed"
+      ]
+    },
+    {
+      "test_case_id": "8f0588f2-55ba-4837-a793-f3f1aa436333",
+      "test_case_name": "Add Single Item to Cart",
+      "status": "failed",
+      "duration": 253.296,
+      "error_message": "Step 2: Step execution timed out after 60 seconds",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\8f0588f2-55ba-4837-a793-f3f1aa436333_step2_failure.png",
+      "logs": [
+        "Step 1: navigate - passed",
+        "Step 2: type - failed",
+        "Step 3: type - passed",
+        "Step 4: click - failed",
+        "Step 5: click - failed",
+        "Step 6: assert_text - failed",
+        "Step 7: click - failed",
+        "Step 8: assert_text - failed"
+      ]
+    },
+    {
+      "test_case_id": "4b968ae8-da4c-4715-9097-9c8161c8732c",
+      "test_case_name": "Add Multiple Items to Cart",
+      "status": "failed",
+      "duration": 307.234,
+      "error_message": "Step 2: Step execution timed out after 60 seconds",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\4b968ae8-da4c-4715-9097-9c8161c8732c_step2_failure.png",
+      "logs": [
+        "Step 1: navigate - passed",
+        "Step 2: type - failed",
+        "Step 3: type - passed",
+        "Step 4: click - failed",
+        "Step 5: click - failed",
+        "Step 6: click - failed",
+        "Step 7: click - failed",
+        "Step 8: assert_text - failed"
+      ]
+    },
+    {
+      "test_case_id": "43745253-0683-4081-84c7-8077bd1fa2f4",
+      "test_case_name": "Remove Item from Cart",
+      "status": "failed",
+      "duration": 310.688,
+      "error_message": "Step 2: Step execution timed out after 60 seconds",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\43745253-0683-4081-84c7-8077bd1fa2f4_step2_failure.png",
+      "logs": [
+        "Step 1: navigate - passed",
+        "Step 2: type - failed",
+        "Step 3: type - passed",
+        "Step 4: click - failed",
+        "Step 5: click - failed",
+        "Step 6: click - failed",
+        "Step 7: click - failed",
+        "Step 8: assert_visible - failed"
+      ]
+    },
+    {
+      "test_case_id": "ea6c50c1-77b5-4086-b2b6-cd78107e97c7",
+      "test_case_name": "Complete Checkout Flow - Happy Path",
+      "status": "failed",
+      "duration": 616.598,
+      "error_message": "Step 2: Step execution timed out after 60 seconds",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\ea6c50c1-77b5-4086-b2b6-cd78107e97c7_step2_failure.png",
+      "logs": [
+        "Step 1: navigate - passed",
+        "Step 2: type - failed",
+        "Step 3: type - passed",
+        "Step 4: click - failed",
+        "Step 5: click - failed",
+        "Step 6: click - failed",
+        "Step 7: click - failed",
+        "Step 8: type - failed",
+        "Step 9: type - failed",
+        "Step 10: type - failed",
+        "Step 11: click - failed",
+        "Step 12: assert_url - failed",
+        "Step 13: click - failed",
+        "Step 14: assert_url - failed",
+        "Step 15: assert_visible - failed",
+        "Step 16: assert_text - failed"
+      ]
+    },
+    {
+      "test_case_id": "01bd5b75-2471-4cf4-bc8c-de50a358c04d",
+      "test_case_name": "Sort Products by Price - Low to High",
+      "status": "failed",
+      "duration": 185.931,
+      "error_message": "Step 2: Step execution timed out after 60 seconds",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\01bd5b75-2471-4cf4-bc8c-de50a358c04d_step2_failure.png",
+      "logs": [
+        "Step 1: navigate - passed",
+        "Step 2: type - failed",
+        "Step 3: type - passed",
+        "Step 4: click - failed",
+        "Step 5: select - failed",
+        "Step 6: screenshot - failed"
+      ]
+    },
+    {
+      "test_case_id": "3c1391ac-de11-4801-960d-dd29197e1e71",
+      "test_case_name": "Sort Products by Name - Z to A",
+      "status": "failed",
+      "duration": 185.907,
+      "error_message": "Step 2: Step execution timed out after 60 seconds",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\3c1391ac-de11-4801-960d-dd29197e1e71_step2_failure.png",
+      "logs": [
+        "Step 1: navigate - passed",
+        "Step 2: type - failed",
+        "Step 3: type - passed",
+        "Step 4: click - failed",
+        "Step 5: select - failed",
+        "Step 6: screenshot - failed"
+      ]
+    },
+    {
+      "test_case_id": "a25fe20e-7ff8-4201-9870-ed5c8b0dea4f",
+      "test_case_name": "Logout Successfully",
+      "status": "failed",
+      "duration": 250.741,
+      "error_message": "Step 2: Step execution timed out after 60 seconds",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\a25fe20e-7ff8-4201-9870-ed5c8b0dea4f_step2_failure.png",
+      "logs": [
+        "Step 1: navigate - passed",
+        "Step 2: type - failed",
+        "Step 3: type - passed",
+        "Step 4: click - failed",
+        "Step 5: click - failed",
+        "Step 6: click - failed",
+        "Step 7: assert_url - failed",
+        "Step 8: assert_visible - failed"
+      ]
+    },
+    {
+      "test_case_id": "7602d7d2-04fe-4c2d-90e9-24e54fb1e6a2",
+      "test_case_name": "View Product Details",
+      "status": "failed",
+      "duration": 194.29,
+      "error_message": "Step 2: Step execution timed out after 60 seconds",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\7602d7d2-04fe-4c2d-90e9-24e54fb1e6a2_step2_failure.png",
+      "logs": [
+        "Step 1: navigate - passed",
+        "Step 2: type - failed",
+        "Step 3: type - passed",
+        "Step 4: click - failed",
+        "Step 5: click - failed",
+        "Step 6: assert_url - failed",
+        "Step 7: assert_visible - failed",
+        "Step 8: assert_visible - failed",
+        "Step 9: screenshot - failed"
+      ]
+    },
+    {
+      "test_case_id": "6fa783d5-82f0-4d85-aaac-c0c8d562fe0a",
+      "test_case_name": "Checkout Validation - Missing First Name",
+      "status": "failed",
+      "duration": 460.698,
+      "error_message": "Step 2: Step execution timed out after 60 seconds",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\6fa783d5-82f0-4d85-aaac-c0c8d562fe0a_step2_failure.png",
+      "logs": [
+        "Step 1: navigate - passed",
+        "Step 2: type - failed",
+        "Step 3: type - passed",
+        "Step 4: click - failed",
+        "Step 5: click - failed",
+        "Step 6: click - failed",
+        "Step 7: click - failed",
+        "Step 8: type - failed",
+        "Step 9: type - failed",
+        "Step 10: click - failed",
+        "Step 11: assert_visible - failed",
+        "Step 12: assert_text - failed"
+      ]
+    }
+  ],
+  "format": "traditional",
+  "execution_mode": "autonomous",
+  "pass_rate": 0.0,
+  "total_ai_calls": 0,
+  "total_kb_hits": 0,
+  "ai_dependency_percent": 0,
+  "new_selectors_learned": 0,
+  "errors": []
+}

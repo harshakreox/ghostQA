@@ -1,0 +1,104 @@
+[
+  {
+    "timestamp": "2025-11-27T11:34:16.605910",
+    "test_id": "b7029a2d-35c9-44b2-a115-71c89f4bdb59",
+    "test_name": "Successful Login with Standard User",
+    "format": "traditional",
+    "status": "passed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": null,
+        "selector_used": "https://www.saucedemo.com",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "user-name",
+        "selector_used": "[data-test=\"username\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "password",
+        "selector_used": "[data-test=\"password\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "login-button",
+        "selector_used": "[data-test=\"login-button\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_url",
+        "target": null,
+        "selector_used": "inventory.html",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": ".inventory_list",
+        "selector_used": ".inventory_list",
+        "status": "passed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-27T11:34:26.763456",
+    "test_id": "b58a4fbd-e564-4e78-aabd-3714c794d38e",
+    "test_name": "Login Failure with Invalid Credentials",
+    "format": "traditional",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": null,
+        "selector_used": "https://www.saucedemo.com",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "user-name",
+        "selector_used": "[data-test=\"username\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "password",
+        "selector_used": "[data-test=\"password\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "login-button",
+        "selector_used": "[data-test=\"login-button\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "[data-test='error']",
+        "selector_used": "[data-test='error']",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_text",
+        "target": "[data-test='error']",
+        "selector_used": "[data-test='error']",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

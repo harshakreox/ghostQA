@@ -1,0 +1,37 @@
+{
+  "id": "report_20251204_072608",
+  "project_id": "96a02259-94d8-488e-b799-d5b731b8585c",
+  "project_name": "SauceDemo E2E Tests",
+  "executed_at": "2025-12-04T07:26:08.123116",
+  "total_tests": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "duration": 79.519705,
+  "results": [
+    {
+      "test_case_id": "01bd5b75-2471-4cf4-bc8c-de50a358c04d",
+      "test_case_name": "Sort Products by Price - Low to High",
+      "status": "failed",
+      "duration": 72.954,
+      "error_message": "Step 5: Step execution timed out after 60 seconds",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\01bd5b75-2471-4cf4-bc8c-de50a358c04d_step5_failure.png",
+      "logs": [
+        "Step 1: Navigate to https://www.saucedemo.com - passed",
+        "Step 2: Type 'standard_user' into 'user-name' - passed",
+        "Step 3: Type 'secret_sauce' into 'password' - passed",
+        "Step 4: Click on 'login-button' - passed",
+        "Step 5: Select 'lohi' from '.product_sort_container' - failed",
+        "Step 6: Screenshot - passed"
+      ]
+    }
+  ],
+  "format": "traditional",
+  "execution_mode": "guided",
+  "pass_rate": 0.0,
+  "total_ai_calls": 0,
+  "total_kb_hits": 4,
+  "ai_dependency_percent": 0.0,
+  "new_selectors_learned": 0,
+  "errors": []
+}

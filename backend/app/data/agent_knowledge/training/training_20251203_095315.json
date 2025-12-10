@@ -1,0 +1,146 @@
+[
+  {
+    "timestamp": "2025-12-03T09:49:57.341918",
+    "test_id": "feature_1764667190.953682_User_successfully_creates_account_with_valid_information",
+    "test_name": "User successfully creates account with valid information",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "registration options",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "Sign Up",
+        "selector_used": "Sign Up",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "fill",
+        "target": "First Name",
+        "selector_used": "First Name",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "fill",
+        "target": "Last Name",
+        "selector_used": "Last Name",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "fill",
+        "target": "Username",
+        "selector_used": "#username",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "fill",
+        "target": "Email",
+        "selector_used": "Email",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "fill",
+        "target": "Password",
+        "selector_used": "#password",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "Sign Up",
+        "selector_used": "Sign Up",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_url",
+        "target": "user",
+        "selector_used": "user",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "a welcome message",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-03T09:53:15.695407",
+    "test_id": "feature_1764667190.953682_User_creates_account_and_receives_welcome_email",
+    "test_name": "User creates account and receives welcome email",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "registration options",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "fill",
+        "target": "registration_form",
+        "selector_used": ".MuiFormControl-root",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "submit",
+        "selector_used": "Sign In",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "welcome email",
+        "selector_used": "[data-test*=\"welcome\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "email content containing account information",
+        "selector_used": "[data-test*=\"email\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

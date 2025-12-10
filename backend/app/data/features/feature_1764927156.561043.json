@@ -1,0 +1,352 @@
+{
+  "id": "feature_1764927156.561043",
+  "name": "Compliance Dashboard Navigation",
+  "description": "Back Office Users can access and navigate to the Compliance Dashboard module to view companies list",
+  "created_at": "2025-12-05T15:02:36.561043",
+  "updated_at": "2025-12-05T15:03:20.794925",
+  "project_id": "566a1920-fc02-4782-9a8c-501ca8d9e6cc",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am on the application at https://test.com"
+    },
+    {
+      "keyword": "And",
+      "text": "I am logged in as a Back Office User"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Back Office User successfully navigates to Compliance Dashboard",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be redirected to the Compliance Dashboard page"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the companies list view"
+        },
+        {
+          "keyword": "And",
+          "text": "the companies list should contain records of all companies"
+        }
+      ]
+    },
+    {
+      "name": "Compliance Dashboard module displays with correct title",
+      "tags": [
+        "@positive",
+        "@ui"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "the module should display the title \"Compliance Dashboard\""
+        }
+      ]
+    },
+    {
+      "name": "Compliance Dashboard module is visible for Back Office User role",
+      "tags": [
+        "@positive",
+        "@authorization"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Compliance Dashboard module should be visible"
+        },
+        {
+          "keyword": "And",
+          "text": "the module should be accessible for interaction"
+        }
+      ]
+    },
+    {
+      "name": "Companies list view loads with all company records",
+      "tags": [
+        "@positive",
+        "@data"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "the companies list view should load"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see all company records displayed"
+        },
+        {
+          "keyword": "And",
+          "text": "the list should not be empty"
+        }
+      ]
+    },
+    {
+      "name": "Navigation maintains user session after clicking module",
+      "tags": [
+        "@positive",
+        "@session"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should remain logged in as Back Office User"
+        },
+        {
+          "keyword": "And",
+          "text": "my session should be maintained"
+        },
+        {
+          "keyword": "And",
+          "text": "I should have access to the Compliance Dashboard features"
+        }
+      ]
+    },
+    {
+      "name": "Multiple clicks on module do not cause errors",
+      "tags": [
+        "@positive",
+        "@stability"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module multiple times"
+        },
+        {
+          "keyword": "Then",
+          "text": "the navigation should work correctly"
+        },
+        {
+          "keyword": "And",
+          "text": "no error messages should appear"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the companies list view"
+        }
+      ]
+    },
+    {
+      "name": "Module is not accessible when user is not logged in",
+      "tags": [
+        "@negative",
+        "@security"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am not logged in"
+        },
+        {
+          "keyword": "And",
+          "text": "I navigate to the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Compliance Dashboard module should not be visible"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be redirected to the login page"
+        }
+      ]
+    },
+    {
+      "name": "Invalid user role cannot access Compliance Dashboard module",
+      "tags": [
+        "@negative",
+        "@authorization"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in with a non-Back Office User role"
+        },
+        {
+          "keyword": "When",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Compliance Dashboard module should not be visible"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not have access to compliance features"
+        }
+      ]
+    },
+    {
+      "name": "Network error during navigation shows appropriate message",
+      "tags": [
+        "@negative",
+        "@error-handling"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "And",
+          "text": "there is a network connectivity issue"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an appropriate error message"
+        },
+        {
+          "keyword": "And",
+          "text": "the application should handle the error gracefully"
+        }
+      ]
+    },
+    {
+      "name": "Module remains functional after browser refresh",
+      "tags": [
+        "@edge-case",
+        "@browser"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I refresh the browser page"
+        },
+        {
+          "keyword": "And",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "the navigation should work correctly"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the companies list view"
+        }
+      ]
+    },
+    {
+      "name": "Module works with keyboard navigation accessibility",
+      "tags": [
+        "@edge-case",
+        "@accessibility"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the Compliance Dashboard module using keyboard"
+        },
+        {
+          "keyword": "And",
+          "text": "I press Enter to activate the module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be redirected to the Compliance Dashboard page"
+        },
+        {
+          "keyword": "And",
+          "text": "the companies list view should load"
+        }
+      ]
+    },
+    {
+      "name": "Back navigation works after accessing dashboard",
+      "tags": [
+        "@alternative-flow"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have navigated to the Compliance Dashboard"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the browser back button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should return to the home page"
+        },
+        {
+          "keyword": "And",
+          "text": "the Compliance Dashboard module should still be visible"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: Compliance Dashboard Navigation\n  Back Office Users can access and navigate to the Compliance Dashboard module to view companies list\n\n  Background:\n    Given I am on the application at https://test.com\n    And I am logged in as a Back Office User\n\n  @smoke @positive\n  Scenario: Back Office User successfully navigates to Compliance Dashboard\n    Given I am on the home page\n    When I click on the Compliance Dashboard module\n    Then I should be redirected to the Compliance Dashboard page\n    And I should see the companies list view\n    And the companies list should contain records of all companies\n\n  @positive @ui\n  Scenario: Compliance Dashboard module displays with correct title\n    Given I am on the home page\n    Then I should see the Compliance Dashboard module\n    And the module should display the title \"Compliance Dashboard\"\n\n  @positive @authorization\n  Scenario: Compliance Dashboard module is visible for Back Office User role\n    Given I am on the home page\n    Then the Compliance Dashboard module should be visible\n    And the module should be accessible for interaction\n\n  @positive @data\n  Scenario: Companies list view loads with all company records\n    Given I am on the home page\n    When I click on the Compliance Dashboard module\n    Then the companies list view should load\n    And I should see all company records displayed\n    And the list should not be empty\n\n  @positive @session\n  Scenario: Navigation maintains user session after clicking module\n    Given I am on the home page\n    When I click on the Compliance Dashboard module\n    Then I should remain logged in as Back Office User\n    And my session should be maintained\n    And I should have access to the Compliance Dashboard features\n\n  @positive @stability\n  Scenario: Multiple clicks on module do not cause errors\n    Given I am on the home page\n    When I click on the Compliance Dashboard module multiple times\n    Then the navigation should work correctly\n    And no error messages should appear\n    And I should see the companies list view\n\n  @negative @security\n  Scenario: Module is not accessible when user is not logged in\n    Given I am not logged in\n    And I navigate to the home page\n    Then the Compliance Dashboard module should not be visible\n    And I should be redirected to the login page\n\n  @negative @authorization\n  Scenario: Invalid user role cannot access Compliance Dashboard module\n    Given I am logged in with a non-Back Office User role\n    When I am on the home page\n    Then the Compliance Dashboard module should not be visible\n    And I should not have access to compliance features\n\n  @negative @error-handling\n  Scenario: Network error during navigation shows appropriate message\n    Given I am on the home page\n    And there is a network connectivity issue\n    When I click on the Compliance Dashboard module\n    Then I should see an appropriate error message\n    And the application should handle the error gracefully\n\n  @edge-case @browser\n  Scenario: Module remains functional after browser refresh\n    Given I am on the home page\n    When I refresh the browser page\n    And I click on the Compliance Dashboard module\n    Then the navigation should work correctly\n    And I should see the companies list view\n\n  @edge-case @accessibility\n  Scenario: Module works with keyboard navigation accessibility\n    Given I am on the home page\n    When I navigate to the Compliance Dashboard module using keyboard\n    And I press Enter to activate the module\n    Then I should be redirected to the Compliance Dashboard page\n    And the companies list view should load\n\n  @alternative-flow\n  Scenario: Back navigation works after accessing dashboard\n    Given I have navigated to the Compliance Dashboard\n    When I click the browser back button\n    Then I should return to the home page\n    And the Compliance Dashboard module should still be visible"
+}

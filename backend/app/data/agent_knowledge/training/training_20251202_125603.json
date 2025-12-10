@@ -1,0 +1,220 @@
+[
+  {
+    "timestamp": "2025-12-02T12:55:45.699044",
+    "test_id": "feature_1764667190.953682_Password_validation_with_various_invalid_formats",
+    "test_name": "Password validation with various invalid formats",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "password",
+        "selector_used": "[data-test=\"password\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "<error_message>",
+        "selector_used": "[data-test*=\"error\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-02T12:55:54.072912",
+    "test_id": "feature_1764667190.953682_Email_field_accepts_valid_email_formats",
+    "test_name": "Email field accepts valid email formats",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "email",
+        "selector_used": "[data-test*=\"email\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-02T12:55:58.918160",
+    "test_id": "feature_1764667190.953682_Username_field_boundary_-_minimum_length_acceptance",
+    "test_name": "Username field boundary - minimum length acceptance",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-02T12:56:03.151968",
+    "test_id": "feature_1764667190.953682_Form_submission_disabled_until_all_required_fields_completed",
+    "test_name": "Form submission disabled until all required fields completed",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

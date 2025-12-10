@@ -1,0 +1,497 @@
+{
+  "id": "feature_1765167966.485204",
+  "name": "Admin Form Builder with Digital Signatures",
+  "description": "No-code form builder allowing admins to create custom participant intake forms with digital signature capabilities for legal compliance",
+  "created_at": "2025-12-08T09:56:06.485204",
+  "updated_at": "2025-12-08T09:56:15.134773",
+  "project_id": "ea2626d4-21d4-4c2c-8cfe-82b1c79b2e31",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am on the application"
+    },
+    {
+      "keyword": "And",
+      "text": "I am logged in as an admin user"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Admin successfully creates a basic form with drag-and-drop",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the Forms page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the \"Create Form\" button"
+        },
+        {
+          "keyword": "And",
+          "text": "I enter a valid form name in the \"Form Name\" field"
+        },
+        {
+          "keyword": "And",
+          "text": "I drag a \"Text Input\" field to the form builder area"
+        },
+        {
+          "keyword": "And",
+          "text": "I configure the field label as \"First Name\""
+        },
+        {
+          "keyword": "And",
+          "text": "I mark the field as required"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the \"Save Form\" button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a success message"
+        },
+        {
+          "keyword": "And",
+          "text": "the form should appear in the Forms Management list"
+        }
+      ]
+    },
+    {
+      "name": "Admin adds digital signature field to form",
+      "tags": [
+        "@positive",
+        "@signature"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am creating a new form"
+        },
+        {
+          "keyword": "When",
+          "text": "I drag a \"Signature\" field to the form builder"
+        },
+        {
+          "keyword": "And",
+          "text": "I configure the signature field as \"Legal Waiver\""
+        },
+        {
+          "keyword": "And",
+          "text": "I mark the signature field as required"
+        },
+        {
+          "keyword": "And",
+          "text": "I add help text \"Please sign to acknowledge the waiver\""
+        },
+        {
+          "keyword": "And",
+          "text": "I save the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "the signature field should be added to the form"
+        },
+        {
+          "keyword": "And",
+          "text": "the form should be saved with the signature configuration"
+        }
+      ]
+    },
+    {
+      "name": "Admin creates form sections to group fields",
+      "tags": [
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am in the form builder"
+        },
+        {
+          "keyword": "When",
+          "text": "I create a new section called \"Personal Information\""
+        },
+        {
+          "keyword": "And",
+          "text": "I drag \"First Name\" and \"Last Name\" fields into the section"
+        },
+        {
+          "keyword": "And",
+          "text": "I create another section called \"Emergency Contact\""
+        },
+        {
+          "keyword": "And",
+          "text": "I drag \"Contact Name\" and \"Contact Phone\" fields into the second section"
+        },
+        {
+          "keyword": "And",
+          "text": "I save the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "the form should display with organized sections"
+        },
+        {
+          "keyword": "And",
+          "text": "the sections should appear in the \"Sections\" tab in Forms Management"
+        }
+      ]
+    },
+    {
+      "name": "Admin previews form in real-time before saving",
+      "tags": [
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am building a form with multiple fields"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the \"Preview\" button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a real-time preview of the form"
+        },
+        {
+          "keyword": "And",
+          "text": "the preview should show all configured fields"
+        },
+        {
+          "keyword": "And",
+          "text": "the preview should reflect field labels and validation settings"
+        },
+        {
+          "keyword": "When",
+          "text": "I make changes to field properties"
+        },
+        {
+          "keyword": "Then",
+          "text": "the preview should update automatically"
+        }
+      ]
+    },
+    {
+      "name": "Admin attaches form to program successfully",
+      "tags": [
+        "@positive",
+        "@program-integration"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have a published form in Forms Management"
+        },
+        {
+          "keyword": "And",
+          "text": "I am on the program edit page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the \"Attach Forms\" section"
+        },
+        {
+          "keyword": "And",
+          "text": "I select the form from the searchable dropdown"
+        },
+        {
+          "keyword": "And",
+          "text": "I set the display order for the form"
+        },
+        {
+          "keyword": "And",
+          "text": "I save the program changes"
+        },
+        {
+          "keyword": "Then",
+          "text": "the form should be attached to the program"
+        },
+        {
+          "keyword": "And",
+          "text": "a record should be created in program form assignments"
+        }
+      ]
+    },
+    {
+      "name": "Admin manages forms through Forms Management interface",
+      "tags": [
+        "@positive",
+        "@management"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have existing forms in the system"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to Forms Management"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see options to view forms"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see options to edit forms"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see options to copy forms"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see options to export forms as JSON"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see options to delete forms"
+        },
+        {
+          "keyword": "When",
+          "text": "I duplicate an existing form"
+        },
+        {
+          "keyword": "Then",
+          "text": "a copy of the form should be created with a new name"
+        }
+      ]
+    },
+    {
+      "name": "Form creation fails with empty form name",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the Create Form page"
+        },
+        {
+          "keyword": "When",
+          "text": "I leave the \"Form Name\" field empty"
+        },
+        {
+          "keyword": "And",
+          "text": "I add some fields to the form"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the \"Save Form\" button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message \"Form name is required\""
+        },
+        {
+          "keyword": "And",
+          "text": "the form should not be saved"
+        }
+      ]
+    },
+    {
+      "name": "Cannot save form without any fields",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am creating a new form"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter a valid form name"
+        },
+        {
+          "keyword": "But",
+          "text": "I do not add any fields to the form"
+        },
+        {
+          "keyword": "And",
+          "text": "I attempt to save the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message \"Form must contain at least one field\""
+        },
+        {
+          "keyword": "And",
+          "text": "the save operation should be prevented"
+        }
+      ]
+    },
+    {
+      "name": "Signature field validation fails when misconfigured",
+      "tags": [
+        "@negative",
+        "@signature"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am adding a signature field to a form"
+        },
+        {
+          "keyword": "When",
+          "text": "I leave the signature field label empty"
+        },
+        {
+          "keyword": "And",
+          "text": "I attempt to save the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message \"Signature field must have a label\""
+        },
+        {
+          "keyword": "And",
+          "text": "the form should not be saved until the field is properly configured"
+        }
+      ]
+    },
+    {
+      "name": "Cannot attach unpublished form to program",
+      "tags": [
+        "@negative",
+        "@program-integration"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have a draft form that is not published"
+        },
+        {
+          "keyword": "And",
+          "text": "I am on the program edit page"
+        },
+        {
+          "keyword": "When",
+          "text": "I try to attach forms to the program"
+        },
+        {
+          "keyword": "Then",
+          "text": "the unpublished form should not appear in the searchable dropdown"
+        },
+        {
+          "keyword": "And",
+          "text": "only published forms should be available for selection"
+        }
+      ]
+    },
+    {
+      "name": "Form handles maximum number of fields",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am creating a form with many fields"
+        },
+        {
+          "keyword": "When",
+          "text": "I add the maximum allowed number of fields to the form"
+        },
+        {
+          "keyword": "And",
+          "text": "I save the form"
+        },
+        {
+          "keyword": "Then",
+          "text": "the form should save successfully"
+        },
+        {
+          "keyword": "When",
+          "text": "I attempt to add one more field beyond the limit"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a warning message about field limits"
+        }
+      ]
+    },
+    {
+      "name": "Form version control maintains signature history",
+      "tags": [
+        "@edge-case",
+        "@versioning"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have a form with signature fields that has been used by participants"
+        },
+        {
+          "keyword": "When",
+          "text": "I edit the form and change field configurations"
+        },
+        {
+          "keyword": "And",
+          "text": "I save the updated form version"
+        },
+        {
+          "keyword": "Then",
+          "text": "the historical signatures should remain tied to the old version"
+        },
+        {
+          "keyword": "And",
+          "text": "new enrollments should use the updated form version"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be able to view version history"
+        }
+      ]
+    },
+    {
+      "name": "Form field validation with various configurations",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am configuring a form field"
+        },
+        {
+          "keyword": "When",
+          "text": "I set the field validation to <validation_type>"
+        },
+        {
+          "keyword": "And",
+          "text": "I enter <input_value> as the configuration"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see <result>"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: Admin Form Builder with Digital Signatures\n  No-code form builder allowing admins to create custom participant intake forms with digital signature capabilities for legal compliance\n\n  Background:\n    Given I am on the application\n    And I am logged in as an admin user\n\n  @smoke @positive\n  Scenario: Admin successfully creates a basic form with drag-and-drop\n    Given I am on the Forms page\n    When I click the \"Create Form\" button\n    And I enter a valid form name in the \"Form Name\" field\n    And I drag a \"Text Input\" field to the form builder area\n    And I configure the field label as \"First Name\"\n    And I mark the field as required\n    And I click the \"Save Form\" button\n    Then I should see a success message\n    And the form should appear in the Forms Management list\n\n  @positive @signature\n  Scenario: Admin adds digital signature field to form\n    Given I am creating a new form\n    When I drag a \"Signature\" field to the form builder\n    And I configure the signature field as \"Legal Waiver\"\n    And I mark the signature field as required\n    And I add help text \"Please sign to acknowledge the waiver\"\n    And I save the form\n    Then the signature field should be added to the form\n    And the form should be saved with the signature configuration\n\n  @positive\n  Scenario: Admin creates form sections to group fields\n    Given I am in the form builder\n    When I create a new section called \"Personal Information\"\n    And I drag \"First Name\" and \"Last Name\" fields into the section\n    And I create another section called \"Emergency Contact\"\n    And I drag \"Contact Name\" and \"Contact Phone\" fields into the second section\n    And I save the form\n    Then the form should display with organized sections\n    And the sections should appear in the \"Sections\" tab in Forms Management\n\n  @positive\n  Scenario: Admin previews form in real-time before saving\n    Given I am building a form with multiple fields\n    When I click the \"Preview\" button\n    Then I should see a real-time preview of the form\n    And the preview should show all configured fields\n    And the preview should reflect field labels and validation settings\n    When I make changes to field properties\n    Then the preview should update automatically\n\n  @positive @program-integration\n  Scenario: Admin attaches form to program successfully\n    Given I have a published form in Forms Management\n    And I am on the program edit page\n    When I click on the \"Attach Forms\" section\n    And I select the form from the searchable dropdown\n    And I set the display order for the form\n    And I save the program changes\n    Then the form should be attached to the program\n    And a record should be created in program form assignments\n\n  @positive @management\n  Scenario: Admin manages forms through Forms Management interface\n    Given I have existing forms in the system\n    When I navigate to Forms Management\n    Then I should see options to view forms\n    And I should see options to edit forms\n    And I should see options to copy forms\n    And I should see options to export forms as JSON\n    And I should see options to delete forms\n    When I duplicate an existing form\n    Then a copy of the form should be created with a new name\n\n  @negative @validation\n  Scenario: Form creation fails with empty form name\n    Given I am on the Create Form page\n    When I leave the \"Form Name\" field empty\n    And I add some fields to the form\n    And I click the \"Save Form\" button\n    Then I should see an error message \"Form name is required\"\n    And the form should not be saved\n\n  @negative @validation\n  Scenario: Cannot save form without any fields\n    Given I am creating a new form\n    When I enter a valid form name\n    But I do not add any fields to the form\n    And I attempt to save the form\n    Then I should see an error message \"Form must contain at least one field\"\n    And the save operation should be prevented\n\n  @negative @signature\n  Scenario: Signature field validation fails when misconfigured\n    Given I am adding a signature field to a form\n    When I leave the signature field label empty\n    And I attempt to save the form\n    Then I should see an error message \"Signature field must have a label\"\n    And the form should not be saved until the field is properly configured\n\n  @negative @program-integration\n  Scenario: Cannot attach unpublished form to program\n    Given I have a draft form that is not published\n    And I am on the program edit page\n    When I try to attach forms to the program\n    Then the unpublished form should not appear in the searchable dropdown\n    And only published forms should be available for selection\n\n  @edge-case @boundary\n  Scenario: Form handles maximum number of fields\n    Given I am creating a form with many fields\n    When I add the maximum allowed number of fields to the form\n    And I save the form\n    Then the form should save successfully\n    When I attempt to add one more field beyond the limit\n    Then I should see a warning message about field limits\n\n  @edge-case @versioning\n  Scenario: Form version control maintains signature history\n    Given I have a form with signature fields that has been used by participants\n    When I edit the form and change field configurations\n    And I save the updated form version\n    Then the historical signatures should remain tied to the old version\n    And new enrollments should use the updated form version\n    And I should be able to view version history\n\n  @negative @validation\n  Scenario: Form field validation with various configurations\n    Given I am configuring a form field\n    When I set the field validation to <validation_type>\n    And I enter <input_value> as the configuration\n    Then I should see <result>"
+}

@@ -1,0 +1,497 @@
+{
+  "id": "feature_1764247133.226963",
+  "name": "Product Purchase on SauceDemo",
+  "description": "Customers can browse products, add items to cart, and complete secure checkout",
+  "created_at": "2025-11-27T17:03:50.146726",
+  "updated_at": "2025-11-27T18:08:58.286341",
+  "project_id": "96a02259-94d8-488e-b799-d5b731b8585c",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am on the SauceDemo website at https://www.saucedemo.com"
+    },
+    {
+      "keyword": "And",
+      "text": "the application is loaded successfully"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Successful login with valid credentials",
+      "tags": [
+        "@smoke",
+        "@positive",
+        "@login"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the SauceDemo login page"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter 'standard_user' in the username field with data-testid 'username'"
+        },
+        {
+          "keyword": "And",
+          "text": "I enter 'secret_sauce' in the password field with data-testid 'password'"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the login button with data-testid 'login-button'"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be redirected to the inventory page"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the products container with data-testid 'inventory-container'"
+        }
+      ]
+    },
+    {
+      "name": "Complete product purchase with single item",
+      "tags": [
+        "@smoke",
+        "@positive",
+        "@e2e"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as 'standard_user'"
+        },
+        {
+          "keyword": "And",
+          "text": "I am on the inventory page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click 'Add to cart' button for 'Sauce Labs Backpack'"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the shopping cart icon with data-testid 'shopping-cart-link'"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the checkout button with data-testid 'checkout'"
+        },
+        {
+          "keyword": "And",
+          "text": "I enter 'John' in first name field with data-testid 'firstName'"
+        },
+        {
+          "keyword": "And",
+          "text": "I enter 'Doe' in last name field with data-testid 'lastName'"
+        },
+        {
+          "keyword": "And",
+          "text": "I enter '12345' in postal code field with data-testid 'postalCode'"
+        },
+        {
+          "keyword": "And",
+          "text": "I click continue button with data-testid 'continue'"
+        },
+        {
+          "keyword": "And",
+          "text": "I click finish button with data-testid 'finish'"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see order confirmation with text 'Thank you for your order!'"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see completion message with data-testid 'complete-header'"
+        }
+      ]
+    },
+    {
+      "name": "Add multiple products to cart and verify cart contents",
+      "tags": [
+        "@positive",
+        "@cart"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in and on the inventory page"
+        },
+        {
+          "keyword": "When",
+          "text": "I add 'Sauce Labs Backpack' to cart"
+        },
+        {
+          "keyword": "And",
+          "text": "I add 'Sauce Labs Bike Light' to cart"
+        },
+        {
+          "keyword": "And",
+          "text": "I add 'Sauce Labs Bolt T-Shirt' to cart"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the shopping cart icon"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see 3 items in the cart"
+        },
+        {
+          "keyword": "And",
+          "text": "the cart badge should display '3'"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see all three product names in the cart list"
+        }
+      ]
+    },
+    {
+      "name": "Remove item from cart and verify updated total",
+      "tags": [
+        "@positive",
+        "@cart"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have added 2 items to my cart"
+        },
+        {
+          "keyword": "And",
+          "text": "I am viewing the cart page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click remove button for 'Sauce Labs Backpack'"
+        },
+        {
+          "keyword": "Then",
+          "text": "the item should be removed from cart"
+        },
+        {
+          "keyword": "And",
+          "text": "the cart badge should display '1'"
+        },
+        {
+          "keyword": "And",
+          "text": "the cart should contain only the remaining item"
+        }
+      ]
+    },
+    {
+      "name": "View product details and return to inventory",
+      "tags": [
+        "@positive",
+        "@navigation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the inventory page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on 'Sauce Labs Backpack' product name"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the product detail page"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see product description and price details"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the back button with data-testid 'back-to-products'"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should return to the inventory page"
+        }
+      ]
+    },
+    {
+      "name": "Sort products by price low to high",
+      "tags": [
+        "@positive",
+        "@sorting"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the inventory page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the sort dropdown with data-testid 'product-sort-container'"
+        },
+        {
+          "keyword": "And",
+          "text": "I select 'Price (low to high)' option"
+        },
+        {
+          "keyword": "Then",
+          "text": "products should be displayed in ascending price order"
+        },
+        {
+          "keyword": "And",
+          "text": "the first product should have the lowest price"
+        }
+      ]
+    },
+    {
+      "name": "Login fails with invalid username",
+      "tags": [
+        "@negative",
+        "@login"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the login page"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter 'invalid_user' in username field"
+        },
+        {
+          "keyword": "And",
+          "text": "I enter 'secret_sauce' in password field"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the login button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see error message 'Username and password do not match'"
+        },
+        {
+          "keyword": "And",
+          "text": "I should remain on the login page"
+        }
+      ]
+    },
+    {
+      "name": "Login fails with invalid password",
+      "tags": [
+        "@negative",
+        "@login"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the login page"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter 'standard_user' in username field"
+        },
+        {
+          "keyword": "And",
+          "text": "I enter 'wrong_password' in password field"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the login button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see error message 'Username and password do not match'"
+        },
+        {
+          "keyword": "And",
+          "text": "I should remain on the login page"
+        }
+      ]
+    },
+    {
+      "name": "Checkout fails with missing required information",
+      "tags": [
+        "@negative",
+        "@checkout"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have items in cart and am on checkout information page"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter <first_name> in first name field"
+        },
+        {
+          "keyword": "And",
+          "text": "I enter <last_name> in last name field"
+        },
+        {
+          "keyword": "And",
+          "text": "I enter <postal_code> in postal code field"
+        },
+        {
+          "keyword": "And",
+          "text": "I click continue button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see error message <error_message>"
+        },
+        {
+          "keyword": "And",
+          "text": "I should remain on the checkout information page"
+        }
+      ]
+    },
+    {
+      "name": "Locked user cannot login",
+      "tags": [
+        "@negative",
+        "@access"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the login page"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter 'locked_out_user' in username field"
+        },
+        {
+          "keyword": "And",
+          "text": "I enter 'secret_sauce' in password field"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the login button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see error message 'Sorry, this user has been locked out'"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not be able to access the inventory page"
+        }
+      ]
+    },
+    {
+      "name": "Empty cart checkout attempt",
+      "tags": [
+        "@edge-case",
+        "@cart"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in with an empty cart"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the shopping cart icon"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an empty cart page"
+        },
+        {
+          "keyword": "And",
+          "text": "the checkout button should not be present or disabled"
+        },
+        {
+          "keyword": "When",
+          "text": "I click continue shopping"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should return to the inventory page"
+        }
+      ]
+    },
+    {
+      "name": "Maximum items in cart boundary test",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the inventory page"
+        },
+        {
+          "keyword": "When",
+          "text": "I add all 6 available products to cart"
+        },
+        {
+          "keyword": "Then",
+          "text": "the cart badge should display '6'"
+        },
+        {
+          "keyword": "And",
+          "text": "all add to cart buttons should change to remove buttons"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the cart"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see all 6 items listed in the cart"
+        }
+      ]
+    },
+    {
+      "name": "Navigate back from checkout without completing purchase",
+      "tags": [
+        "@alternative-flow",
+        "@navigation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have items in cart and am on checkout overview page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click cancel button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should return to the inventory page"
+        },
+        {
+          "keyword": "And",
+          "text": "my cart items should still be preserved"
+        },
+        {
+          "keyword": "When",
+          "text": "I check the cart icon"
+        },
+        {
+          "keyword": "Then",
+          "text": "the cart badge should still show my item count"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: Product Purchase on SauceDemo\n  Customers can browse products, add items to cart, and complete secure checkout\n\n  Background:\n    Given I am on the SauceDemo website at https://www.saucedemo.com\n    And the application is loaded successfully\n\n  @smoke @positive @login\n  Scenario: Successful login with valid credentials\n    Given I am on the SauceDemo login page\n    When I enter 'standard_user' in the username field with data-testid 'username'\n    And I enter 'secret_sauce' in the password field with data-testid 'password'\n    And I click the login button with data-testid 'login-button'\n    Then I should be redirected to the inventory page\n    And I should see the products container with data-testid 'inventory-container'\n\n  @smoke @positive @e2e\n  Scenario: Complete product purchase with single item\n    Given I am logged in as 'standard_user'\n    And I am on the inventory page\n    When I click 'Add to cart' button for 'Sauce Labs Backpack'\n    And I click the shopping cart icon with data-testid 'shopping-cart-link'\n    And I click the checkout button with data-testid 'checkout'\n    And I enter 'John' in first name field with data-testid 'firstName'\n    And I enter 'Doe' in last name field with data-testid 'lastName'\n    And I enter '12345' in postal code field with data-testid 'postalCode'\n    And I click continue button with data-testid 'continue'\n    And I click finish button with data-testid 'finish'\n    Then I should see order confirmation with text 'Thank you for your order!'\n    And I should see completion message with data-testid 'complete-header'\n\n  @positive @cart\n  Scenario: Add multiple products to cart and verify cart contents\n    Given I am logged in and on the inventory page\n    When I add 'Sauce Labs Backpack' to cart\n    And I add 'Sauce Labs Bike Light' to cart\n    And I add 'Sauce Labs Bolt T-Shirt' to cart\n    And I click the shopping cart icon\n    Then I should see 3 items in the cart\n    And the cart badge should display '3'\n    And I should see all three product names in the cart list\n\n  @positive @cart\n  Scenario: Remove item from cart and verify updated total\n    Given I have added 2 items to my cart\n    And I am viewing the cart page\n    When I click remove button for 'Sauce Labs Backpack'\n    Then the item should be removed from cart\n    And the cart badge should display '1'\n    And the cart should contain only the remaining item\n\n  @positive @navigation\n  Scenario: View product details and return to inventory\n    Given I am on the inventory page\n    When I click on 'Sauce Labs Backpack' product name\n    Then I should see the product detail page\n    And I should see product description and price details\n    When I click the back button with data-testid 'back-to-products'\n    Then I should return to the inventory page\n\n  @positive @sorting\n  Scenario: Sort products by price low to high\n    Given I am on the inventory page\n    When I click the sort dropdown with data-testid 'product-sort-container'\n    And I select 'Price (low to high)' option\n    Then products should be displayed in ascending price order\n    And the first product should have the lowest price\n\n  @negative @login\n  Scenario: Login fails with invalid username\n    Given I am on the login page\n    When I enter 'invalid_user' in username field\n    And I enter 'secret_sauce' in password field\n    And I click the login button\n    Then I should see error message 'Username and password do not match'\n    And I should remain on the login page\n\n  @negative @login\n  Scenario: Login fails with invalid password\n    Given I am on the login page\n    When I enter 'standard_user' in username field\n    And I enter 'wrong_password' in password field\n    And I click the login button\n    Then I should see error message 'Username and password do not match'\n    And I should remain on the login page\n\n  @negative @checkout\n  Scenario: Checkout fails with missing required information\n    Given I have items in cart and am on checkout information page\n    When I enter <first_name> in first name field\n    And I enter <last_name> in last name field\n    And I enter <postal_code> in postal code field\n    And I click continue button\n    Then I should see error message <error_message>\n    And I should remain on the checkout information page\n\n  @negative @access\n  Scenario: Locked user cannot login\n    Given I am on the login page\n    When I enter 'locked_out_user' in username field\n    And I enter 'secret_sauce' in password field\n    And I click the login button\n    Then I should see error message 'Sorry, this user has been locked out'\n    And I should not be able to access the inventory page\n\n  @edge-case @cart\n  Scenario: Empty cart checkout attempt\n    Given I am logged in with an empty cart\n    When I click the shopping cart icon\n    Then I should see an empty cart page\n    And the checkout button should not be present or disabled\n    When I click continue shopping\n    Then I should return to the inventory page\n\n  @edge-case @boundary\n  Scenario: Maximum items in cart boundary test\n    Given I am on the inventory page\n    When I add all 6 available products to cart\n    Then the cart badge should display '6'\n    And all add to cart buttons should change to remove buttons\n    When I view the cart\n    Then I should see all 6 items listed in the cart\n\n  @alternative-flow @navigation\n  Scenario: Navigate back from checkout without completing purchase\n    Given I have items in cart and am on checkout overview page\n    When I click cancel button\n    Then I should return to the inventory page\n    And my cart items should still be preserved\n    When I check the cart icon\n    Then the cart badge should still show my item count"
+}

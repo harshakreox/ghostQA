@@ -1,0 +1,118 @@
+[
+  {
+    "timestamp": "2025-12-03T10:25:27.076002",
+    "test_id": "feature_1764066099.460405_Network_error_during_save_operation",
+    "test_name": "Network error during save operation",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": "login_page",
+        "selector_used": "login_page",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "navigate",
+        "target": "tile_configuration",
+        "selector_used": "changes_made",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "wait",
+        "target": "network_instability",
+        "selector_used": "[data-test*=\"network\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "save_configuration_button",
+        "selector_used": "button:has-text('Save')",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "network error message",
+        "selector_used": "[data-test*=\"network\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "an error message about connection failure",
+        "selector_used": "[data-test*=\"error\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "form",
+        "selector_used": "[data-test*=\"form\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-12-03T10:25:55.221078",
+    "test_id": "feature_1764066099.460405_Maximum_number_of_tiles_boundary_test",
+    "test_name": "Maximum number of tiles boundary test",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": "login_page",
+        "selector_used": "login_page",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "noop",
+        "target": null,
+        "selector_used": "",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "navigate",
+        "target": "tiles_limit_page",
+        "selector_used": "maximum_tiles_reached",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "add_tile_button",
+        "selector_used": "button:has-text('Add')",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "a message about reaching maximum tile limit",
+        "selector_used": "[data-test*=\"message\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": "add tile action[disabled]",
+        "selector_used": "button:has-text('Add')",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

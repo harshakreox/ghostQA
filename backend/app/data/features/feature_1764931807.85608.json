@@ -1,0 +1,351 @@
+{
+  "id": "feature_1764931807.85608",
+  "name": "View Compliance Record Attachments - Contractor",
+  "description": "Contractors can click the attachments button to view COI documents in read-only mode through the Entity Viewer",
+  "created_at": "2025-12-05T16:20:07.856080",
+  "updated_at": "2025-12-05T16:20:11.834752",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am on the application"
+    },
+    {
+      "keyword": "And",
+      "text": "I am logged in as a contractor user"
+    },
+    {
+      "keyword": "And",
+      "text": "I am on the compliance records list view"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Successfully view attachments for compliance record",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a compliance record with attached documents for my company"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the paperclip icon for that record"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see all attached documents in read-only mode"
+        }
+      ]
+    },
+    {
+      "name": "Successfully download a COI document",
+      "tags": [
+        "@positive",
+        "@download"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have opened the Entity Viewer for a compliance record"
+        },
+        {
+          "keyword": "And",
+          "text": "there are COI documents displayed"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the download button for a document"
+        },
+        {
+          "keyword": "Then",
+          "text": "the document should begin downloading"
+        },
+        {
+          "keyword": "And",
+          "text": "I should receive the file successfully"
+        }
+      ]
+    },
+    {
+      "name": "View multiple COI documents in Entity Viewer",
+      "tags": [
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a compliance record has multiple attached COI documents"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the paperclip icon for that record"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should display all documents"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be able to view each document individually"
+        }
+      ]
+    },
+    {
+      "name": "Close Entity Viewer and return to list view",
+      "tags": [
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have the Entity Viewer open with documents displayed"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the close button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should close"
+        },
+        {
+          "keyword": "And",
+          "text": "I should return to the compliance records list view"
+        }
+      ]
+    },
+    {
+      "name": "Navigate between multiple documents in viewer",
+      "tags": [
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "the Entity Viewer is open with multiple documents"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on different documents in the list"
+        },
+        {
+          "keyword": "Then",
+          "text": "each document should display correctly"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be able to view the content of each document"
+        }
+      ]
+    },
+    {
+      "name": "View attachments for record with single document",
+      "tags": [
+        "@positive",
+        "@edge-case"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a compliance record has only one attached document"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the paperclip icon"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "the single document should be displayed"
+        }
+      ]
+    },
+    {
+      "name": "Cannot upload documents in read-only mode",
+      "tags": [
+        "@negative",
+        "@security"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have the Entity Viewer open"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see an upload button"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not be able to add new documents"
+        }
+      ]
+    },
+    {
+      "name": "Cannot delete documents in read-only mode",
+      "tags": [
+        "@negative",
+        "@security"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have the Entity Viewer open with documents displayed"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see delete buttons for documents"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not be able to remove existing documents"
+        }
+      ]
+    },
+    {
+      "name": "Cannot view attachments for other companies' records",
+      "tags": [
+        "@negative",
+        "@security"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a compliance record belonging to a different company"
+        },
+        {
+          "keyword": "When",
+          "text": "I attempt to click the paperclip icon for that record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not be able to access the attachments"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see an access denied message"
+        }
+      ]
+    },
+    {
+      "name": "Handle record with no attachments",
+      "tags": [
+        "@negative",
+        "@edge-case"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a compliance record with no attached documents"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the paperclip icon for that record"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see a message indicating no documents are available"
+        }
+      ]
+    },
+    {
+      "name": "Handle corrupted or unreadable document",
+      "tags": [
+        "@negative",
+        "@edge-case"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a compliance record with a corrupted document attachment"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the paperclip icon and attempt to view the document"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message indicating the document cannot be displayed"
+        },
+        {
+          "keyword": "But",
+          "text": "other valid documents should still be viewable"
+        }
+      ]
+    },
+    {
+      "name": "Paperclip icon visibility based on attachment presence",
+      "tags": [
+        "@edge-case"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the compliance records list"
+        },
+        {
+          "keyword": "Then",
+          "text": "records with attachments should display a paperclip icon"
+        },
+        {
+          "keyword": "And",
+          "text": "records without attachments should not display a paperclip icon"
+        }
+      ]
+    },
+    {
+      "name": "View large document files in Entity Viewer",
+      "tags": [
+        "@edge-case",
+        "@performance"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a compliance record has a large document attachment"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the paperclip icon"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "the large document should load properly with appropriate loading indicators"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: View Compliance Record Attachments - Contractor\n  Contractors can click the attachments button to view COI documents in read-only mode through the Entity Viewer\n\n  Background:\n    Given I am on the application\n    And I am logged in as a contractor user\n    And I am on the compliance records list view\n\n  @smoke @positive\n  Scenario: Successfully view attachments for compliance record\n    Given there is a compliance record with attached documents for my company\n    When I click the paperclip icon for that record\n    Then the Entity Viewer should open\n    And I should see all attached documents in read-only mode\n\n  @positive @download\n  Scenario: Successfully download a COI document\n    Given I have opened the Entity Viewer for a compliance record\n    And there are COI documents displayed\n    When I click the download button for a document\n    Then the document should begin downloading\n    And I should receive the file successfully\n\n  @positive\n  Scenario: View multiple COI documents in Entity Viewer\n    Given a compliance record has multiple attached COI documents\n    When I click the paperclip icon for that record\n    Then the Entity Viewer should display all documents\n    And I should be able to view each document individually\n\n  @positive\n  Scenario: Close Entity Viewer and return to list view\n    Given I have the Entity Viewer open with documents displayed\n    When I click the close button\n    Then the Entity Viewer should close\n    And I should return to the compliance records list view\n\n  @positive\n  Scenario: Navigate between multiple documents in viewer\n    Given the Entity Viewer is open with multiple documents\n    When I click on different documents in the list\n    Then each document should display correctly\n    And I should be able to view the content of each document\n\n  @positive @edge-case\n  Scenario: View attachments for record with single document\n    Given a compliance record has only one attached document\n    When I click the paperclip icon\n    Then the Entity Viewer should open\n    And the single document should be displayed\n\n  @negative @security\n  Scenario: Cannot upload documents in read-only mode\n    Given I have the Entity Viewer open\n    Then I should not see an upload button\n    And I should not be able to add new documents\n\n  @negative @security\n  Scenario: Cannot delete documents in read-only mode\n    Given I have the Entity Viewer open with documents displayed\n    Then I should not see delete buttons for documents\n    And I should not be able to remove existing documents\n\n  @negative @security\n  Scenario: Cannot view attachments for other companies' records\n    Given there is a compliance record belonging to a different company\n    When I attempt to click the paperclip icon for that record\n    Then I should not be able to access the attachments\n    And I should see an access denied message\n\n  @negative @edge-case\n  Scenario: Handle record with no attachments\n    Given there is a compliance record with no attached documents\n    When I click the paperclip icon for that record\n    Then the Entity Viewer should open\n    And I should see a message indicating no documents are available\n\n  @negative @edge-case\n  Scenario: Handle corrupted or unreadable document\n    Given there is a compliance record with a corrupted document attachment\n    When I click the paperclip icon and attempt to view the document\n    Then I should see an error message indicating the document cannot be displayed\n    But other valid documents should still be viewable\n\n  @edge-case\n  Scenario: Paperclip icon visibility based on attachment presence\n    Given I am viewing the compliance records list\n    Then records with attachments should display a paperclip icon\n    And records without attachments should not display a paperclip icon\n\n  @edge-case @performance\n  Scenario: View large document files in Entity Viewer\n    Given a compliance record has a large document attachment\n    When I click the paperclip icon\n    Then the Entity Viewer should open\n    And the large document should load properly with appropriate loading indicators"
+}

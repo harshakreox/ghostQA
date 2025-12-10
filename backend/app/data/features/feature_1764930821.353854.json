@@ -1,0 +1,479 @@
+{
+  "id": "feature_1764930821.353854",
+  "name": "View Compliance Record Attachments",
+  "description": "Alliant Admin can access and view all COI documents attached to compliance records through the Attachments button in list view",
+  "created_at": "2025-12-05T16:03:41.353854",
+  "updated_at": "2025-12-05T16:03:44.316492",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am on the insurer claims dashboard"
+    },
+    {
+      "keyword": "And",
+      "text": "I am logged in as an Alliant Admin"
+    },
+    {
+      "keyword": "And",
+      "text": "compliance records with attachments are displayed in the list view"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Successfully view attachments by clicking paperclip icon",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I can see compliance records in the list view"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button with paperclip icon"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see all attached COI documents"
+        },
+        {
+          "keyword": "And",
+          "text": "the Attachments tab should be displayed"
+        }
+      ]
+    },
+    {
+      "name": "View manually attached documents in Entity Viewer",
+      "tags": [
+        "@positive",
+        "@manual-attachments"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a compliance record has manually attached documents"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see all manually attached documents"
+        },
+        {
+          "keyword": "And",
+          "text": "the documents should be properly labeled as manual attachments"
+        }
+      ]
+    },
+    {
+      "name": "View documents fetched from Focus system",
+      "tags": [
+        "@positive",
+        "@focus-integration"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a compliance record has documents fetched from Focus"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see all documents fetched from Focus"
+        },
+        {
+          "keyword": "And",
+          "text": "the documents should be properly labeled as Focus documents"
+        }
+      ]
+    },
+    {
+      "name": "View mixed attachment types in single record",
+      "tags": [
+        "@positive",
+        "@mixed-attachments"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a compliance record has both manual attachments and Focus documents"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see both manually attached and Focus-fetched documents"
+        },
+        {
+          "keyword": "And",
+          "text": "each document type should be clearly identified"
+        }
+      ]
+    },
+    {
+      "name": "Navigate between multiple compliance record attachments",
+      "tags": [
+        "@positive",
+        "@navigation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "multiple compliance records are displayed with attachments"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button for the first record"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open showing first record attachments"
+        },
+        {
+          "keyword": "When",
+          "text": "I close the Entity Viewer"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the Attachments button for a different record"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should show the correct attachments for the selected record"
+        }
+      ]
+    },
+    {
+      "name": "View attachment details and metadata",
+      "tags": [
+        "@positive",
+        "@details"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a compliance record has attached documents"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see document names and file types"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see document upload dates or fetch dates"
+        },
+        {
+          "keyword": "And",
+          "text": "document metadata should be clearly displayed"
+        }
+      ]
+    },
+    {
+      "name": "Handle compliance record with no attachments",
+      "tags": [
+        "@negative",
+        "@no-attachments"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a compliance record has no attached documents"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see a message indicating no attachments are available"
+        },
+        {
+          "keyword": "And",
+          "text": "the Attachments tab should still be accessible"
+        }
+      ]
+    },
+    {
+      "name": "Handle corrupted or missing attachment files",
+      "tags": [
+        "@negative",
+        "@corrupted-files"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a compliance record has corrupted or missing attachment files"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see an error message for corrupted files"
+        },
+        {
+          "keyword": "And",
+          "text": "available attachments should still be displayed"
+        }
+      ]
+    },
+    {
+      "name": "Handle Focus system connection failure",
+      "tags": [
+        "@negative",
+        "@system-failure"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "the Focus system is temporarily unavailable"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button for a record with Focus documents"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see an error message about Focus system unavailability"
+        },
+        {
+          "keyword": "And",
+          "text": "manually attached documents should still be displayed"
+        }
+      ]
+    },
+    {
+      "name": "Handle Entity Viewer loading failure",
+      "tags": [
+        "@negative",
+        "@viewer-failure"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a system error preventing Entity Viewer from loading"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message indicating the viewer cannot load"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be provided with alternative options to access attachments"
+        }
+      ]
+    },
+    {
+      "name": "Maximum number of attachments display",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a compliance record has the maximum allowed number of attachments"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "all attachments should be displayed without performance issues"
+        },
+        {
+          "keyword": "And",
+          "text": "pagination or scrolling should work properly if needed"
+        }
+      ]
+    },
+    {
+      "name": "Large file size attachment handling",
+      "tags": [
+        "@edge-case",
+        "@large-files"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a compliance record has very large attachment files"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "large files should be handled appropriately with loading indicators"
+        },
+        {
+          "keyword": "And",
+          "text": "the interface should remain responsive during file loading"
+        }
+      ]
+    },
+    {
+      "name": "Special characters in attachment filenames",
+      "tags": [
+        "@edge-case",
+        "@special-characters"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a compliance record has attachments with special characters in filenames"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "filenames with special characters should display correctly"
+        },
+        {
+          "keyword": "And",
+          "text": "all attachment functions should work properly"
+        }
+      ]
+    },
+    {
+      "name": "Access attachments via keyboard navigation",
+      "tags": [
+        "@alternative-flow",
+        "@accessibility"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am using keyboard navigation"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the Attachments button using Tab key"
+        },
+        {
+          "keyword": "And",
+          "text": "I press Enter or Space to activate the button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "all attachments should be accessible via keyboard"
+        }
+      ]
+    },
+    {
+      "name": "Close Entity Viewer and return to list view",
+      "tags": [
+        "@alternative-flow",
+        "@navigation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "the Entity Viewer is open showing attachments"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the close button or press Escape"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should close"
+        },
+        {
+          "keyword": "And",
+          "text": "I should return to the compliance records list view"
+        },
+        {
+          "keyword": "And",
+          "text": "the previous record selection should be maintained"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: View Compliance Record Attachments\n  Alliant Admin can access and view all COI documents attached to compliance records through the Attachments button in list view\n\n  Background:\n    Given I am on the insurer claims dashboard\n    And I am logged in as an Alliant Admin\n    And compliance records with attachments are displayed in the list view\n\n  @smoke @positive\n  Scenario: Successfully view attachments by clicking paperclip icon\n    Given I can see compliance records in the list view\n    When I click the Attachments button with paperclip icon\n    Then the Entity Viewer should open\n    And I should see all attached COI documents\n    And the Attachments tab should be displayed\n\n  @positive @manual-attachments\n  Scenario: View manually attached documents in Entity Viewer\n    Given a compliance record has manually attached documents\n    When I click the Attachments button\n    Then the Entity Viewer should open\n    And I should see all manually attached documents\n    And the documents should be properly labeled as manual attachments\n\n  @positive @focus-integration\n  Scenario: View documents fetched from Focus system\n    Given a compliance record has documents fetched from Focus\n    When I click the Attachments button\n    Then the Entity Viewer should open\n    And I should see all documents fetched from Focus\n    And the documents should be properly labeled as Focus documents\n\n  @positive @mixed-attachments\n  Scenario: View mixed attachment types in single record\n    Given a compliance record has both manual attachments and Focus documents\n    When I click the Attachments button\n    Then the Entity Viewer should open\n    And I should see both manually attached and Focus-fetched documents\n    And each document type should be clearly identified\n\n  @positive @navigation\n  Scenario: Navigate between multiple compliance record attachments\n    Given multiple compliance records are displayed with attachments\n    When I click the Attachments button for the first record\n    Then the Entity Viewer should open showing first record attachments\n    When I close the Entity Viewer\n    And I click the Attachments button for a different record\n    Then the Entity Viewer should show the correct attachments for the selected record\n\n  @positive @details\n  Scenario: View attachment details and metadata\n    Given a compliance record has attached documents\n    When I click the Attachments button\n    Then the Entity Viewer should open\n    And I should see document names and file types\n    And I should see document upload dates or fetch dates\n    And document metadata should be clearly displayed\n\n  @negative @no-attachments\n  Scenario: Handle compliance record with no attachments\n    Given a compliance record has no attached documents\n    When I click the Attachments button\n    Then the Entity Viewer should open\n    And I should see a message indicating no attachments are available\n    And the Attachments tab should still be accessible\n\n  @negative @corrupted-files\n  Scenario: Handle corrupted or missing attachment files\n    Given a compliance record has corrupted or missing attachment files\n    When I click the Attachments button\n    Then the Entity Viewer should open\n    And I should see an error message for corrupted files\n    And available attachments should still be displayed\n\n  @negative @system-failure\n  Scenario: Handle Focus system connection failure\n    Given the Focus system is temporarily unavailable\n    When I click the Attachments button for a record with Focus documents\n    Then the Entity Viewer should open\n    And I should see an error message about Focus system unavailability\n    And manually attached documents should still be displayed\n\n  @negative @viewer-failure\n  Scenario: Handle Entity Viewer loading failure\n    Given there is a system error preventing Entity Viewer from loading\n    When I click the Attachments button\n    Then I should see an error message indicating the viewer cannot load\n    And I should be provided with alternative options to access attachments\n\n  @edge-case @boundary\n  Scenario: Maximum number of attachments display\n    Given a compliance record has the maximum allowed number of attachments\n    When I click the Attachments button\n    Then the Entity Viewer should open\n    And all attachments should be displayed without performance issues\n    And pagination or scrolling should work properly if needed\n\n  @edge-case @large-files\n  Scenario: Large file size attachment handling\n    Given a compliance record has very large attachment files\n    When I click the Attachments button\n    Then the Entity Viewer should open\n    And large files should be handled appropriately with loading indicators\n    And the interface should remain responsive during file loading\n\n  @edge-case @special-characters\n  Scenario: Special characters in attachment filenames\n    Given a compliance record has attachments with special characters in filenames\n    When I click the Attachments button\n    Then the Entity Viewer should open\n    And filenames with special characters should display correctly\n    And all attachment functions should work properly\n\n  @alternative-flow @accessibility\n  Scenario: Access attachments via keyboard navigation\n    Given I am using keyboard navigation\n    When I navigate to the Attachments button using Tab key\n    And I press Enter or Space to activate the button\n    Then the Entity Viewer should open\n    And all attachments should be accessible via keyboard\n\n  @alternative-flow @navigation\n  Scenario: Close Entity Viewer and return to list view\n    Given the Entity Viewer is open showing attachments\n    When I click the close button or press Escape\n    Then the Entity Viewer should close\n    And I should return to the compliance records list view\n    And the previous record selection should be maintained"
+}

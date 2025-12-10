@@ -1,0 +1,47 @@
+{
+  "id": "report_20251127_062838",
+  "project_id": "96a02259-94d8-488e-b799-d5b731b8585c",
+  "project_name": "SauceDemo E2E Tests",
+  "format": "traditional",
+  "execution_mode": "guided",
+  "executed_at": "2025-11-27T06:28:38.377528",
+  "completed_at": "2025-11-27T06:32:29.458565",
+  "duration_seconds": 231.081037,
+  "total_tests": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "pass_rate": 0.0,
+  "total_ai_calls": 0,
+  "total_kb_hits": 0,
+  "ai_dependency_percent": 0,
+  "new_selectors_learned": 0,
+  "errors": [
+    "Successful Login with Standard User: KnowledgeIndex.add_learning() got an unexpected keyword argument 'ai_assisted'"
+  ],
+  "results": [
+    {
+      "test_id": "b7029a2d-35c9-44b2-a115-71c89f4bdb59",
+      "test_name": "Successful Login with Standard User",
+      "format": "traditional",
+      "status": "failed",
+      "total_steps": 6,
+      "passed_steps": 0,
+      "failed_steps": 6,
+      "recovered_steps": 0,
+      "duration_ms": 0,
+      "started_at": "2025-11-27T06:32:29.443055",
+      "completed_at": "2025-11-27T06:32:29.443055",
+      "step_results": [],
+      "error_message": "KnowledgeIndex.add_learning() got an unexpected keyword argument 'ai_assisted'",
+      "logs": [
+        "Error: KnowledgeIndex.add_learning() got an unexpected keyword argument 'ai_assisted'"
+      ],
+      "screenshot_path": null,
+      "ai_calls_made": 0,
+      "knowledge_base_hits": 0,
+      "is_spa": false,
+      "spa_framework": null
+    }
+  ]
+}

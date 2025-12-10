@@ -1,0 +1,205 @@
+{
+  "id": "traditional_1764160395.548496",
+  "name": "Program Management - Forms Test Suite",
+  "description": "Comprehensive test suite for the no-code form builder functionality covering form creation, management, and program integration capabilities.",
+  "created_at": "2025-11-26T15:53:20.422456",
+  "updated_at": "2025-11-26T18:12:34.634958",
+  "project_id": "23baf525-d28d-4e55-9f97-26a8f9b661fe",
+  "test_cases": [
+    {
+      "test_case_no": 1,
+      "scenario_name": "Verify successful form creation using drag-and-drop interface",
+      "precondition": "1. Admin user is logged in\n2. Admin has access to Program Management menu\n3. Forms Management page is accessible\n4. Form.io field types are available",
+      "steps": "1. Navigate to Program Management > Forms menu\n2. Click 'Create Form' button\n3. Drag text field from field palette to form canvas\n4. Drag dropdown field to form canvas\n5. Configure field properties for both fields\n6. Enter form name as 'Participant Intake Form'\n7. Click Save button",
+      "expected_outcome": "1. Drag-and-drop interface loads successfully\n2. Fields are added to canvas when dropped\n3. Field properties panel opens for configuration\n4. Form is saved with unique ID\n5. Success message 'Form created successfully' displays\n6. Form appears in Forms Management list",
+      "post_condition": "1. New form is saved in forms.schema as JSON\n2. Form status is set to 'Draft'\n3. Version 1.0 is created in version history\n4. Admin is redirected to Forms Management page",
+      "tags": [
+        "@smoke",
+        "@positive",
+        "@form-builder"
+      ]
+    },
+    {
+      "test_case_no": 2,
+      "scenario_name": "Verify form field grouping into sections functionality",
+      "precondition": "1. Admin is logged in\n2. Form builder interface is open\n3. Multiple form fields are available for grouping",
+      "steps": "1. Open form builder interface\n2. Drag 3 different fields to canvas (text, email, phone)\n3. Select all 3 fields\n4. Right-click and choose 'Group into Section'\n5. Name section as 'Contact Information'\n6. Configure section properties\n7. Save the form",
+      "expected_outcome": "1. Section container wraps selected fields\n2. Section title 'Contact Information' displays above fields\n3. Section is saved with unique identifier\n4. Section appears in 'Sections' tab of Forms Management\n5. Fields maintain their individual properties within section",
+      "post_condition": "1. Section is saved in database\n2. Section-field relationships are established\n3. Section is available for reuse in other forms",
+      "tags": [
+        "@positive",
+        "@sections",
+        "@form-builder"
+      ]
+    },
+    {
+      "test_case_no": 3,
+      "scenario_name": "Verify real-time form preview functionality",
+      "precondition": "1. Admin is in form builder\n2. Form has at least 3 different field types added\n3. Preview panel is available",
+      "steps": "1. Add text field, dropdown, and checkbox to form\n2. Configure properties for each field\n3. Click 'Preview' button\n4. Interact with preview fields (type text, select dropdown)\n5. Make changes to original form\n6. Observe preview updates",
+      "expected_outcome": "1. Preview panel opens showing form as participants will see it\n2. All fields are functional in preview mode\n3. Field validations work in preview\n4. Preview updates automatically when form is modified\n5. Preview maintains form styling and layout",
+      "post_condition": "1. Preview session is active\n2. Form changes are reflected in real-time\n3. No data is saved from preview interactions",
+      "tags": [
+        "@positive",
+        "@preview",
+        "@real-time"
+      ]
+    },
+    {
+      "test_case_no": 4,
+      "scenario_name": "Verify form version history tracking",
+      "precondition": "1. Existing form 'Registration Form' exists\n2. Form has been saved at least once\n3. Admin has edit permissions",
+      "steps": "1. Open existing form in edit mode\n2. Modify form by adding new field\n3. Save the changes\n4. Navigate to Forms Management\n5. Click on form name to view details\n6. Check version history section",
+      "expected_outcome": "1. Version history shows Version 1.0 (original) and Version 2.0 (current)\n2. Each version displays timestamp and admin who made changes\n3. Change summary shows 'Added field: [field_name]'\n4. Option to revert to previous version is available",
+      "post_condition": "1. Version 2.0 is marked as current version\n2. Previous version remains accessible\n3. Version metadata is stored in database",
+      "tags": [
+        "@positive",
+        "@versioning",
+        "@history"
+      ]
+    },
+    {
+      "test_case_no": 5,
+      "scenario_name": "Verify form export to JSON functionality",
+      "precondition": "1. Published form 'Survey Form' exists\n2. Form contains multiple field types and sections\n3. Admin has export permissions",
+      "steps": "1. Navigate to Forms Management page\n2. Locate 'Survey Form' in forms list\n3. Click three-dot menu next to form name\n4. Select 'Export' option\n5. Choose JSON format\n6. Click 'Download' button",
+      "expected_outcome": "1. Export dialog opens with format options\n2. JSON file downloads automatically\n3. Downloaded file contains complete form schema\n4. JSON structure includes fields, sections, and properties\n5. File name follows format: FormName_YYYYMMDD.json",
+      "post_condition": "1. JSON file is saved to local downloads\n2. Export activity is logged in system\n3. Original form remains unchanged",
+      "tags": [
+        "@positive",
+        "@export",
+        "@json"
+      ]
+    },
+    {
+      "test_case_no": 6,
+      "scenario_name": "Verify successful form attachment to program",
+      "precondition": "1. Program 'Youth Development' exists\n2. Published form 'Enrollment Form' is available\n3. Admin has program edit permissions\n4. Program edit page is accessible",
+      "steps": "1. Navigate to Program Management\n2. Open 'Youth Development' program for editing\n3. Scroll to Forms section\n4. Click 'Attach Form' button\n5. Search for 'Enrollment Form' in dropdown\n6. Select form and set order as '1'\n7. Save program changes",
+      "expected_outcome": "1. Forms dropdown shows all published forms\n2. Search filters forms correctly\n3. Form is attached with specified order\n4. Program_form_assignments table gets new record\n5. Success message confirms attachment\n6. Form appears in program's form list",
+      "post_condition": "1. Form-program relationship is established in database\n2. Form will appear during participant enrollment\n3. Assignment record includes order and timestamp",
+      "tags": [
+        "@smoke",
+        "@positive",
+        "@program-integration"
+      ]
+    },
+    {
+      "test_case_no": 7,
+      "scenario_name": "Verify form validation during save without required fields",
+      "precondition": "1. Admin is in form builder\n2. Empty form canvas is displayed\n3. Form name field is empty",
+      "steps": "1. Open form builder\n2. Leave form name field empty\n3. Do not add any fields to canvas\n4. Click Save button\n5. Observe validation messages",
+      "expected_outcome": "1. Validation error 'Form name is required' displays\n2. Error 'At least one field is required' shows\n3. Save operation is prevented\n4. Form remains in unsaved state\n5. Error messages are highlighted in red",
+      "post_condition": "1. Form is not saved to database\n2. User remains on form builder page\n3. Validation errors persist until corrected",
+      "tags": [
+        "@negative",
+        "@validation",
+        "@required-fields"
+      ]
+    },
+    {
+      "test_case_no": 8,
+      "scenario_name": "Verify error handling when attaching non-published form to program",
+      "precondition": "1. Program 'Skills Training' exists\n2. Draft form 'Assessment Form' exists (not published)\n3. Admin is on program edit page",
+      "steps": "1. Open program edit page\n2. Navigate to Forms section\n3. Click 'Attach Form' button\n4. Search for 'Assessment Form'\n5. Attempt to select the draft form",
+      "expected_outcome": "1. Draft form does not appear in dropdown list\n2. Only published forms are available for selection\n3. Search returns 'No published forms found' if only draft exists\n4. Tooltip explains 'Only published forms can be attached'",
+      "post_condition": "1. No form attachment is created\n2. Program remains unchanged\n3. User understands publishing requirement",
+      "tags": [
+        "@negative",
+        "@validation",
+        "@form-status"
+      ]
+    },
+    {
+      "test_case_no": 9,
+      "scenario_name": "Verify error when deleting form attached to active program",
+      "precondition": "1. Form 'Medical History' is attached to active program\n2. Program has active participants\n3. Admin attempts to delete the form",
+      "steps": "1. Navigate to Forms Management\n2. Find 'Medical History' form\n3. Click delete icon\n4. Confirm deletion in popup\n5. Observe system response",
+      "expected_outcome": "1. Warning message displays: 'Form is attached to active programs'\n2. List of affected programs is shown\n3. Deletion is prevented\n4. Options provided: 'Detach from programs' or 'Cancel'\n5. Form remains in system unchanged",
+      "post_condition": "1. Form is not deleted\n2. Program attachments remain intact\n3. System integrity is maintained",
+      "tags": [
+        "@negative",
+        "@data-integrity",
+        "@deletion"
+      ]
+    },
+    {
+      "test_case_no": 10,
+      "scenario_name": "Verify form field limit boundary condition",
+      "precondition": "1. Form builder is open\n2. System has maximum field limit of 50 fields per form\n3. Admin has created form with 49 fields",
+      "steps": "1. Open form with 49 existing fields\n2. Attempt to drag 50th field to canvas\n3. Try to drag 51st field to canvas\n4. Observe system behavior and messages",
+      "expected_outcome": "1. 50th field is added successfully\n2. Attempt to add 51st field is blocked\n3. Warning message: 'Maximum 50 fields allowed per form'\n4. Field palette becomes disabled\n5. Save functionality remains available",
+      "post_condition": "1. Form contains exactly 50 fields\n2. No additional fields can be added\n3. Existing fields remain fully functional",
+      "tags": [
+        "@edge-case",
+        "@boundary",
+        "@field-limits"
+      ]
+    },
+    {
+      "test_case_no": 11,
+      "scenario_name": "Verify form copy functionality with unique naming",
+      "precondition": "1. Original form 'Registration Form v1' exists\n2. Form contains 5 fields and 2 sections\n3. Admin is on Forms Management page",
+      "steps": "1. Locate 'Registration Form v1' in forms list\n2. Click three-dot menu\n3. Select 'Copy' option\n4. Modify form name to 'Registration Form v2'\n5. Make minor field adjustments\n6. Save the copied form",
+      "expected_outcome": "1. Copy dialog opens with pre-filled name 'Copy of Registration Form v1'\n2. All original fields and sections are duplicated\n3. New form gets unique ID\n4. Copy retains all field configurations\n5. Both original and copy exist independently",
+      "post_condition": "1. Two separate forms exist in database\n2. Copy has status 'Draft'\n3. No relationship exists between original and copy",
+      "tags": [
+        "@positive",
+        "@copy",
+        "@duplication"
+      ]
+    },
+    {
+      "test_case_no": 12,
+      "scenario_name": "Verify section reusability across multiple forms",
+      "precondition": "1. Section 'Address Information' exists in Sections library\n2. Two different forms are being created\n3. Section contains 4 address-related fields",
+      "steps": "1. Create first form 'Employee Registration'\n2. Navigate to Sections tab\n3. Drag 'Address Information' section to form\n4. Save first form\n5. Create second form 'Vendor Registration'\n6. Add same 'Address Information' section\n7. Save second form",
+      "expected_outcome": "1. Section is available in Sections library\n2. Section can be dragged to multiple forms\n3. All 4 fields are added when section is dropped\n4. Section maintains consistent formatting across forms\n5. Both forms save successfully with shared section",
+      "post_condition": "1. Section is used in 2 different forms\n2. Section usage count is updated\n3. Modifications to section affect all using forms",
+      "tags": [
+        "@positive",
+        "@reusability",
+        "@sections"
+      ]
+    },
+    {
+      "test_case_no": 13,
+      "scenario_name": "Verify form ordering during participant enrollment",
+      "precondition": "1. Program has 3 forms attached with orders: Form A (1), Form B (2), Form C (3)\n2. Participant enrollment process is initiated\n3. All forms are published and active",
+      "steps": "1. Start participant enrollment for the program\n2. Complete Form A and submit\n3. Observe next form presented\n4. Complete Form B and submit\n5. Observe final form\n6. Complete Form C and finish enrollment",
+      "expected_outcome": "1. Forms are presented in exact order: A, B, C\n2. Cannot skip to later forms\n3. Progress indicator shows current form position\n4. Previous form data is retained\n5. Enrollment completes only after all forms are submitted",
+      "post_condition": "1. All 3 forms are completed and stored\n2. Participant enrollment status is 'Complete'\n3. Form submission timestamps are recorded",
+      "tags": [
+        "@positive",
+        "@workflow",
+        "@enrollment-order"
+      ]
+    },
+    {
+      "test_case_no": 14,
+      "scenario_name": "Verify special characters handling in form names",
+      "precondition": "1. Admin is creating new form\n2. Form builder is open\n3. Form name field accepts text input",
+      "steps": "1. Enter form name with special characters: 'Survey@#$%^&*()'\n2. Add basic text field to form\n3. Attempt to save the form\n4. Try form name with only spaces: '   '\n5. Test extremely long name (500+ characters)",
+      "expected_outcome": "1. Special characters trigger validation error\n2. Error message: 'Form name can only contain letters, numbers, spaces, hyphens, and underscores'\n3. Space-only name shows 'Form name cannot be empty'\n4. Long name is truncated to maximum allowed length\n5. Valid characters are accepted and form saves",
+      "post_condition": "1. Invalid names are rejected\n2. Form is not saved with invalid name\n3. Validation rules are enforced consistently",
+      "tags": [
+        "@edge-case",
+        "@validation",
+        "@special-characters"
+      ]
+    },
+    {
+      "test_case_no": 15,
+      "scenario_name": "Verify form editing affects only new enrollments with version control",
+      "precondition": "1. Published form is attached to program\n2. 5 participants have completed enrollment using original form\n3. Admin needs to modify the form\n4. New participants are waiting to enroll",
+      "steps": "1. Edit the published form by adding new required field\n2. Save the modified form\n3. Verify existing participant data remains unchanged\n4. Start new participant enrollment\n5. Confirm new participant sees updated form\n6. Check version control tracking",
+      "expected_outcome": "1. Form version increments (e.g., 1.0 to 2.0)\n2. Existing participant data uses original form structure\n3. New enrollments use updated form version\n4. Version history shows modification details\n5. No data corruption occurs for existing records",
+      "post_condition": "1. Two form versions exist in system\n2. Historical data integrity is maintained\n3. New enrollments use current version\n4. Version control log is updated",
+      "tags": [
+        "@positive",
+        "@versioning",
+        "@data-integrity"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,371 @@
+{
+  "id": "feature_1764931756.36911",
+  "name": "View Compliance Record Detail - Contractor",
+  "description": "As a contractor user, I can view detailed compliance information for my company's records through a dedicated read-only detail page",
+  "created_at": "2025-12-05T16:19:16.369110",
+  "updated_at": "2025-12-05T16:19:18.821055",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am logged in as a contractor user"
+    },
+    {
+      "keyword": "And",
+      "text": "I am on the Compliance Dashboard"
+    },
+    {
+      "keyword": "And",
+      "text": "compliance records are available in the list view"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Successfully navigate to compliance record detail page",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I can see compliance records in the list view"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button for a compliance record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to the Compliance Record Detail page"
+        },
+        {
+          "keyword": "And",
+          "text": "the page header should display \"Compliance Record Detail\""
+        }
+      ]
+    },
+    {
+      "name": "Compliance record detail page displays in read-only mode",
+      "tags": [
+        "@positive",
+        "@read-only"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the Compliance Record Detail page"
+        },
+        {
+          "keyword": "Then",
+          "text": "all information should be displayed in read-only mode"
+        },
+        {
+          "keyword": "And",
+          "text": "no edit buttons should be visible"
+        },
+        {
+          "keyword": "And",
+          "text": "no input fields should be editable"
+        }
+      ]
+    },
+    {
+      "name": "Requirements section is hidden for contractor users",
+      "tags": [
+        "@positive",
+        "@permissions"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record detail as a contractor"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Requirements section should not be visible"
+        },
+        {
+          "keyword": "And",
+          "text": "only basic compliance information should be displayed"
+        }
+      ]
+    },
+    {
+      "name": "Basic compliance information is visible to contractor",
+      "tags": [
+        "@positive",
+        "@content"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the Compliance Record Detail page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see basic compliance information"
+        },
+        {
+          "keyword": "And",
+          "text": "compliance status should be displayed"
+        },
+        {
+          "keyword": "And",
+          "text": "record dates should be visible"
+        }
+      ]
+    },
+    {
+      "name": "Back navigation returns to compliance dashboard",
+      "tags": [
+        "@positive",
+        "@navigation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the Compliance Record Detail page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the back navigation button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be returned to the Compliance Dashboard list view"
+        },
+        {
+          "keyword": "And",
+          "text": "the compliance records list should be displayed"
+        }
+      ]
+    },
+    {
+      "name": "View button functions correctly from different list positions",
+      "tags": [
+        "@positive",
+        "@list-interaction"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "multiple compliance records are displayed in the list"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button for the first record"
+        },
+        {
+          "keyword": "Then",
+          "text": "the correct compliance record details should be displayed"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate back to the list"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the View button for the last record"
+        },
+        {
+          "keyword": "Then",
+          "text": "the correct different compliance record details should be displayed"
+        }
+      ]
+    },
+    {
+      "name": "Cannot access edit functionality through URL manipulation",
+      "tags": [
+        "@negative",
+        "@security"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the Compliance Record Detail page"
+        },
+        {
+          "keyword": "When",
+          "text": "I attempt to access edit mode through URL modification"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should remain in read-only mode"
+        },
+        {
+          "keyword": "And",
+          "text": "no edit capabilities should be available"
+        }
+      ]
+    },
+    {
+      "name": "Error handling when compliance record not found",
+      "tags": [
+        "@negative",
+        "@error-handling"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I attempt to view a non-existent compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "the system cannot find the requested record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an appropriate error message"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be redirected back to the compliance dashboard"
+        }
+      ]
+    },
+    {
+      "name": "Access denied when unauthorized to view specific record",
+      "tags": [
+        "@negative",
+        "@permissions"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I attempt to view a compliance record I am not authorized to access"
+        },
+        {
+          "keyword": "When",
+          "text": "the system checks my permissions"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an access denied message"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not be able to view the record details"
+        }
+      ]
+    },
+    {
+      "name": "Page behavior when no compliance data available",
+      "tags": [
+        "@negative",
+        "@empty-state"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record with no detailed data"
+        },
+        {
+          "keyword": "When",
+          "text": "the compliance record detail page loads"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an appropriate message indicating no data available"
+        },
+        {
+          "keyword": "And",
+          "text": "the page should remain in read-only mode"
+        }
+      ]
+    },
+    {
+      "name": "Page loads correctly with minimum required compliance data",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a compliance record exists with only minimum required fields"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button for this record"
+        },
+        {
+          "keyword": "Then",
+          "text": "the page should load successfully"
+        },
+        {
+          "keyword": "And",
+          "text": "the minimum compliance information should be displayed"
+        }
+      ]
+    },
+    {
+      "name": "Page handles compliance records with maximum data fields",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "a compliance record exists with all possible data fields populated"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button for this record"
+        },
+        {
+          "keyword": "Then",
+          "text": "the page should load without performance issues"
+        },
+        {
+          "keyword": "And",
+          "text": "all appropriate contractor-visible fields should be displayed properly"
+        }
+      ]
+    },
+    {
+      "name": "Browser navigation maintains read-only state",
+      "tags": [
+        "@edge-case",
+        "@navigation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the Compliance Record Detail page"
+        },
+        {
+          "keyword": "When",
+          "text": "I use browser back button to navigate away"
+        },
+        {
+          "keyword": "And",
+          "text": "I use browser forward button to return"
+        },
+        {
+          "keyword": "Then",
+          "text": "the page should still be in read-only mode"
+        },
+        {
+          "keyword": "And",
+          "text": "no edit capabilities should be available"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: View Compliance Record Detail - Contractor\n  As a contractor user, I can view detailed compliance information for my company's records through a dedicated read-only detail page\n\n  Background:\n    Given I am logged in as a contractor user\n    And I am on the Compliance Dashboard\n    And compliance records are available in the list view\n\n  @smoke @positive\n  Scenario: Successfully navigate to compliance record detail page\n    Given I can see compliance records in the list view\n    When I click the View button for a compliance record\n    Then I should be navigated to the Compliance Record Detail page\n    And the page header should display \"Compliance Record Detail\"\n\n  @positive @read-only\n  Scenario: Compliance record detail page displays in read-only mode\n    Given I am on the Compliance Record Detail page\n    Then all information should be displayed in read-only mode\n    And no edit buttons should be visible\n    And no input fields should be editable\n\n  @positive @permissions\n  Scenario: Requirements section is hidden for contractor users\n    Given I am viewing a compliance record detail as a contractor\n    Then the Requirements section should not be visible\n    And only basic compliance information should be displayed\n\n  @positive @content\n  Scenario: Basic compliance information is visible to contractor\n    Given I am on the Compliance Record Detail page\n    Then I should see basic compliance information\n    And compliance status should be displayed\n    And record dates should be visible\n\n  @positive @navigation\n  Scenario: Back navigation returns to compliance dashboard\n    Given I am on the Compliance Record Detail page\n    When I click the back navigation button\n    Then I should be returned to the Compliance Dashboard list view\n    And the compliance records list should be displayed\n\n  @positive @list-interaction\n  Scenario: View button functions correctly from different list positions\n    Given multiple compliance records are displayed in the list\n    When I click the View button for the first record\n    Then the correct compliance record details should be displayed\n    When I navigate back to the list\n    And I click the View button for the last record\n    Then the correct different compliance record details should be displayed\n\n  @negative @security\n  Scenario: Cannot access edit functionality through URL manipulation\n    Given I am on the Compliance Record Detail page\n    When I attempt to access edit mode through URL modification\n    Then I should remain in read-only mode\n    And no edit capabilities should be available\n\n  @negative @error-handling\n  Scenario: Error handling when compliance record not found\n    Given I attempt to view a non-existent compliance record\n    When the system cannot find the requested record\n    Then I should see an appropriate error message\n    And I should be redirected back to the compliance dashboard\n\n  @negative @permissions\n  Scenario: Access denied when unauthorized to view specific record\n    Given I attempt to view a compliance record I am not authorized to access\n    When the system checks my permissions\n    Then I should see an access denied message\n    And I should not be able to view the record details\n\n  @negative @empty-state\n  Scenario: Page behavior when no compliance data available\n    Given I am viewing a compliance record with no detailed data\n    When the compliance record detail page loads\n    Then I should see an appropriate message indicating no data available\n    And the page should remain in read-only mode\n\n  @edge-case @boundary\n  Scenario: Page loads correctly with minimum required compliance data\n    Given a compliance record exists with only minimum required fields\n    When I click the View button for this record\n    Then the page should load successfully\n    And the minimum compliance information should be displayed\n\n  @edge-case @boundary\n  Scenario: Page handles compliance records with maximum data fields\n    Given a compliance record exists with all possible data fields populated\n    When I click the View button for this record\n    Then the page should load without performance issues\n    And all appropriate contractor-visible fields should be displayed properly\n\n  @edge-case @navigation\n  Scenario: Browser navigation maintains read-only state\n    Given I am on the Compliance Record Detail page\n    When I use browser back button to navigate away\n    And I use browser forward button to return\n    Then the page should still be in read-only mode\n    And no edit capabilities should be available"
+}

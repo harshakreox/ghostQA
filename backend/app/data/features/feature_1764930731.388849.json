@@ -1,0 +1,435 @@
+{
+  "id": "feature_1764930731.388849",
+  "name": "Edit Compliance Record - Alliant Admin",
+  "description": "Alliant Admin users can edit compliance records from the list view with full editing permissions including Requirements tab access",
+  "created_at": "2025-12-05T16:02:11.388849",
+  "updated_at": "2025-12-05T16:02:43.727651",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am on the compliance dashboard"
+    },
+    {
+      "keyword": "And",
+      "text": "I am logged in as an Alliant Admin user"
+    },
+    {
+      "keyword": "And",
+      "text": "there are existing compliance records in the list"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Successfully edit compliance record via pencil icon",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I can see compliance records in the list view"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Edit button for a compliance record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should navigate to the compliance record form in edit mode"
+        },
+        {
+          "keyword": "And",
+          "text": "the form should be pre-filled with existing data"
+        },
+        {
+          "keyword": "And",
+          "text": "all form fields should be editable"
+        },
+        {
+          "keyword": "And",
+          "text": "the Requirements tab should be visible and editable"
+        }
+      ]
+    },
+    {
+      "name": "Successfully save edited compliance record",
+      "tags": [
+        "@positive",
+        "@core"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am editing a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "I modify the compliance details"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the Save button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the message \"Compliance record updated successfully\""
+        },
+        {
+          "keyword": "And",
+          "text": "I should be redirected to the Compliance Dashboard list view"
+        },
+        {
+          "keyword": "And",
+          "text": "the updated data should reflect in the list view"
+        }
+      ]
+    },
+    {
+      "name": "Successfully edit requirements tab as Alliant Admin",
+      "tags": [
+        "@positive",
+        "@requirements"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am editing a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the Requirements tab"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Requirements tab should be editable"
+        },
+        {
+          "keyword": "When",
+          "text": "I modify requirement details"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the Save button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the message \"Compliance record updated successfully\""
+        }
+      ]
+    },
+    {
+      "name": "Cancel edit operation returns to dashboard",
+      "tags": [
+        "@positive",
+        "@navigation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am editing a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "I modify some fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the Cancel button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be returned to the Compliance Dashboard list view"
+        },
+        {
+          "keyword": "And",
+          "text": "the changes should not be saved"
+        },
+        {
+          "keyword": "And",
+          "text": "the original data should remain unchanged"
+        }
+      ]
+    },
+    {
+      "name": "Edit form displays Save and Cancel buttons",
+      "tags": [
+        "@positive",
+        "@ui"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I click the Edit button for a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "the edit form loads"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the Save button"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the Cancel button"
+        },
+        {
+          "keyword": "And",
+          "text": "both buttons should be clickable"
+        }
+      ]
+    },
+    {
+      "name": "Updated compliance record reflects in Client Admin view",
+      "tags": [
+        "@positive",
+        "@integration"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have successfully updated a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "a Client Admin user views the same record"
+        },
+        {
+          "keyword": "Then",
+          "text": "the updated data should be visible"
+        },
+        {
+          "keyword": "But",
+          "text": "the Requirements tab should remain non-editable for Client Admin"
+        }
+      ]
+    },
+    {
+      "name": "Validation error prevents saving invalid data",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am editing a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "I clear a required field"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the Save button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see a validation error message"
+        },
+        {
+          "keyword": "And",
+          "text": "the form should not be saved"
+        },
+        {
+          "keyword": "And",
+          "text": "I should remain on the edit form"
+        }
+      ]
+    },
+    {
+      "name": "Cannot edit non-existent compliance record",
+      "tags": [
+        "@negative",
+        "@error"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I attempt to edit a compliance record that has been deleted"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Edit button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not be able to access the edit form"
+        }
+      ]
+    },
+    {
+      "name": "Save fails with server error",
+      "tags": [
+        "@negative",
+        "@error"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am editing a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "I modify the compliance details"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the Save button"
+        },
+        {
+          "keyword": "And",
+          "text": "the server returns an error"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message"
+        },
+        {
+          "keyword": "And",
+          "text": "I should remain on the edit form"
+        },
+        {
+          "keyword": "And",
+          "text": "my changes should be preserved"
+        }
+      ]
+    },
+    {
+      "name": "Form validation with empty required fields",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am editing a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "I clear all required fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I attempt to save"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see validation errors for each required field"
+        },
+        {
+          "keyword": "And",
+          "text": "the save operation should be prevented"
+        }
+      ]
+    },
+    {
+      "name": "Edit record with maximum field length data",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am editing a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter maximum allowed characters in text fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the Save button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the data should be saved successfully"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the success message"
+        }
+      ]
+    },
+    {
+      "name": "Edit record with minimum valid data",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am editing a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter minimum required data in all fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I click the Save button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the record should be saved successfully"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the success message"
+        }
+      ]
+    },
+    {
+      "name": "Edit record with special characters in text fields",
+      "tags": [
+        "@edge-case",
+        "@data"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am editing a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter special characters in text fields"
+        },
+        {
+          "keyword": "And",
+          "text": "I save the record"
+        },
+        {
+          "keyword": "Then",
+          "text": "the special characters should be preserved correctly"
+        },
+        {
+          "keyword": "And",
+          "text": "the data should display properly in the list view"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: Edit Compliance Record - Alliant Admin\n  Alliant Admin users can edit compliance records from the list view with full editing permissions including Requirements tab access\n\n  Background:\n    Given I am on the compliance dashboard\n    And I am logged in as an Alliant Admin user\n    And there are existing compliance records in the list\n\n  @smoke @positive\n  Scenario: Successfully edit compliance record via pencil icon\n    Given I can see compliance records in the list view\n    When I click the Edit button for a compliance record\n    Then I should navigate to the compliance record form in edit mode\n    And the form should be pre-filled with existing data\n    And all form fields should be editable\n    And the Requirements tab should be visible and editable\n\n  @positive @core\n  Scenario: Successfully save edited compliance record\n    Given I am editing a compliance record\n    When I modify the compliance details\n    And I click the Save button\n    Then I should see the message \"Compliance record updated successfully\"\n    And I should be redirected to the Compliance Dashboard list view\n    And the updated data should reflect in the list view\n\n  @positive @requirements\n  Scenario: Successfully edit requirements tab as Alliant Admin\n    Given I am editing a compliance record\n    When I navigate to the Requirements tab\n    Then the Requirements tab should be editable\n    When I modify requirement details\n    And I click the Save button\n    Then I should see the message \"Compliance record updated successfully\"\n\n  @positive @navigation\n  Scenario: Cancel edit operation returns to dashboard\n    Given I am editing a compliance record\n    When I modify some fields\n    And I click the Cancel button\n    Then I should be returned to the Compliance Dashboard list view\n    And the changes should not be saved\n    And the original data should remain unchanged\n\n  @positive @ui\n  Scenario: Edit form displays Save and Cancel buttons\n    Given I click the Edit button for a compliance record\n    When the edit form loads\n    Then I should see the Save button\n    And I should see the Cancel button\n    And both buttons should be clickable\n\n  @positive @integration\n  Scenario: Updated compliance record reflects in Client Admin view\n    Given I have successfully updated a compliance record\n    When a Client Admin user views the same record\n    Then the updated data should be visible\n    But the Requirements tab should remain non-editable for Client Admin\n\n  @negative @validation\n  Scenario: Validation error prevents saving invalid data\n    Given I am editing a compliance record\n    When I clear a required field\n    And I click the Save button\n    Then I should see a validation error message\n    And the form should not be saved\n    And I should remain on the edit form\n\n  @negative @error\n  Scenario: Cannot edit non-existent compliance record\n    Given I attempt to edit a compliance record that has been deleted\n    When I click the Edit button\n    Then I should see an error message\n    And I should not be able to access the edit form\n\n  @negative @error\n  Scenario: Save fails with server error\n    Given I am editing a compliance record\n    When I modify the compliance details\n    And I click the Save button\n    And the server returns an error\n    Then I should see an error message\n    And I should remain on the edit form\n    And my changes should be preserved\n\n  @negative @validation\n  Scenario: Form validation with empty required fields\n    Given I am editing a compliance record\n    When I clear all required fields\n    And I attempt to save\n    Then I should see validation errors for each required field\n    And the save operation should be prevented\n\n  @edge-case @boundary\n  Scenario: Edit record with maximum field length data\n    Given I am editing a compliance record\n    When I enter maximum allowed characters in text fields\n    And I click the Save button\n    Then the data should be saved successfully\n    And I should see the success message\n\n  @edge-case @boundary\n  Scenario: Edit record with minimum valid data\n    Given I am editing a compliance record\n    When I enter minimum required data in all fields\n    And I click the Save button\n    Then the record should be saved successfully\n    And I should see the success message\n\n  @edge-case @data\n  Scenario: Edit record with special characters in text fields\n    Given I am editing a compliance record\n    When I enter special characters in text fields\n    And I save the record\n    Then the special characters should be preserved correctly\n    And the data should display properly in the list view"
+}

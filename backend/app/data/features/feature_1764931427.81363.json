@@ -1,0 +1,419 @@
+{
+  "id": "feature_1764931427.81363",
+  "name": "View Compliance Record Attachments - Client Admin",
+  "description": "Client Admin users can access and view COI document attachments for compliance records belonging to their company through the Attachments button",
+  "created_at": "2025-12-05T16:13:47.813630",
+  "updated_at": "2025-12-05T16:13:51.804464",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am logged in as a Client Admin user"
+    },
+    {
+      "keyword": "And",
+      "text": "I am on the compliance records list view"
+    },
+    {
+      "keyword": "And",
+      "text": "there are compliance records with attachments available"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Successfully open Entity Viewer by clicking Attachments button",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I can see a compliance record with the paperclip icon"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button with the paperclip icon"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the Attachments tab displayed"
+        },
+        {
+          "keyword": "And",
+          "text": "all attached COI documents should be visible"
+        }
+      ]
+    },
+    {
+      "name": "View all COI documents in Attachments tab",
+      "tags": [
+        "@positive",
+        "@core"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have opened the Entity Viewer for a compliance record"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the Attachments tab"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see all COI documents attached to this record"
+        },
+        {
+          "keyword": "And",
+          "text": "each document should display its name and relevant details"
+        },
+        {
+          "keyword": "And",
+          "text": "the documents should be organized clearly"
+        }
+      ]
+    },
+    {
+      "name": "Preview document attachment successfully",
+      "tags": [
+        "@positive",
+        "@functionality"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing attachments in the Entity Viewer"
+        },
+        {
+          "keyword": "And",
+          "text": "there are COI documents available"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on a document to preview it"
+        },
+        {
+          "keyword": "Then",
+          "text": "the document preview should open"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be able to view the document content clearly"
+        },
+        {
+          "keyword": "And",
+          "text": "preview controls should be available"
+        }
+      ]
+    },
+    {
+      "name": "Download document attachment successfully",
+      "tags": [
+        "@positive",
+        "@functionality"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing attachments in the Entity Viewer"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the download option for a COI document"
+        },
+        {
+          "keyword": "Then",
+          "text": "the document download should start"
+        },
+        {
+          "keyword": "And",
+          "text": "I should receive the complete document file"
+        },
+        {
+          "keyword": "And",
+          "text": "the downloaded file should be accessible"
+        }
+      ]
+    },
+    {
+      "name": "Access multiple attachments for same compliance record",
+      "tags": [
+        "@positive",
+        "@multiple-items"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record with multiple attachments"
+        },
+        {
+          "keyword": "When",
+          "text": "I open the Entity Viewer Attachments tab"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see all attached documents listed"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be able to preview each document individually"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be able to download each document individually"
+        }
+      ]
+    },
+    {
+      "name": "View attachments only for my company's records",
+      "tags": [
+        "@positive",
+        "@authorization"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing compliance records in the list"
+        },
+        {
+          "keyword": "And",
+          "text": "the records belong to my company"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button for any record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should successfully access the Entity Viewer"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see all attachments for that record"
+        },
+        {
+          "keyword": "And",
+          "text": "all viewing and download capabilities should be available"
+        }
+      ]
+    },
+    {
+      "name": "Cannot access attachments for other company's records",
+      "tags": [
+        "@negative",
+        "@authorization"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there are compliance records from other companies in the system"
+        },
+        {
+          "keyword": "When",
+          "text": "I attempt to access attachments for a record not belonging to my company"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not be able to view those attachments"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see an appropriate access restriction message"
+        }
+      ]
+    },
+    {
+      "name": "Handle compliance record with no attachments",
+      "tags": [
+        "@negative",
+        "@empty-state"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record with no attachments"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Entity Viewer should open"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the Attachments tab"
+        },
+        {
+          "keyword": "But",
+          "text": "I should see a message indicating no attachments are available"
+        }
+      ]
+    },
+    {
+      "name": "Error handling when Entity Viewer fails to load",
+      "tags": [
+        "@negative",
+        "@error"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the compliance records list view"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Attachments button and the Entity Viewer fails to load"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an appropriate error message"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be able to retry the action"
+        },
+        {
+          "keyword": "And",
+          "text": "the system should remain stable"
+        }
+      ]
+    },
+    {
+      "name": "Handle corrupted or unavailable document preview",
+      "tags": [
+        "@negative",
+        "@error"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing attachments in the Entity Viewer"
+        },
+        {
+          "keyword": "When",
+          "text": "I try to preview a corrupted or unavailable document"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message indicating the document cannot be previewed"
+        },
+        {
+          "keyword": "And",
+          "text": "the Entity Viewer should remain functional"
+        },
+        {
+          "keyword": "And",
+          "text": "I should still be able to access other documents"
+        }
+      ]
+    },
+    {
+      "name": "Entity Viewer displays correctly with maximum number of attachments",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record with the maximum allowed number of attachments"
+        },
+        {
+          "keyword": "When",
+          "text": "I open the Entity Viewer Attachments tab"
+        },
+        {
+          "keyword": "Then",
+          "text": "all attachments should be displayed properly"
+        },
+        {
+          "keyword": "And",
+          "text": "the interface should remain responsive"
+        },
+        {
+          "keyword": "And",
+          "text": "scrolling or pagination should work correctly if needed"
+        }
+      ]
+    },
+    {
+      "name": "Handle very large document file preview and download",
+      "tags": [
+        "@edge-case",
+        "@performance"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing attachments that include very large document files"
+        },
+        {
+          "keyword": "When",
+          "text": "I attempt to preview or download a large document"
+        },
+        {
+          "keyword": "Then",
+          "text": "the system should handle the request appropriately"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see progress indicators for long-running operations"
+        },
+        {
+          "keyword": "And",
+          "text": "the operation should complete successfully or show appropriate timeout messages"
+        }
+      ]
+    },
+    {
+      "name": "Close Entity Viewer and return to list view",
+      "tags": [
+        "@alternative-flow",
+        "@navigation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have the Entity Viewer open with attachments displayed"
+        },
+        {
+          "keyword": "When",
+          "text": "I close the Entity Viewer"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should return to the compliance records list view"
+        },
+        {
+          "keyword": "And",
+          "text": "the list should maintain its previous state"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be able to access attachments for other records"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: View Compliance Record Attachments - Client Admin\n  Client Admin users can access and view COI document attachments for compliance records belonging to their company through the Attachments button\n\n  Background:\n    Given I am logged in as a Client Admin user\n    And I am on the compliance records list view\n    And there are compliance records with attachments available\n\n  @smoke @positive\n  Scenario: Successfully open Entity Viewer by clicking Attachments button\n    Given I can see a compliance record with the paperclip icon\n    When I click the Attachments button with the paperclip icon\n    Then the Entity Viewer should open\n    And I should see the Attachments tab displayed\n    And all attached COI documents should be visible\n\n  @positive @core\n  Scenario: View all COI documents in Attachments tab\n    Given I have opened the Entity Viewer for a compliance record\n    When I view the Attachments tab\n    Then I should see all COI documents attached to this record\n    And each document should display its name and relevant details\n    And the documents should be organized clearly\n\n  @positive @functionality\n  Scenario: Preview document attachment successfully\n    Given I am viewing attachments in the Entity Viewer\n    And there are COI documents available\n    When I click on a document to preview it\n    Then the document preview should open\n    And I should be able to view the document content clearly\n    And preview controls should be available\n\n  @positive @functionality\n  Scenario: Download document attachment successfully\n    Given I am viewing attachments in the Entity Viewer\n    When I click the download option for a COI document\n    Then the document download should start\n    And I should receive the complete document file\n    And the downloaded file should be accessible\n\n  @positive @multiple-items\n  Scenario: Access multiple attachments for same compliance record\n    Given I am viewing a compliance record with multiple attachments\n    When I open the Entity Viewer Attachments tab\n    Then I should see all attached documents listed\n    And I should be able to preview each document individually\n    And I should be able to download each document individually\n\n  @positive @authorization\n  Scenario: View attachments only for my company's records\n    Given I am viewing compliance records in the list\n    And the records belong to my company\n    When I click the Attachments button for any record\n    Then I should successfully access the Entity Viewer\n    And I should see all attachments for that record\n    And all viewing and download capabilities should be available\n\n  @negative @authorization\n  Scenario: Cannot access attachments for other company's records\n    Given there are compliance records from other companies in the system\n    When I attempt to access attachments for a record not belonging to my company\n    Then I should not be able to view those attachments\n    And I should see an appropriate access restriction message\n\n  @negative @empty-state\n  Scenario: Handle compliance record with no attachments\n    Given I am viewing a compliance record with no attachments\n    When I click the Attachments button\n    Then the Entity Viewer should open\n    And I should see the Attachments tab\n    But I should see a message indicating no attachments are available\n\n  @negative @error\n  Scenario: Error handling when Entity Viewer fails to load\n    Given I am on the compliance records list view\n    When I click the Attachments button and the Entity Viewer fails to load\n    Then I should see an appropriate error message\n    And I should be able to retry the action\n    And the system should remain stable\n\n  @negative @error\n  Scenario: Handle corrupted or unavailable document preview\n    Given I am viewing attachments in the Entity Viewer\n    When I try to preview a corrupted or unavailable document\n    Then I should see an error message indicating the document cannot be previewed\n    And the Entity Viewer should remain functional\n    And I should still be able to access other documents\n\n  @edge-case @boundary\n  Scenario: Entity Viewer displays correctly with maximum number of attachments\n    Given I am viewing a compliance record with the maximum allowed number of attachments\n    When I open the Entity Viewer Attachments tab\n    Then all attachments should be displayed properly\n    And the interface should remain responsive\n    And scrolling or pagination should work correctly if needed\n\n  @edge-case @performance\n  Scenario: Handle very large document file preview and download\n    Given I am viewing attachments that include very large document files\n    When I attempt to preview or download a large document\n    Then the system should handle the request appropriately\n    And I should see progress indicators for long-running operations\n    And the operation should complete successfully or show appropriate timeout messages\n\n  @alternative-flow @navigation\n  Scenario: Close Entity Viewer and return to list view\n    Given I have the Entity Viewer open with attachments displayed\n    When I close the Entity Viewer\n    Then I should return to the compliance records list view\n    And the list should maintain its previous state\n    And I should be able to access attachments for other records"
+}

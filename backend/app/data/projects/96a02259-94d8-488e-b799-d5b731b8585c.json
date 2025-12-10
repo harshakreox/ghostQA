@@ -1,0 +1,957 @@
+{
+  "id": "96a02259-94d8-488e-b799-d5b731b8585c",
+  "name": "SauceDemo E2E Tests",
+  "description": "Complete test suite for SauceDemo.com e-commerce application",
+  "base_url": "https://www.saucedemo.com",
+  "test_cases": [
+    {
+      "id": "b7029a2d-35c9-44b2-a115-71c89f4bdb59",
+      "name": "Successful Login with Standard User",
+      "description": "Verify that a standard user can successfully log in to the application",
+      "actions": [
+        {
+          "action": "navigate",
+          "selector_type": null,
+          "selector": null,
+          "value": "https://www.saucedemo.com",
+          "description": "Navigate to SauceDemo login page",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "user-name",
+          "value": "standard_user",
+          "description": "Enter username: standard_user",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "password",
+          "value": "secret_sauce",
+          "description": "Enter password",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "login-button",
+          "value": null,
+          "description": "Click login button",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "assert_url",
+          "selector_type": null,
+          "selector": null,
+          "value": "inventory.html",
+          "description": "Verify redirected to inventory page",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "assert_visible",
+          "selector_type": "css",
+          "selector": ".inventory_list",
+          "value": null,
+          "description": "Verify product list is visible",
+          "wait_before": 0,
+          "wait_after": 500
+        }
+      ],
+      "created_at": "2025-11-19T09:41:44.493722",
+      "updated_at": "2025-11-19T09:41:44.493722"
+    },
+    {
+      "id": "b58a4fbd-e564-4e78-aabd-3714c794d38e",
+      "name": "Login Failure with Invalid Credentials",
+      "description": "Verify that login fails with incorrect credentials and displays error message",
+      "actions": [
+        {
+          "action": "navigate",
+          "selector_type": null,
+          "selector": null,
+          "value": "https://www.saucedemo.com",
+          "description": "Navigate to SauceDemo login page",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "user-name",
+          "value": "invalid_user",
+          "description": "Enter invalid username",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "password",
+          "value": "wrong_password",
+          "description": "Enter wrong password",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "login-button",
+          "value": null,
+          "description": "Click login button",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "assert_visible",
+          "selector_type": "css",
+          "selector": "[data-test='error']",
+          "value": null,
+          "description": "Verify error message is displayed",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "assert_text",
+          "selector_type": "css",
+          "selector": "[data-test='error']",
+          "value": "do not match",
+          "description": "Verify error message contains correct text",
+          "wait_before": 0,
+          "wait_after": 500
+        }
+      ],
+      "created_at": "2025-11-19T09:41:44.493722",
+      "updated_at": "2025-11-19T09:41:44.493722"
+    },
+    {
+      "id": "8f0588f2-55ba-4837-a793-f3f1aa436333",
+      "name": "Add Single Item to Cart",
+      "description": "Verify user can add a product to the shopping cart",
+      "actions": [
+        {
+          "action": "navigate",
+          "selector_type": null,
+          "selector": null,
+          "value": "https://www.saucedemo.com",
+          "description": "Navigate to login page",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "user-name",
+          "value": "standard_user",
+          "description": "Enter username",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "password",
+          "value": "secret_sauce",
+          "description": "Enter password",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "login-button",
+          "value": null,
+          "description": "Click login button",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "add-to-cart-sauce-labs-backpack",
+          "value": null,
+          "description": "Add Backpack to cart",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "assert_text",
+          "selector_type": "css",
+          "selector": ".shopping_cart_badge",
+          "value": "1",
+          "description": "Verify cart badge shows 1 item",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "click",
+          "selector_type": "css",
+          "selector": ".shopping_cart_link",
+          "value": null,
+          "description": "Click on cart icon",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "assert_text",
+          "selector_type": "css",
+          "selector": ".inventory_item_name",
+          "value": "Sauce Labs Backpack",
+          "description": "Verify correct item is in cart",
+          "wait_before": 0,
+          "wait_after": 500
+        }
+      ],
+      "created_at": "2025-11-19T09:41:44.493722",
+      "updated_at": "2025-11-19T09:41:44.493722"
+    },
+    {
+      "id": "4b968ae8-da4c-4715-9097-9c8161c8732c",
+      "name": "Add Multiple Items to Cart",
+      "description": "Verify user can add multiple products to cart",
+      "actions": [
+        {
+          "action": "navigate",
+          "selector_type": null,
+          "selector": null,
+          "value": "https://www.saucedemo.com",
+          "description": "Navigate to login page",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "user-name",
+          "value": "standard_user",
+          "description": "Enter username",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "password",
+          "value": "secret_sauce",
+          "description": "Enter password",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "login-button",
+          "value": null,
+          "description": "Login",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "add-to-cart-sauce-labs-backpack",
+          "value": null,
+          "description": "Add Backpack to cart",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "add-to-cart-sauce-labs-bike-light",
+          "value": null,
+          "description": "Add Bike Light to cart",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "add-to-cart-sauce-labs-bolt-t-shirt",
+          "value": null,
+          "description": "Add T-Shirt to cart",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "assert_text",
+          "selector_type": "css",
+          "selector": ".shopping_cart_badge",
+          "value": "3",
+          "description": "Verify cart badge shows 3 items",
+          "wait_before": 0,
+          "wait_after": 500
+        }
+      ],
+      "created_at": "2025-11-19T09:41:44.493722",
+      "updated_at": "2025-11-19T09:41:44.493722"
+    },
+    {
+      "id": "43745253-0683-4081-84c7-8077bd1fa2f4",
+      "name": "Remove Item from Cart",
+      "description": "Verify user can remove items from the shopping cart",
+      "actions": [
+        {
+          "action": "navigate",
+          "selector_type": null,
+          "selector": null,
+          "value": "https://www.saucedemo.com",
+          "description": "Navigate to login page",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "user-name",
+          "value": "standard_user",
+          "description": "Enter username",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "password",
+          "value": "secret_sauce",
+          "description": "Enter password",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "login-button",
+          "value": null,
+          "description": "Login",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "add-to-cart-sauce-labs-backpack",
+          "value": null,
+          "description": "Add Backpack to cart",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "click",
+          "selector_type": "css",
+          "selector": ".shopping_cart_link",
+          "value": null,
+          "description": "Go to cart",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "remove-sauce-labs-backpack",
+          "value": null,
+          "description": "Remove item from cart",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "assert_visible",
+          "selector_type": "css",
+          "selector": ".removed_cart_item",
+          "value": null,
+          "description": "Verify item was removed (cart should be empty or show removed state)",
+          "wait_before": 0,
+          "wait_after": 500
+        }
+      ],
+      "created_at": "2025-11-19T09:41:44.493722",
+      "updated_at": "2025-11-19T09:41:44.493722"
+    },
+    {
+      "id": "ea6c50c1-77b5-4086-b2b6-cd78107e97c7",
+      "name": "Complete Checkout Flow - Happy Path",
+      "description": "Verify complete purchase flow from adding item to order completion",
+      "actions": [
+        {
+          "action": "navigate",
+          "selector_type": null,
+          "selector": null,
+          "value": "https://www.saucedemo.com",
+          "description": "Navigate to login page",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "user-name",
+          "value": "standard_user",
+          "description": "Enter username",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "password",
+          "value": "secret_sauce",
+          "description": "Enter password",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "login-button",
+          "value": null,
+          "description": "Login",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "add-to-cart-sauce-labs-backpack",
+          "value": null,
+          "description": "Add Backpack to cart",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "click",
+          "selector_type": "css",
+          "selector": ".shopping_cart_link",
+          "value": null,
+          "description": "Go to cart",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "checkout",
+          "value": null,
+          "description": "Click checkout button",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "first-name",
+          "value": "John",
+          "description": "Enter first name",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "last-name",
+          "value": "Doe",
+          "description": "Enter last name",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "postal-code",
+          "value": "12345",
+          "description": "Enter zip code",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "continue",
+          "value": null,
+          "description": "Click continue button",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "assert_url",
+          "selector_type": null,
+          "selector": null,
+          "value": "checkout-step-two.html",
+          "description": "Verify on checkout overview page",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "finish",
+          "value": null,
+          "description": "Click finish button",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "assert_url",
+          "selector_type": null,
+          "selector": null,
+          "value": "checkout-complete.html",
+          "description": "Verify on order complete page",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "assert_visible",
+          "selector_type": "css",
+          "selector": ".complete-header",
+          "value": null,
+          "description": "Verify success message is displayed",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "assert_text",
+          "selector_type": "css",
+          "selector": ".complete-header",
+          "value": "Thank you",
+          "description": "Verify thank you message",
+          "wait_before": 0,
+          "wait_after": 500
+        }
+      ],
+      "created_at": "2025-11-19T09:41:44.493722",
+      "updated_at": "2025-11-19T09:41:44.493722"
+    },
+    {
+      "id": "01bd5b75-2471-4cf4-bc8c-de50a358c04d",
+      "name": "Sort Products by Price - Low to High",
+      "description": "Verify products can be sorted by price in ascending order",
+      "actions": [
+        {
+          "action": "navigate",
+          "selector_type": null,
+          "selector": null,
+          "value": "https://www.saucedemo.com",
+          "description": "Navigate to login page",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "user-name",
+          "value": "standard_user",
+          "description": "Enter username",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "password",
+          "value": "secret_sauce",
+          "description": "Enter password",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "login-button",
+          "value": null,
+          "description": "Login",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "select",
+          "selector_type": "css",
+          "selector": ".product_sort_container",
+          "value": "lohi",
+          "description": "Sort by price: low to high",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "screenshot",
+          "selector_type": null,
+          "selector": null,
+          "value": "products_sorted_lohi.png",
+          "description": "Take screenshot of sorted products",
+          "wait_before": 0,
+          "wait_after": 500
+        }
+      ],
+      "created_at": "2025-11-19T09:41:44.493722",
+      "updated_at": "2025-11-19T09:41:44.493722"
+    },
+    {
+      "id": "3c1391ac-de11-4801-960d-dd29197e1e71",
+      "name": "Sort Products by Name - Z to A",
+      "description": "Verify products can be sorted alphabetically in reverse order",
+      "actions": [
+        {
+          "action": "navigate",
+          "selector_type": null,
+          "selector": null,
+          "value": "https://www.saucedemo.com",
+          "description": "Navigate to login page",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "user-name",
+          "value": "standard_user",
+          "description": "Enter username",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "password",
+          "value": "secret_sauce",
+          "description": "Enter password",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "login-button",
+          "value": null,
+          "description": "Login",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "select",
+          "selector_type": "css",
+          "selector": ".product_sort_container",
+          "value": "za",
+          "description": "Sort by name: Z to A",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "screenshot",
+          "selector_type": null,
+          "selector": null,
+          "value": "products_sorted_za.png",
+          "description": "Take screenshot of sorted products",
+          "wait_before": 0,
+          "wait_after": 500
+        }
+      ],
+      "created_at": "2025-11-19T09:41:44.493722",
+      "updated_at": "2025-11-19T09:41:44.493722"
+    },
+    {
+      "id": "a25fe20e-7ff8-4201-9870-ed5c8b0dea4f",
+      "name": "Logout Successfully",
+      "description": "Verify user can successfully logout from the application",
+      "actions": [
+        {
+          "action": "navigate",
+          "selector_type": null,
+          "selector": null,
+          "value": "https://www.saucedemo.com",
+          "description": "Navigate to login page",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "user-name",
+          "value": "standard_user",
+          "description": "Enter username",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "password",
+          "value": "secret_sauce",
+          "description": "Enter password",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "login-button",
+          "value": null,
+          "description": "Login",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "react-burger-menu-btn",
+          "value": null,
+          "description": "Open hamburger menu",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "logout_sidebar_link",
+          "value": null,
+          "description": "Click logout link",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "assert_url",
+          "selector_type": null,
+          "selector": null,
+          "value": "https://www.saucedemo.com/",
+          "description": "Verify redirected to login page",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "assert_visible",
+          "selector_type": "id",
+          "selector": "login-button",
+          "value": null,
+          "description": "Verify login button is visible again",
+          "wait_before": 0,
+          "wait_after": 500
+        }
+      ],
+      "created_at": "2025-11-19T09:41:44.493722",
+      "updated_at": "2025-11-19T09:41:44.493722"
+    },
+    {
+      "id": "7602d7d2-04fe-4c2d-90e9-24e54fb1e6a2",
+      "name": "View Product Details",
+      "description": "Verify user can view detailed product information",
+      "actions": [
+        {
+          "action": "navigate",
+          "selector_type": null,
+          "selector": null,
+          "value": "https://www.saucedemo.com",
+          "description": "Navigate to login page",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "user-name",
+          "value": "standard_user",
+          "description": "Enter username",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "password",
+          "value": "secret_sauce",
+          "description": "Enter password",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "login-button",
+          "value": null,
+          "description": "Login",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "item_4_title_link",
+          "value": null,
+          "description": "Click on Backpack product link",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "assert_url",
+          "selector_type": null,
+          "selector": null,
+          "value": "inventory-item.html",
+          "description": "Verify on product detail page",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "assert_visible",
+          "selector_type": "css",
+          "selector": ".inventory_details_name",
+          "value": null,
+          "description": "Verify product name is visible",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "assert_visible",
+          "selector_type": "css",
+          "selector": ".inventory_details_desc",
+          "value": null,
+          "description": "Verify product description is visible",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "screenshot",
+          "selector_type": null,
+          "selector": null,
+          "value": "product_details.png",
+          "description": "Take screenshot of product details",
+          "wait_before": 0,
+          "wait_after": 500
+        }
+      ],
+      "created_at": "2025-11-19T09:41:44.493722",
+      "updated_at": "2025-11-19T09:41:44.493722"
+    },
+    {
+      "id": "6fa783d5-82f0-4d85-aaac-c0c8d562fe0a",
+      "name": "Checkout Validation - Missing First Name",
+      "description": "Verify checkout form validation when first name is missing",
+      "actions": [
+        {
+          "action": "navigate",
+          "selector_type": null,
+          "selector": null,
+          "value": "https://www.saucedemo.com",
+          "description": "Navigate to login page",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "user-name",
+          "value": "standard_user",
+          "description": "Enter username",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "password",
+          "value": "secret_sauce",
+          "description": "Enter password",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "login-button",
+          "value": null,
+          "description": "Login",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "add-to-cart-sauce-labs-backpack",
+          "value": null,
+          "description": "Add item to cart",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "click",
+          "selector_type": "css",
+          "selector": ".shopping_cart_link",
+          "value": null,
+          "description": "Go to cart",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "checkout",
+          "value": null,
+          "description": "Click checkout",
+          "wait_before": 0,
+          "wait_after": 1000
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "last-name",
+          "value": "Doe",
+          "description": "Enter last name only (skip first name)",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "type",
+          "selector_type": "id",
+          "selector": "postal-code",
+          "value": "12345",
+          "description": "Enter zip code",
+          "wait_before": 0,
+          "wait_after": 300
+        },
+        {
+          "action": "click",
+          "selector_type": "id",
+          "selector": "continue",
+          "value": null,
+          "description": "Click continue",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "assert_visible",
+          "selector_type": "css",
+          "selector": "[data-test='error']",
+          "value": null,
+          "description": "Verify error message is displayed",
+          "wait_before": 0,
+          "wait_after": 500
+        },
+        {
+          "action": "assert_text",
+          "selector_type": "css",
+          "selector": "[data-test='error']",
+          "value": "First Name is required",
+          "description": "Verify correct validation message",
+          "wait_before": 0,
+          "wait_after": 500
+        }
+      ],
+      "created_at": "2025-11-19T09:41:44.493722",
+      "updated_at": "2025-11-19T09:41:44.493722"
+    }
+  ],
+  "created_at": "2025-11-19T09:41:44.495723",
+  "updated_at": "2025-11-27T17:00:29.105702",
+  "test_username": "",
+  "test_password": "",
+  "test_admin_username": "",
+  "test_admin_password": "",
+  "ui_config": {
+    "frameworks": [
+      "react"
+    ],
+    "primary_framework": "react",
+    "testing_library": "playwright"
+  }
+}

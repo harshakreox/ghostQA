@@ -1,0 +1,123 @@
+[
+  {
+    "timestamp": "2025-12-03T07:08:33.730331",
+    "test_id": "ea6c50c1-77b5-4086-b2b6-cd78107e97c7",
+    "test_name": "Complete Checkout Flow - Happy Path",
+    "format": "traditional",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "navigate",
+        "target": null,
+        "selector_used": "https://www.saucedemo.com",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "user-name",
+        "selector_used": "[data-test=\"username\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "password",
+        "selector_used": "[data-test=\"password\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "login-button",
+        "selector_used": "[data-test=\"login-container\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "add-to-cart-sauce-labs-backpack",
+        "selector_used": "[value=\"secret_sauce\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": ".shopping_cart_link",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "checkout",
+        "selector_used": null,
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "first-name",
+        "selector_used": "[data-test=\"username\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "last-name",
+        "selector_used": "[data-test=\"login-container\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "postal-code",
+        "selector_used": "[data-test=\"password\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "continue",
+        "selector_used": "[data-test=\"login-container\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_url",
+        "target": null,
+        "selector_used": "checkout-step-two.html",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "finish",
+        "selector_used": "[data-test*=\"finish\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_url",
+        "target": null,
+        "selector_used": "checkout-complete.html",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_visible",
+        "target": ".complete-header",
+        "selector_used": ".complete-header",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert_text",
+        "target": ".complete-header",
+        "selector_used": ".complete-header",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

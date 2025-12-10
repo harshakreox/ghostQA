@@ -1,0 +1,1464 @@
+{
+  "www.saucedemo.com:/:[data-testid*=\"username\"]": {
+    "original_selector": "[data-testid*=\"username\"]",
+    "current_selector": "[data-testid*=\"username\"]",
+    "evolution_history": [
+      {
+        "timestamp": "2025-11-27T07:37:57.447553",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[id*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:37:57.462716",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[name*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:37:57.478819",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[aria-label*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:37:57.492801",
+        "from": "[data-testid*=\"username\"]",
+        "to": "*:has-text(\"username\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:37:58.516700",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[id*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:37:58.534992",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[name*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:37:58.545100",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[aria-label*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:37:58.556072",
+        "from": "[data-testid*=\"username\"]",
+        "to": "*:has-text(\"username\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:37:59.545369",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[id*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:37:59.555392",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[name*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:37:59.568448",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[aria-label*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:37:59.575635",
+        "from": "[data-testid*=\"username\"]",
+        "to": "*:has-text(\"username\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:00.567180",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[id*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:00.588920",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[name*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:00.600498",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[aria-label*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:00.605500",
+        "from": "[data-testid*=\"username\"]",
+        "to": "*:has-text(\"username\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:14.939359",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[id*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:14.951170",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[name*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:14.951170",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[aria-label*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:14.973996",
+        "from": "[data-testid*=\"username\"]",
+        "to": "*:has-text(\"username\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:22.752000",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[id*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:22.752000",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[name*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:22.768187",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[aria-label*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:22.783834",
+        "from": "[data-testid*=\"username\"]",
+        "to": "*:has-text(\"username\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:40.984858",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[id*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:40.989048",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[name*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:41.006955",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[aria-label*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:41.016478",
+        "from": "[data-testid*=\"username\"]",
+        "to": "*:has-text(\"username\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:46.706954",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[id*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:46.722130",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[name*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:46.732159",
+        "from": "[data-testid*=\"username\"]",
+        "to": "[aria-label*=\"username\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:46.738711",
+        "from": "[data-testid*=\"username\"]",
+        "to": "*:has-text(\"username\")",
+        "reason": "failure_recovery"
+      }
+    ],
+    "total_attempts": 40,
+    "total_successes": 0,
+    "average_execution_time": 0.0
+  },
+  "www.saucedemo.com:/:[data-testid*=\"password\"]": {
+    "original_selector": "[data-testid*=\"password\"]",
+    "current_selector": "[data-testid*=\"password\"]",
+    "evolution_history": [
+      {
+        "timestamp": "2025-11-27T07:38:01.133219",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[id*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:01.141230",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[name*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:01.146934",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[aria-label*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:01.153887",
+        "from": "[data-testid*=\"password\"]",
+        "to": "*:has-text(\"password\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:02.175797",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[id*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:02.186572",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[name*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:02.194200",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[aria-label*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:02.203571",
+        "from": "[data-testid*=\"password\"]",
+        "to": "*:has-text(\"password\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:03.239365",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[id*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:03.252653",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[name*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:03.263670",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[aria-label*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:03.275470",
+        "from": "[data-testid*=\"password\"]",
+        "to": "*:has-text(\"password\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:04.313169",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[id*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:04.322174",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[name*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:04.333710",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[aria-label*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:04.346274",
+        "from": "[data-testid*=\"password\"]",
+        "to": "*:has-text(\"password\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:15.540739",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[id*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:15.551624",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[name*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:15.555389",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[aria-label*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:15.574293",
+        "from": "[data-testid*=\"password\"]",
+        "to": "*:has-text(\"password\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:23.423259",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[id*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:23.439254",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[name*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:23.471023",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[aria-label*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:23.486807",
+        "from": "[data-testid*=\"password\"]",
+        "to": "*:has-text(\"password\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:41.605852",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[id*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:41.617838",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[name*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:41.621614",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[aria-label*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:41.639492",
+        "from": "[data-testid*=\"password\"]",
+        "to": "*:has-text(\"password\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:47.288947",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[id*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:47.303722",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[name*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:47.306732",
+        "from": "[data-testid*=\"password\"]",
+        "to": "[aria-label*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:47.322182",
+        "from": "[data-testid*=\"password\"]",
+        "to": "*:has-text(\"password\")",
+        "reason": "failure_recovery"
+      }
+    ],
+    "total_attempts": 40,
+    "total_successes": 0,
+    "average_execution_time": 0.0
+  },
+  "www.saucedemo.com:/:button:has-text('Log in')": {
+    "original_selector": "button:has-text('Log in')",
+    "current_selector": "button:has-text('Log in')",
+    "evolution_history": [
+      {
+        "timestamp": "2025-11-27T07:38:04.902277",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Login')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:04.918229",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign in')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:04.928952",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign In')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:04.941773",
+        "from": "button:has-text('Log in')",
+        "to": "input[type='submit'][value*='Log']",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:05.962973",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Login')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:05.974207",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign in')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:05.978753",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign In')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:05.987890",
+        "from": "button:has-text('Log in')",
+        "to": "input[type='submit'][value*='Log']",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:07.014066",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Login')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:07.022326",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign in')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:07.035215",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign In')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:07.039044",
+        "from": "button:has-text('Log in')",
+        "to": "input[type='submit'][value*='Log']",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:08.104536",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Login')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:08.120757",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign in')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:08.136712",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign In')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:08.136712",
+        "from": "button:has-text('Log in')",
+        "to": "input[type='submit'][value*='Log']",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:16.193588",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Login')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:16.211760",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign in')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:16.221952",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign In')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:16.221952",
+        "from": "button:has-text('Log in')",
+        "to": "input[type='submit'][value*='Log']",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:24.074808",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Login')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:24.074808",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign in')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:24.090866",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign In')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:24.106822",
+        "from": "button:has-text('Log in')",
+        "to": "input[type='submit'][value*='Log']",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:42.206716",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Login')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:42.216986",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign in')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:42.225865",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign In')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:42.232616",
+        "from": "button:has-text('Log in')",
+        "to": "input[type='submit'][value*='Log']",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:47.849367",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Login')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:47.865920",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign in')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:47.876401",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign In')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:47.887238",
+        "from": "button:has-text('Log in')",
+        "to": "input[type='submit'][value*='Log']",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:08:27.142962",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Login')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:08:27.159009",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign in')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:08:27.170701",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign In')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:08:27.186518",
+        "from": "button:has-text('Log in')",
+        "to": "input[type='submit'][value*='Log']",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:47.202118",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Login')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:47.219845",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Login')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:47.226221",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign in')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:47.240355",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign in')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:47.261839",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign In')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:47.272613",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign In')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:47.285591",
+        "from": "button:has-text('Log in')",
+        "to": "input[type='submit'][value*='Log']",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:47.287633",
+        "from": "button:has-text('Log in')",
+        "to": "input[type='submit'][value*='Log']",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:48.355704",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Login')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:48.369158",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Login')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:48.371164",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign in')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:48.385193",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign in')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:48.406931",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign In')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:48.419096",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign In')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:48.421096",
+        "from": "button:has-text('Log in')",
+        "to": "input[type='submit'][value*='Log']",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:48.421096",
+        "from": "button:has-text('Log in')",
+        "to": "input[type='submit'][value*='Log']",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:49.459697",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Login')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:49.469938",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign in')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:49.491503",
+        "from": "button:has-text('Log in')",
+        "to": "button:has-text('Sign In')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:49.500518",
+        "from": "button:has-text('Log in')",
+        "to": "input[type='submit'][value*='Log']",
+        "reason": "failure_recovery"
+      }
+    ],
+    "total_attempts": 72,
+    "total_successes": 0,
+    "average_execution_time": 0.0
+  },
+  "www.saucedemo.com:/:button:has-text('Add')": {
+    "original_selector": "button:has-text('Add')",
+    "current_selector": "button:has-text('Add')",
+    "evolution_history": [
+      {
+        "timestamp": "2025-11-27T07:38:24.746794",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('Create')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:24.762980",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('New')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:25.828528",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('Create')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:25.844335",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('New')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:26.898988",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('Create')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:26.908490",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('New')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:27.944795",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('Create')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:27.956366",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('New')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:42.788797",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('Create')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:42.805483",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('New')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:43.361152",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('Create')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:43.372040",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('New')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:43.916064",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('Create')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:43.934674",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('New')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:48.441998",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('Create')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:48.454561",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('New')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:49.013513",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('Create')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:49.021078",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('New')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:50.068433",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('Create')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:50.077857",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('New')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:51.101139",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('Create')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:51.117768",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('New')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:52.150168",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('Create')",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:52.161977",
+        "from": "button:has-text('Add')",
+        "to": "button:has-text('New')",
+        "reason": "failure_recovery"
+      }
+    ],
+    "total_attempts": 36,
+    "total_successes": 0,
+    "average_execution_time": 0.0
+  },
+  "www.saucedemo.com:/:.shopping_cart_link": {
+    "original_selector": ".shopping_cart_link",
+    "current_selector": ".shopping_cart_link",
+    "evolution_history": [],
+    "total_attempts": 11,
+    "total_successes": 0,
+    "average_execution_time": 0.0
+  },
+  "www.saucedemo.com:/:[data-testid*=\"removesaucelabsbackpack\"]": {
+    "original_selector": "[data-testid*=\"removesaucelabsbackpack\"]",
+    "current_selector": "[data-testid*=\"removesaucelabsbackpack\"]",
+    "evolution_history": [
+      {
+        "timestamp": "2025-11-27T07:38:49.542590",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "[id*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:49.549195",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "[name*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:49.555250",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "[aria-label*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:49.565786",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "*:has-text(\"removesaucelabsbackpack\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:50.615748",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "[id*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:50.623978",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "[name*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:50.637119",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "[aria-label*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:50.644345",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "*:has-text(\"removesaucelabsbackpack\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:51.676534",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "[id*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:51.682412",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "[name*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:51.697694",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "[aria-label*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:51.699365",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "*:has-text(\"removesaucelabsbackpack\")",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:52.734855",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "[id*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:52.752884",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "[name*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:52.762173",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "[aria-label*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T07:38:52.776134",
+        "from": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "to": "*:has-text(\"removesaucelabsbackpack\")",
+        "reason": "failure_recovery"
+      }
+    ],
+    "total_attempts": 20,
+    "total_successes": 0,
+    "average_execution_time": 0.0
+  },
+  "www.saucedemo.com:/:[data-test=\"username\"]": {
+    "original_selector": "[data-test=\"username\"]",
+    "current_selector": "[data-test=\"username\"]",
+    "evolution_history": [],
+    "total_attempts": 5,
+    "total_successes": 5,
+    "average_execution_time": 0.0
+  },
+  "www.saucedemo.com:/:[data-test=\"password\"]": {
+    "original_selector": "[data-test=\"password\"]",
+    "current_selector": "[data-test=\"password\"]",
+    "evolution_history": [],
+    "total_attempts": 5,
+    "total_successes": 5,
+    "average_execution_time": 0.0
+  },
+  "www.saucedemo.com:/:[data-test*=\"removesaucelabsbackpack\"]": {
+    "original_selector": "[data-test*=\"removesaucelabsbackpack\"]",
+    "current_selector": "[data-test*=\"removesaucelabsbackpack\"]",
+    "evolution_history": [
+      {
+        "timestamp": "2025-11-27T09:24:56.271553",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:56.282121",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[data-cy*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:56.292134",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[data-qa*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:56.301824",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[id*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:56.311598",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[name*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:56.320426",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[aria-label*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:56.327714",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[placeholder*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:57.358972",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:57.369452",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[data-cy*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:57.378585",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[data-qa*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:57.389592",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[id*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:57.397393",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[name*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:57.407372",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[aria-label*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:57.415557",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[placeholder*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:58.448522",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:58.458766",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[data-cy*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:58.468270",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[data-qa*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:58.478450",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[id*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:58.487303",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[name*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:58.495866",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[aria-label*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:58.506061",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[placeholder*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:59.517040",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[data-testid*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:59.537499",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[data-cy*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:59.538494",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[data-qa*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:59.553552",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[id*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:59.567768",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[name*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:59.571529",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[aria-label*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-11-27T09:24:59.586406",
+        "from": "[data-test*=\"removesaucelabsbackpack\"]",
+        "to": "[placeholder*=\"removesaucelabsbackpack\"]",
+        "reason": "failure_recovery"
+      }
+    ],
+    "total_attempts": 32,
+    "total_successes": 0,
+    "average_execution_time": 0.0
+  },
+  "www.saucedemo.com:/:user-name": {
+    "original_selector": "[data-test=\"username\"]",
+    "current_selector": "[data-test=\"username\"]",
+    "evolution_history": [],
+    "total_attempts": 3,
+    "total_successes": 3,
+    "average_execution_time": 0.0
+  },
+  "www.saucedemo.com:/:password": {
+    "original_selector": "[data-test=\"password\"]",
+    "current_selector": "[data-test=\"password\"]",
+    "evolution_history": [],
+    "total_attempts": 8,
+    "total_successes": 8,
+    "average_execution_time": 0.0
+  },
+  "www.saucedemo.com:/:login-button": {
+    "original_selector": "[data-test=\"login-container\"]",
+    "current_selector": "[data-test=\"login-container\"]",
+    "evolution_history": [],
+    "total_attempts": 3,
+    "total_successes": 3,
+    "average_execution_time": 0.0
+  },
+  "www.saucedemo.com:/:add-to-cart-sauce-labs-backpack": {
+    "original_selector": "[value=\"secret_sauce\"]",
+    "current_selector": "[value=\"secret_sauce\"]",
+    "evolution_history": [],
+    "total_attempts": 1,
+    "total_successes": 1,
+    "average_execution_time": 0.0
+  },
+  "www.saucedemo.com:/:username": {
+    "original_selector": "[data-test=\"username\"]",
+    "current_selector": "[data-test=\"username\"]",
+    "evolution_history": [],
+    "total_attempts": 1,
+    "total_successes": 1,
+    "average_execution_time": 0.0
+  },
+  "www.saucedemo.com:/inventory.html:login-button": {
+    "original_selector": "[data-test=\"login-button\"]",
+    "current_selector": "[data-test=\"login-button\"]",
+    "evolution_history": [],
+    "total_attempts": 1,
+    "total_successes": 1,
+    "average_execution_time": 0.0
+  },
+  "f666b047.foundry-3xh.pages.dev:/:Sign Up": {
+    "original_selector": "[data-test*=\"sign\"]",
+    "current_selector": "[data-test*=\"sign\"]",
+    "evolution_history": [],
+    "total_attempts": 2,
+    "total_successes": 0,
+    "average_execution_time": 0.0
+  },
+  "f666b047.foundry-3xh.pages.dev:/login:Log In": {
+    "original_selector": "[data-testid=\"LoginIcon\"]",
+    "current_selector": "[data-testid=\"LoginIcon\"]",
+    "evolution_history": [
+      {
+        "timestamp": "2025-12-02T04:46:24.696499",
+        "from": "[data-testid=\"LoginIcon\"]",
+        "to": "[data-test*=\"log\"]",
+        "reason": "failure_recovery"
+      }
+    ],
+    "total_attempts": 8,
+    "total_successes": 6,
+    "average_execution_time": 0.0
+  },
+  "f666b047.foundry-3xh.pages.dev:/:password": {
+    "original_selector": "[data-test*=\"password\"]",
+    "current_selector": "[data-test*=\"password\"]",
+    "evolution_history": [
+      {
+        "timestamp": "2025-12-02T06:43:39.726168",
+        "from": "[data-test*=\"password\"]",
+        "to": "[data-test=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-12-03T07:32:58.574042",
+        "from": "[data-test*=\"password\"]",
+        "to": "[data-testid*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-12-03T07:32:58.574042",
+        "from": "[data-test*=\"password\"]",
+        "to": "[data-cy*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-12-03T07:32:58.584167",
+        "from": "[data-test*=\"password\"]",
+        "to": "[data-qa*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-12-03T07:32:58.590000",
+        "from": "[data-test*=\"password\"]",
+        "to": "[id*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-12-03T07:32:58.594850",
+        "from": "[data-test*=\"password\"]",
+        "to": "[name*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-12-03T07:32:58.596955",
+        "from": "[data-test*=\"password\"]",
+        "to": "[aria-label*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-12-03T07:32:58.603378",
+        "from": "[data-test*=\"password\"]",
+        "to": "input[placeholder*=\"password\" i]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-12-03T07:32:59.624950",
+        "from": "[data-test*=\"password\"]",
+        "to": "[data-testid*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-12-03T07:32:59.628664",
+        "from": "[data-test*=\"password\"]",
+        "to": "[data-cy*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-12-03T07:32:59.635506",
+        "from": "[data-test*=\"password\"]",
+        "to": "[data-qa*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-12-03T07:32:59.640715",
+        "from": "[data-test*=\"password\"]",
+        "to": "[id*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-12-03T07:32:59.646925",
+        "from": "[data-test*=\"password\"]",
+        "to": "[name*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-12-03T07:32:59.648922",
+        "from": "[data-test*=\"password\"]",
+        "to": "[aria-label*=\"password\"]",
+        "reason": "failure_recovery"
+      },
+      {
+        "timestamp": "2025-12-03T07:32:59.656282",
+        "from": "[data-test*=\"password\"]",
+        "to": "input[placeholder*=\"password\" i]",
+        "reason": "failure_recovery"
+      }
+    ],
+    "total_attempts": 18,
+    "total_successes": 0,
+    "average_execution_time": 0.0
+  },
+  "f666b047.foundry-3xh.pages.dev:/:email": {
+    "original_selector": "[data-testid=\"VerifiedUserIcon\"]",
+    "current_selector": "[data-testid=\"VerifiedUserIcon\"]",
+    "evolution_history": [
+      {
+        "timestamp": "2025-12-02T04:50:42.327703",
+        "from": "[data-testid=\"VerifiedUserIcon\"]",
+        "to": "#VerifiedUserIcon",
+        "reason": "failure_recovery"
+      }
+    ],
+    "total_attempts": 2,
+    "total_successes": 0,
+    "average_execution_time": 0.0
+  },
+  "lemur-4.cloud-iam.com:/auth/realms/foundrytest/protocol/openid-connect/registrations:Sign Up": {
+    "original_selector": "Sign Up",
+    "current_selector": "Sign Up",
+    "evolution_history": [],
+    "total_attempts": 3,
+    "total_successes": 3,
+    "average_execution_time": 0.0
+  },
+  "lemur-4.cloud-iam.com:/auth/realms/foundrytest/login-actions/registration:Sign Up": {
+    "original_selector": "Sign Up",
+    "current_selector": "input[type=\"submit\"][value=\"Sign Up\"]",
+    "evolution_history": [],
+    "total_attempts": 4,
+    "total_successes": 4,
+    "average_execution_time": 0.0
+  },
+  "f666b047.foundry-3xh.pages.dev:/register:Sign Up": {
+    "original_selector": "Sign Up",
+    "current_selector": "Sign Up",
+    "evolution_history": [],
+    "total_attempts": 2,
+    "total_successes": 2,
+    "average_execution_time": 0.0
+  },
+  "2bd642eb.taruvi-testconsole.pages.dev:/login:save button": {
+    "original_selector": "button:has-text('Save')",
+    "current_selector": "button:has-text('Save')",
+    "evolution_history": [],
+    "total_attempts": 1,
+    "total_successes": 0,
+    "average_execution_time": 0.0
+  },
+  "lemur-4.cloud-iam.com:/auth/realms/foundrytest/protocol/openid-connect/registrations:Username": {
+    "original_selector": "#username",
+    "current_selector": "#username",
+    "evolution_history": [],
+    "total_attempts": 1,
+    "total_successes": 1,
+    "average_execution_time": 0.0
+  },
+  "lemur-4.cloud-iam.com:/auth/realms/foundrytest/protocol/openid-connect/registrations:Password": {
+    "original_selector": "#password",
+    "current_selector": "#password",
+    "evolution_history": [
+      {
+        "timestamp": "2025-12-03T09:56:54.512547",
+        "from": "#password",
+        "to": "input[type=\"password\"]",
+        "reason": "failure_recovery"
+      }
+    ],
+    "total_attempts": 2,
+    "total_successes": 1,
+    "average_execution_time": 0.0
+  },
+  "f666b047.foundry-3xh.pages.dev:/:registration_form": {
+    "original_selector": ".MuiFormControl-root",
+    "current_selector": ".MuiFormControl-fullWidth",
+    "evolution_history": [],
+    "total_attempts": 2,
+    "total_successes": 1,
+    "average_execution_time": 0.0
+  },
+  "f666b047.foundry-3xh.pages.dev:/:submit": {
+    "original_selector": "button:has-text('Submit')",
+    "current_selector": "button:has-text('Submit')",
+    "evolution_history": [],
+    "total_attempts": 1,
+    "total_successes": 0,
+    "average_execution_time": 0.0
+  }
+}

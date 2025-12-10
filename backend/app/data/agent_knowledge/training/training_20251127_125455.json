@@ -1,0 +1,67 @@
+[
+  {
+    "timestamp": "2025-11-27T12:51:02.109316",
+    "test_id": "feature_1764247133.226963_Successful_login_with_valid_credentials",
+    "test_name": "Successful login with valid credentials",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "u",
+        "selector_used": "[data-test=\"username\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "type",
+        "target": "p",
+        "selector_used": "[data-test=\"password\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "click",
+        "target": "l",
+        "selector_used": "[data-test=\"login-container\"]",
+        "status": "passed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "gherkin_step",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "assert",
+        "target": "the products container with data-testid ",
+        "selector_used": "[data-test=\"login-container\"]",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

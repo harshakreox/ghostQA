@@ -1,0 +1,177 @@
+{
+  "id": "feature_1764083491.633907",
+  "name": "End-to-End Insurance Application Workflow - Complete User Journey",
+  "description": "Comprehensive test covering the complete happy path workflow from creating insured, registration, quote generation, application submission, to acceptance and IMS flow initiation",
+  "created_at": "2025-11-25T20:21:16.679705",
+  "updated_at": "2025-11-25T20:41:31.633907",
+  "project_id": "952981ca-9688-48c0-b59b-3d35eeea6494",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "the insurance application system is running"
+    },
+    {
+      "keyword": "And",
+      "text": "I have valid UW credentials to access the system"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Complete end-to-end happy path - Full insurance application workflow",
+      "tags": [
+        "@e2e",
+        "@happy-path",
+        "@smoke",
+        "@critical"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the UW login page"
+        },
+        {
+          "keyword": "When",
+          "text": "I enter my valid UW credentials and log in"
+        },
+        {
+          "keyword": "And",
+          "text": "I navigate to the insured management section"
+        },
+        {
+          "keyword": "And",
+          "text": "I create an active insured with company name 'TestCorp Insurance' and email 'testcorp@example.com'"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the insured created successfully"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the registration section"
+        },
+        {
+          "keyword": "And",
+          "text": "I register using the same company name 'TestCorp Insurance' and email 'testcorp@example.com'"
+        },
+        {
+          "keyword": "And",
+          "text": "I submit the registration form"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the record in the list with submission status as 'Pending Quick Quote'"
+        },
+        {
+          "keyword": "When",
+          "text": "I edit the same record from the list"
+        },
+        {
+          "keyword": "And",
+          "text": "I fill in all required details for the application"
+        },
+        {
+          "keyword": "And",
+          "text": "I generate the quick quote successfully"
+        },
+        {
+          "keyword": "And",
+          "text": "I proceed to continue with the application"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the application tabs available for completion"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the Drivers and Vehicles tab"
+        },
+        {
+          "keyword": "And",
+          "text": "I upload the driver template with valid driver information"
+        },
+        {
+          "keyword": "And",
+          "text": "I manually update vehicle details for additional vehicles"
+        },
+        {
+          "keyword": "And",
+          "text": "I save the drivers and vehicles information"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see all drivers and vehicles saved successfully"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the Coverages tab"
+        },
+        {
+          "keyword": "And",
+          "text": "I select Motor Truck Cargo (MTC), General Liability (GL), and Physical Damage (PD) coverages"
+        },
+        {
+          "keyword": "And",
+          "text": "I configure the coverage limits and deductibles for all selected coverages"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see all selected coverages configured properly"
+        },
+        {
+          "keyword": "When",
+          "text": "I generate the complete application"
+        },
+        {
+          "keyword": "And",
+          "text": "I upload a PDF template file for Physical Damage coverage"
+        },
+        {
+          "keyword": "And",
+          "text": "I submit the complete application"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the application submitted successfully in the list view"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the ellipse menu for the submitted record"
+        },
+        {
+          "keyword": "And",
+          "text": "I select 'View Quote' option"
+        },
+        {
+          "keyword": "And",
+          "text": "I review the quote details"
+        },
+        {
+          "keyword": "And",
+          "text": "I click on 'Accept' button"
+        },
+        {
+          "keyword": "And",
+          "text": "I select 'Monthly' as the billing type"
+        },
+        {
+          "keyword": "And",
+          "text": "I confirm the quote acceptance"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the quote accepted successfully"
+        },
+        {
+          "keyword": "And",
+          "text": "the IMS flow should initiate automatically"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see confirmation that the complete workflow has been processed"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: End-to-End Insurance Application Workflow - Complete User Journey\n  Comprehensive test covering the complete happy path workflow from creating insured, registration, quote generation, application submission, to acceptance and IMS flow initiation\n\n  Background:\n    Given the insurance application system is running\n    And I have valid UW credentials to access the system\n\n  @e2e @happy-path @smoke @critical\n  Scenario: Complete end-to-end happy path - Full insurance application workflow\n    Given I am on the UW login page\n    When I enter my valid UW credentials and log in\n    And I navigate to the insured management section\n    And I create an active insured with company name 'TestCorp Insurance' and email 'testcorp@example.com'\n    Then I should see the insured created successfully\n    When I navigate to the registration section\n    And I register using the same company name 'TestCorp Insurance' and email 'testcorp@example.com'\n    And I submit the registration form\n    Then I should see the record in the list with submission status as 'Pending Quick Quote'\n    When I edit the same record from the list\n    And I fill in all required details for the application\n    And I generate the quick quote successfully\n    And I proceed to continue with the application\n    Then I should see the application tabs available for completion\n    When I navigate to the Drivers and Vehicles tab\n    And I upload the driver template with valid driver information\n    And I manually update vehicle details for additional vehicles\n    And I save the drivers and vehicles information\n    Then I should see all drivers and vehicles saved successfully\n    When I navigate to the Coverages tab\n    And I select Motor Truck Cargo (MTC), General Liability (GL), and Physical Damage (PD) coverages\n    And I configure the coverage limits and deductibles for all selected coverages\n    Then I should see all selected coverages configured properly\n    When I generate the complete application\n    And I upload a PDF template file for Physical Damage coverage\n    And I submit the complete application\n    Then I should see the application submitted successfully in the list view\n    When I click on the ellipse menu for the submitted record\n    And I select 'View Quote' option\n    And I review the quote details\n    And I click on 'Accept' button\n    And I select 'Monthly' as the billing type\n    And I confirm the quote acceptance\n    Then I should see the quote accepted successfully\n    And the IMS flow should initiate automatically\n    And I should see confirmation that the complete workflow has been processed"
+}

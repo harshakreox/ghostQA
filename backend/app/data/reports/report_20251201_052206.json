@@ -1,0 +1,119 @@
+{
+  "id": "report_20251201_052206",
+  "project_id": "96a02259-94d8-488e-b799-d5b731b8585c",
+  "project_name": "SauceDemo E2E Tests",
+  "executed_at": "2025-12-01T05:22:06.691203",
+  "total_tests": 5,
+  "passed": 0,
+  "failed": 5,
+  "skipped": 0,
+  "duration": 250.50896,
+  "results": [
+    {
+      "test_case_id": "feature_1764247133.226963_Successful_login_with_valid_credentials",
+      "test_case_name": "Successful login with valid credentials",
+      "status": "failed",
+      "duration": 13.432,
+      "error_message": "Step 1: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764247133.226963_Successful_login_with_valid_credentials_step1_failure.png",
+      "logs": [
+        "Step 1: step - failed",
+        "Step 2: step - failed",
+        "Step 3: step - failed",
+        "Step 4: Type 'standard_user' into 'u' - passed",
+        "Step 5: Type 'secret_sauce' into 'p' - passed",
+        "Step 6: Click on 'l' - passed",
+        "Step 7: step - failed",
+        "Step 8: Assert on 'the products container with data-testid ' - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764247133.226963_Complete_product_purchase_with_single_item",
+      "test_case_name": "Complete product purchase with single item",
+      "status": "failed",
+      "duration": 84.428,
+      "error_message": "Step 1: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764247133.226963_Complete_product_purchase_with_single_item_step1_failure.png",
+      "logs": [
+        "Step 1: step - failed",
+        "Step 2: step - failed",
+        "Step 3: step - failed",
+        "Step 4: step - failed",
+        "Step 5: Click on 'A' - passed",
+        "Step 6: Click on 's' - passed",
+        "Step 7: Click on 'c' - passed",
+        "Step 8: Type 'John' into 'f' - failed",
+        "Step 9: Type 'Doe' into 'l' - failed",
+        "Step 10: Type '12345' into 'p' - failed",
+        "Step 11: Click on 'c' - passed",
+        "Step 12: Click on 'f' - passed",
+        "Step 13: Assert on 'order confirmation with text ' - failed",
+        "Step 14: Assert on 'completion message with data-testid ' - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764247133.226963_Add_multiple_products_to_cart_and_verify_cart_contents",
+      "test_case_name": "Add multiple products to cart and verify cart contents",
+      "status": "failed",
+      "duration": 69.857,
+      "error_message": "Step 1: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764247133.226963_Add_multiple_products_to_cart_and_verify_cart_contents_step1_failure.png",
+      "logs": [
+        "Step 1: step - failed",
+        "Step 2: step - failed",
+        "Step 3: step - failed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: Click on 's' - failed",
+        "Step 8: Assert on '3 items in the cart' - failed",
+        "Step 9: step - failed",
+        "Step 10: Assert on 'all three product names in the cart list' - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764247133.226963_Remove_item_from_cart_and_verify_updated_total",
+      "test_case_name": "Remove item from cart and verify updated total",
+      "status": "failed",
+      "duration": 8.954,
+      "error_message": "Step 1: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764247133.226963_Remove_item_from_cart_and_verify_updated_total_step1_failure.png",
+      "logs": [
+        "Step 1: step - failed",
+        "Step 2: step - failed",
+        "Step 3: step - failed",
+        "Step 4: step - failed",
+        "Step 5: Click on 'r' - passed",
+        "Step 6: step - failed",
+        "Step 7: step - failed",
+        "Step 8: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764247133.226963_View_product_details_and_return_to_inventory",
+      "test_case_name": "View product details and return to inventory",
+      "status": "failed",
+      "duration": 69.281,
+      "error_message": "Step 1: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764247133.226963_View_product_details_and_return_to_inventory_step1_failure.png",
+      "logs": [
+        "Step 1: step - failed",
+        "Step 2: step - failed",
+        "Step 3: step - failed",
+        "Step 4: Click on 'S' - failed",
+        "Step 5: Assert on 'the product detail page' - failed",
+        "Step 6: Assert on 'product description and price details' - failed",
+        "Step 7: Click on 'b' - passed",
+        "Step 8: step - failed"
+      ]
+    }
+  ],
+  "format": "gherkin",
+  "execution_mode": "guided",
+  "pass_rate": 0.0,
+  "total_ai_calls": 0,
+  "total_kb_hits": 28,
+  "ai_dependency_percent": 0.0,
+  "new_selectors_learned": 0,
+  "errors": []
+}

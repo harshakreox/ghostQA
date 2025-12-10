@@ -1,0 +1,39 @@
+[
+  {
+    "timestamp": "2025-12-09T06:20:39.941941",
+    "test_id": "feature_1764667190.953682::Form submission disabled until all required fields completed",
+    "test_name": "Form submission disabled until all required fields completed",
+    "format": "gherkin",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      },
+      {
+        "action": "",
+        "target": null,
+        "selector_used": "",
+        "status": "failed",
+        "recovery_attempts": 0
+      }
+    ]
+  }
+]

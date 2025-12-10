@@ -1,0 +1,418 @@
+{
+  "id": "feature_1764930674.073287",
+  "name": "View Compliance Record Detail",
+  "description": "Alliant Admin can click the View button to navigate to a detailed compliance record page showing complete compliance information including all requirement statuses",
+  "created_at": "2025-12-05T16:01:14.073287",
+  "updated_at": "2025-12-05T16:01:16.411954",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am on the application"
+    },
+    {
+      "keyword": "And",
+      "text": "I am logged in as an Alliant Admin"
+    },
+    {
+      "keyword": "And",
+      "text": "I am on the Compliance Dashboard list view"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Successfully navigate to Compliance Record Detail page",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I can see compliance records in the list view"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button for a compliance record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to the Compliance Record Detail page"
+        },
+        {
+          "keyword": "And",
+          "text": "the page header should display \"Compliance Record Detail\""
+        },
+        {
+          "keyword": "And",
+          "text": "the page should be displayed in read-only mode"
+        }
+      ]
+    },
+    {
+      "name": "View compliant record with all requirements met",
+      "tags": [
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a compliance record with all requirements compliant"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button for that record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the overall status as \"Compliant\" with a green badge"
+        },
+        {
+          "keyword": "And",
+          "text": "all individual requirements should show \"Compliant\" status with green badges"
+        }
+      ]
+    },
+    {
+      "name": "View non-compliant record with some requirements not met",
+      "tags": [
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a compliance record with at least one non-compliant requirement"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button for that record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the overall status as \"Non-Compliant\" with a red badge"
+        },
+        {
+          "keyword": "And",
+          "text": "non-compliant requirements should show \"Non-Compliant\" status with red badges"
+        },
+        {
+          "keyword": "And",
+          "text": "compliant requirements should show \"Compliant\" status with green badges"
+        }
+      ]
+    },
+    {
+      "name": "Display auto-populated contractor information",
+      "tags": [
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record detail page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the contractor's full name displayed as \"First Name Last Name\""
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the Company Name populated from Focus"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the Contractor ID populated from Focus"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the Email ID populated from Focus"
+        }
+      ]
+    },
+    {
+      "name": "View all insurance requirements with proper status display",
+      "tags": [
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record detail page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the Requirements section with \"Requirement\" and \"Status\" columns"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see \"Scheduled or Owned Auto\" requirement with its status"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see \"VIN Listed\" requirement with its status"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see \"Hired\" requirement with its status"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see all other insurance requirements listed with their respective statuses"
+        }
+      ]
+    },
+    {
+      "name": "Successfully navigate back to Compliance Dashboard",
+      "tags": [
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record detail page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the Back navigation button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be returned to the Compliance Dashboard list view"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the list of compliance records"
+        }
+      ]
+    },
+    {
+      "name": "View record with missing contractor information",
+      "tags": [
+        "@negative"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a compliance record with incomplete contractor information"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button for that record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should still be able to view the compliance record detail page"
+        },
+        {
+          "keyword": "And",
+          "text": "missing fields should be displayed as empty or with appropriate placeholders"
+        },
+        {
+          "keyword": "But",
+          "text": "available information should still be displayed correctly"
+        }
+      ]
+    },
+    {
+      "name": "Attempt to edit fields in read-only mode",
+      "tags": [
+        "@negative"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record detail page"
+        },
+        {
+          "keyword": "When",
+          "text": "I attempt to click on any field to edit it"
+        },
+        {
+          "keyword": "Then",
+          "text": "the fields should remain read-only and not editable"
+        },
+        {
+          "keyword": "And",
+          "text": "no editing options should be available"
+        }
+      ]
+    },
+    {
+      "name": "View record with network connectivity issues",
+      "tags": [
+        "@negative"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have limited network connectivity"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button for a compliance record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an appropriate error message if the page fails to load"
+        },
+        {
+          "keyword": "And",
+          "text": "I should have the option to retry loading the page"
+        }
+      ]
+    },
+    {
+      "name": "View record with invalid or corrupted data",
+      "tags": [
+        "@negative"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a compliance record with corrupted requirement data"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button for that record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message indicating data issues"
+        },
+        {
+          "keyword": "And",
+          "text": "corrupted requirements should show an unknown or error status"
+        },
+        {
+          "keyword": "But",
+          "text": "valid requirements should still display correctly"
+        }
+      ]
+    },
+    {
+      "name": "View record with maximum number of requirements",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a compliance record with all possible requirements"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button for that record"
+        },
+        {
+          "keyword": "Then",
+          "text": "all requirements should be displayed correctly"
+        },
+        {
+          "keyword": "And",
+          "text": "the page should handle the display of all requirements without performance issues"
+        },
+        {
+          "keyword": "And",
+          "text": "scrolling should work properly if requirements exceed page height"
+        }
+      ]
+    },
+    {
+      "name": "View record with minimum required data",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there is a compliance record with only minimum required data"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button for that record"
+        },
+        {
+          "keyword": "Then",
+          "text": "the page should display successfully with minimal information"
+        },
+        {
+          "keyword": "And",
+          "text": "empty or unavailable fields should be handled gracefully"
+        },
+        {
+          "keyword": "And",
+          "text": "the overall compliance status should still be calculated correctly"
+        }
+      ]
+    },
+    {
+      "name": "Navigate using browser back button instead of Back navigation",
+      "tags": [
+        "@alternative-flow"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record detail page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the browser back button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be returned to the Compliance Dashboard list view"
+        },
+        {
+          "keyword": "And",
+          "text": "the application state should be maintained correctly"
+        }
+      ]
+    },
+    {
+      "name": "View record by direct URL access",
+      "tags": [
+        "@alternative-flow"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have a direct URL to a compliance record detail page"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate directly to that URL"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the compliance record detail page"
+        },
+        {
+          "keyword": "And",
+          "text": "all information should be displayed correctly"
+        },
+        {
+          "keyword": "And",
+          "text": "the Back navigation button should still work properly"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: View Compliance Record Detail\n  Alliant Admin can click the View button to navigate to a detailed compliance record page showing complete compliance information including all requirement statuses\n\n  Background:\n    Given I am on the application\n    And I am logged in as an Alliant Admin\n    And I am on the Compliance Dashboard list view\n\n  @smoke @positive\n  Scenario: Successfully navigate to Compliance Record Detail page\n    Given I can see compliance records in the list view\n    When I click the View button for a compliance record\n    Then I should be navigated to the Compliance Record Detail page\n    And the page header should display \"Compliance Record Detail\"\n    And the page should be displayed in read-only mode\n\n  @positive\n  Scenario: View compliant record with all requirements met\n    Given there is a compliance record with all requirements compliant\n    When I click the View button for that record\n    Then I should see the overall status as \"Compliant\" with a green badge\n    And all individual requirements should show \"Compliant\" status with green badges\n\n  @positive\n  Scenario: View non-compliant record with some requirements not met\n    Given there is a compliance record with at least one non-compliant requirement\n    When I click the View button for that record\n    Then I should see the overall status as \"Non-Compliant\" with a red badge\n    And non-compliant requirements should show \"Non-Compliant\" status with red badges\n    And compliant requirements should show \"Compliant\" status with green badges\n\n  @positive\n  Scenario: Display auto-populated contractor information\n    Given I am viewing a compliance record detail page\n    Then I should see the contractor's full name displayed as \"First Name Last Name\"\n    And I should see the Company Name populated from Focus\n    And I should see the Contractor ID populated from Focus\n    And I should see the Email ID populated from Focus\n\n  @positive\n  Scenario: View all insurance requirements with proper status display\n    Given I am viewing a compliance record detail page\n    Then I should see the Requirements section with \"Requirement\" and \"Status\" columns\n    And I should see \"Scheduled or Owned Auto\" requirement with its status\n    And I should see \"VIN Listed\" requirement with its status\n    And I should see \"Hired\" requirement with its status\n    And I should see all other insurance requirements listed with their respective statuses\n\n  @positive\n  Scenario: Successfully navigate back to Compliance Dashboard\n    Given I am viewing a compliance record detail page\n    When I click the Back navigation button\n    Then I should be returned to the Compliance Dashboard list view\n    And I should see the list of compliance records\n\n  @negative\n  Scenario: View record with missing contractor information\n    Given there is a compliance record with incomplete contractor information\n    When I click the View button for that record\n    Then I should still be able to view the compliance record detail page\n    And missing fields should be displayed as empty or with appropriate placeholders\n    But available information should still be displayed correctly\n\n  @negative\n  Scenario: Attempt to edit fields in read-only mode\n    Given I am viewing a compliance record detail page\n    When I attempt to click on any field to edit it\n    Then the fields should remain read-only and not editable\n    And no editing options should be available\n\n  @negative\n  Scenario: View record with network connectivity issues\n    Given I have limited network connectivity\n    When I click the View button for a compliance record\n    Then I should see an appropriate error message if the page fails to load\n    And I should have the option to retry loading the page\n\n  @negative\n  Scenario: View record with invalid or corrupted data\n    Given there is a compliance record with corrupted requirement data\n    When I click the View button for that record\n    Then I should see an error message indicating data issues\n    And corrupted requirements should show an unknown or error status\n    But valid requirements should still display correctly\n\n  @edge-case @boundary\n  Scenario: View record with maximum number of requirements\n    Given there is a compliance record with all possible requirements\n    When I click the View button for that record\n    Then all requirements should be displayed correctly\n    And the page should handle the display of all requirements without performance issues\n    And scrolling should work properly if requirements exceed page height\n\n  @edge-case @boundary\n  Scenario: View record with minimum required data\n    Given there is a compliance record with only minimum required data\n    When I click the View button for that record\n    Then the page should display successfully with minimal information\n    And empty or unavailable fields should be handled gracefully\n    And the overall compliance status should still be calculated correctly\n\n  @alternative-flow\n  Scenario: Navigate using browser back button instead of Back navigation\n    Given I am viewing a compliance record detail page\n    When I click the browser back button\n    Then I should be returned to the Compliance Dashboard list view\n    And the application state should be maintained correctly\n\n  @alternative-flow\n  Scenario: View record by direct URL access\n    Given I have a direct URL to a compliance record detail page\n    When I navigate directly to that URL\n    Then I should see the compliance record detail page\n    And all information should be displayed correctly\n    And the Back navigation button should still work properly"
+}

@@ -1,0 +1,280 @@
+{
+  "id": "report_20251202_052610",
+  "project_id": "23baf525-d28d-4e55-9f97-26a8f9b661fe",
+  "project_name": "Foundry",
+  "executed_at": "2025-12-02T05:26:10.898056",
+  "total_tests": 14,
+  "passed": 0,
+  "failed": 14,
+  "skipped": 0,
+  "duration": 878.050971,
+  "results": [
+    {
+      "test_case_id": "feature_1764648906.093977_User_successfully_creates_account_with_valid_information",
+      "test_case_name": "User successfully creates account with valid information",
+      "status": "failed",
+      "duration": 117.284,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764648906.093977_User_successfully_creates_account_with_valid_information_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Click on 'Sign Up' - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: step - failed",
+        "Step 8: step - failed",
+        "Step 9: Click on 'Sign Up' - failed",
+        "Step 10: Assert URL contains 'user' - failed",
+        "Step 11: Assert on 'a welcome message' - failed",
+        "Step 12: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764648906.093977_User_successfully_logs_in_with_valid_email_credentials",
+      "test_case_name": "User successfully logs in with valid email credentials",
+      "status": "failed",
+      "duration": 83.229,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764648906.093977_User_successfully_logs_in_with_valid_email_credentials_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: step - failed",
+        "Step 4: Click on 'Log In' - passed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: Click on 'Log In' - failed",
+        "Step 8: Assert URL contains 'user' - failed",
+        "Step 9: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764648906.093977_User_successfully_logs_in_with_valid_username_credentials",
+      "test_case_name": "User successfully logs in with valid username credentials",
+      "status": "failed",
+      "duration": 37.84,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764648906.093977_User_successfully_logs_in_with_valid_username_credentials_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: step - failed",
+        "Step 4: Click on 'Log In' - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: Click on 'Log In' - failed",
+        "Step 8: Assert URL contains 'user' - failed",
+        "Step 9: Assert on 'my account information' - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764648906.093977_Password_complexity_validation_accepts_valid_passwords",
+      "test_case_name": "Password complexity validation accepts valid passwords",
+      "status": "failed",
+      "duration": 9.264,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764648906.093977_Password_complexity_validation_accepts_valid_passwords_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: Type '<password>' into 'password' - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: step - failed",
+        "Step 8: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764648906.093977_Email_validation_accepts_various_valid_email_formats",
+      "test_case_name": "Email validation accepts various valid email formats",
+      "status": "failed",
+      "duration": 69.039,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764648906.093977_Email_validation_accepts_various_valid_email_formats_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: Type '<email>' into 'email' - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: step - failed",
+        "Step 8: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764648906.093977_Username_uniqueness_allows_new_unique_usernames",
+      "test_case_name": "Username uniqueness allows new unique usernames",
+      "status": "failed",
+      "duration": 9.663,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764648906.093977_Username_uniqueness_allows_new_unique_usernames_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: step - failed",
+        "Step 8: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764648906.093977_Login_fails_with_invalid_credentials_showing_error_message",
+      "test_case_name": "Login fails with invalid credentials showing error message",
+      "status": "failed",
+      "duration": 69.96,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764648906.093977_Login_fails_with_invalid_credentials_showing_error_message_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: Click on 'Log In' - failed",
+        "Step 7: Assert on 'error message ' - failed",
+        "Step 8: step - failed",
+        "Step 9: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764648906.093977_Sign_up_validation_fails_when_required_fields_are_missing",
+      "test_case_name": "Sign up validation fails when required fields are missing",
+      "status": "failed",
+      "duration": 69.18,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764648906.093977_Sign_up_validation_fails_when_required_fields_are_missing_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: Assert on 'validation error for <field>' - failed",
+        "Step 8: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764648906.093977_Password_complexity_validation_rejects_weak_passwords",
+      "test_case_name": "Password complexity validation rejects weak passwords",
+      "status": "failed",
+      "duration": 8.778,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764648906.093977_Password_complexity_validation_rejects_weak_passwords_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: Type '<invalid_password>' into 'password' - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: Assert on 'password validation error' - failed",
+        "Step 8: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764648906.093977_Email_validation_rejects_invalid_email_formats",
+      "test_case_name": "Email validation rejects invalid email formats",
+      "status": "failed",
+      "duration": 73.414,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764648906.093977_Email_validation_rejects_invalid_email_formats_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: Type '<invalid_email>' into 'email' - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: Assert on 'email validation error' - failed",
+        "Step 8: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764648906.093977_Username_uniqueness_validation_prevents_duplicate_usernames",
+      "test_case_name": "Username uniqueness validation prevents duplicate usernames",
+      "status": "failed",
+      "duration": 130.112,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764648906.093977_Username_uniqueness_validation_prevents_duplicate_usernames_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: step - failed",
+        "Step 4: Noop - passed",
+        "Step 5: Type 'existinguser' into 'username' - failed",
+        "Step 6: step - failed",
+        "Step 7: step - failed",
+        "Step 8: Assert on 'error message ' - failed",
+        "Step 9: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764648906.093977_Password_minimum_length_boundary_-_8_characters_accepted",
+      "test_case_name": "Password minimum length boundary - 8 characters accepted",
+      "status": "failed",
+      "duration": 9.179,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764648906.093977_Password_minimum_length_boundary_-_8_characters_accepted_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: step - failed",
+        "Step 8: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764648906.093977_Password_below_minimum_length_boundary_-_7_characters_rejected",
+      "test_case_name": "Password below minimum length boundary - 7 characters rejected",
+      "status": "failed",
+      "duration": 8.488,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764648906.093977_Password_below_minimum_length_boundary_-_7_characters_rejected_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: step - failed",
+        "Step 5: step - failed",
+        "Step 6: step - failed",
+        "Step 7: Assert on 'password length validation error' - failed",
+        "Step 8: step - failed"
+      ]
+    },
+    {
+      "test_case_id": "feature_1764648906.093977_Alternative_flow_-_User_navigates_from_sign_up_to_login",
+      "test_case_name": "Alternative flow - User navigates from sign up to login",
+      "status": "failed",
+      "duration": 176.451,
+      "error_message": "Step 2: Unknown action: gherkin_step",
+      "screenshot_path": "data\\agent_knowledge\\screenshots\\feature_1764648906.093977_Alternative_flow_-_User_navigates_from_sign_up_to_login_step2_failure.png",
+      "logs": [
+        "Step 1: Noop - passed",
+        "Step 2: step - failed",
+        "Step 3: Noop - passed",
+        "Step 4: Click on 'Already have an account' - failed",
+        "Step 5: Assert URL contains 'login' - failed",
+        "Step 6: Assert on 'login form fields' - failed",
+        "Step 7: step - failed"
+      ]
+    }
+  ],
+  "format": "gherkin",
+  "execution_mode": "guided",
+  "pass_rate": 0.0,
+  "total_ai_calls": 0,
+  "total_kb_hits": 23,
+  "ai_dependency_percent": 0.0,
+  "new_selectors_learned": 0,
+  "errors": []
+}

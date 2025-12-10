@@ -1,0 +1,351 @@
+{
+  "id": "feature_1765264270.42498",
+  "name": "View Compliance Record Detail",
+  "description": "Back Office Users can click the View button (eye icon) to navigate to a detailed compliance record page showing contractor information and all requirement statuses in read-only mode.",
+  "created_at": "2025-12-09T12:41:10.424980",
+  "updated_at": "2025-12-09T12:41:10.424980",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am on the application"
+    },
+    {
+      "keyword": "And",
+      "text": "I am logged in as admin"
+    },
+    {
+      "keyword": "And",
+      "text": "I am on the Compliance Dashboard list view"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Successfully navigate to compliance record detail page",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I see a compliance record in the list view"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the View button (eye icon) for a compliance record"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to the Compliance Record Detail page"
+        },
+        {
+          "keyword": "And",
+          "text": "the page header should display \"Compliance Record Detail\""
+        },
+        {
+          "keyword": "And",
+          "text": "the page should be in read-only mode"
+        }
+      ]
+    },
+    {
+      "name": "Display contractor header information correctly",
+      "tags": [
+        "@positive",
+        "@data-display"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the Compliance Record Detail page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the contractor's name displayed as \"First Name Last Name\""
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the overall compliance status with color-coded badge"
+        },
+        {
+          "keyword": "And",
+          "text": "all header information should be auto-populated from Focus system"
+        }
+      ]
+    },
+    {
+      "name": "Display all requirements with correct status badges",
+      "tags": [
+        "@positive",
+        "@data-display"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the Compliance Record Detail page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the Requirements section with \"Requirement\" and \"Status\" column headers"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see all 30 requirement fields listed"
+        },
+        {
+          "keyword": "And",
+          "text": "each requirement should display either \"Compliant\" with green badge or \"Non-Compliant\" with red badge"
+        },
+        {
+          "keyword": "And",
+          "text": "all requirement fields should be read-only"
+        }
+      ]
+    },
+    {
+      "name": "Display overall compliant status when all requirements are compliant",
+      "tags": [
+        "@positive",
+        "@business-logic"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record where all requirements are compliant"
+        },
+        {
+          "keyword": "Then",
+          "text": "the overall status should display \"Compliant\" with green badge"
+        },
+        {
+          "keyword": "And",
+          "text": "all individual requirements should show \"Compliant\" with green badges"
+        }
+      ]
+    },
+    {
+      "name": "Display overall non-compliant status when any requirement is non-compliant",
+      "tags": [
+        "@positive",
+        "@business-logic"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record where at least one requirement is non-compliant"
+        },
+        {
+          "keyword": "Then",
+          "text": "the overall status should display \"Non-Compliant\" with red badge"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see at least one requirement showing \"Non-Compliant\" with red badge"
+        }
+      ]
+    },
+    {
+      "name": "Successfully navigate back to Compliance Dashboard",
+      "tags": [
+        "@positive",
+        "@navigation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the Compliance Record Detail page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the back navigation button"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be returned to the Compliance Dashboard list view"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see the list of compliance records"
+        }
+      ]
+    },
+    {
+      "name": "View button unavailable for invalid compliance record",
+      "tags": [
+        "@negative",
+        "@error-handling"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I attempt to access a compliance record detail page with invalid record ID"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message indicating the record cannot be found"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not be able to view the compliance record details"
+        }
+      ]
+    },
+    {
+      "name": "Page load fails with missing contractor data",
+      "tags": [
+        "@negative",
+        "@error-handling"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I access a compliance record with incomplete contractor data from Focus system"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message about missing contractor information"
+        },
+        {
+          "keyword": "And",
+          "text": "the page should handle the missing data gracefully"
+        }
+      ]
+    },
+    {
+      "name": "Requirements section fails to load properly",
+      "tags": [
+        "@negative",
+        "@error-handling"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on a compliance record detail page where requirements data fails to load"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an error message about requirements data being unavailable"
+        },
+        {
+          "keyword": "And",
+          "text": "the header section should still display available contractor information"
+        }
+      ]
+    },
+    {
+      "name": "Unauthorized access to compliance record detail",
+      "tags": [
+        "@negative",
+        "@security"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I attempt to access a compliance record detail page without proper permissions"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an access denied error message"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be redirected to an appropriate page"
+        }
+      ]
+    },
+    {
+      "name": "Edge case - Compliance record with all requirements non-compliant",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record where all 30 requirements are non-compliant"
+        },
+        {
+          "keyword": "Then",
+          "text": "the overall status should display \"Non-Compliant\" with red badge"
+        },
+        {
+          "keyword": "And",
+          "text": "all 30 individual requirements should show \"Non-Compliant\" with red badges"
+        },
+        {
+          "keyword": "And",
+          "text": "the page should load and display properly despite all non-compliant statuses"
+        }
+      ]
+    },
+    {
+      "name": "Edge case - Compliance record with mixed requirement statuses",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing a compliance record with a mix of compliant and non-compliant requirements"
+        },
+        {
+          "keyword": "Then",
+          "text": "the overall status should display \"Non-Compliant\" with red badge"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see some requirements with \"Compliant\" green badges"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see some requirements with \"Non-Compliant\" red badges"
+        }
+      ]
+    },
+    {
+      "name": "Page maintains read-only state for all interaction attempts",
+      "tags": [
+        "@edge-case",
+        "@security"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the Compliance Record Detail page"
+        },
+        {
+          "keyword": "When",
+          "text": "I attempt to interact with any field or requirement status"
+        },
+        {
+          "keyword": "Then",
+          "text": "no fields should be editable or modifiable"
+        },
+        {
+          "keyword": "And",
+          "text": "all content should remain in read-only mode"
+        },
+        {
+          "keyword": "And",
+          "text": "no form submission should be possible"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: View Compliance Record Detail\n  Back Office Users can click the View button (eye icon) to navigate to a detailed compliance record page showing contractor information and all requirement statuses in read-only mode.\n\n  Background:\n    Given I am on the application\n    And I am logged in as admin\n    And I am on the Compliance Dashboard list view\n\n  @smoke @positive\n  Scenario: Successfully navigate to compliance record detail page\n    Given I see a compliance record in the list view\n    When I click the View button (eye icon) for a compliance record\n    Then I should be navigated to the Compliance Record Detail page\n    And the page header should display \"Compliance Record Detail\"\n    And the page should be in read-only mode\n\n  @positive @data-display\n  Scenario: Display contractor header information correctly\n    Given I am on the Compliance Record Detail page\n    Then I should see the contractor's name displayed as \"First Name Last Name\"\n    And I should see the overall compliance status with color-coded badge\n    And all header information should be auto-populated from Focus system\n\n  @positive @data-display\n  Scenario: Display all requirements with correct status badges\n    Given I am on the Compliance Record Detail page\n    Then I should see the Requirements section with \"Requirement\" and \"Status\" column headers\n    And I should see all 30 requirement fields listed\n    And each requirement should display either \"Compliant\" with green badge or \"Non-Compliant\" with red badge\n    And all requirement fields should be read-only\n\n  @positive @business-logic\n  Scenario: Display overall compliant status when all requirements are compliant\n    Given I am viewing a compliance record where all requirements are compliant\n    Then the overall status should display \"Compliant\" with green badge\n    And all individual requirements should show \"Compliant\" with green badges\n\n  @positive @business-logic\n  Scenario: Display overall non-compliant status when any requirement is non-compliant\n    Given I am viewing a compliance record where at least one requirement is non-compliant\n    Then the overall status should display \"Non-Compliant\" with red badge\n    And I should see at least one requirement showing \"Non-Compliant\" with red badge\n\n  @positive @navigation\n  Scenario: Successfully navigate back to Compliance Dashboard\n    Given I am on the Compliance Record Detail page\n    When I click the back navigation button\n    Then I should be returned to the Compliance Dashboard list view\n    And I should see the list of compliance records\n\n  @negative @error-handling\n  Scenario: View button unavailable for invalid compliance record\n    Given I attempt to access a compliance record detail page with invalid record ID\n    Then I should see an error message indicating the record cannot be found\n    And I should not be able to view the compliance record details\n\n  @negative @error-handling\n  Scenario: Page load fails with missing contractor data\n    Given I access a compliance record with incomplete contractor data from Focus system\n    Then I should see an error message about missing contractor information\n    And the page should handle the missing data gracefully\n\n  @negative @error-handling\n  Scenario: Requirements section fails to load properly\n    Given I am on a compliance record detail page where requirements data fails to load\n    Then I should see an error message about requirements data being unavailable\n    And the header section should still display available contractor information\n\n  @negative @security\n  Scenario: Unauthorized access to compliance record detail\n    Given I attempt to access a compliance record detail page without proper permissions\n    Then I should see an access denied error message\n    And I should be redirected to an appropriate page\n\n  @edge-case @boundary\n  Scenario: Edge case - Compliance record with all requirements non-compliant\n    Given I am viewing a compliance record where all 30 requirements are non-compliant\n    Then the overall status should display \"Non-Compliant\" with red badge\n    And all 30 individual requirements should show \"Non-Compliant\" with red badges\n    And the page should load and display properly despite all non-compliant statuses\n\n  @edge-case @boundary\n  Scenario: Edge case - Compliance record with mixed requirement statuses\n    Given I am viewing a compliance record with a mix of compliant and non-compliant requirements\n    Then the overall status should display \"Non-Compliant\" with red badge\n    And I should see some requirements with \"Compliant\" green badges\n    And I should see some requirements with \"Non-Compliant\" red badges\n\n  @edge-case @security\n  Scenario: Page maintains read-only state for all interaction attempts\n    Given I am on the Compliance Record Detail page\n    When I attempt to interact with any field or requirement status\n    Then no fields should be editable or modifiable\n    And all content should remain in read-only mode\n    And no form submission should be possible"
+}

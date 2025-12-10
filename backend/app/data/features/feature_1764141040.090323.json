@@ -1,0 +1,399 @@
+{
+  "id": "feature_1764141040.090323",
+  "name": "Policy Reinstatement from Notice of Cancellation",
+  "description": "Allows underwriters to reinstate policies that are in Notice of Cancellation status and sync the status changes with IMS",
+  "created_at": "2025-11-26T11:48:42.182897",
+  "updated_at": "2025-11-26T12:40:40.090323",
+  "project_id": "952981ca-9688-48c0-b59b-3d35eeea6494",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am logged in as an Underwriter"
+    },
+    {
+      "keyword": "And",
+      "text": "I have access to the EOX application"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Successfully reinstate policy from Notice of Cancellation status",
+      "tags": [
+        "@smoke",
+        "@positive"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing the applications list"
+        },
+        {
+          "keyword": "And",
+          "text": "there is an application with 'Notice of Cancellation' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the application"
+        },
+        {
+          "keyword": "And",
+          "text": "I click on the 'Reinstate' action button"
+        },
+        {
+          "keyword": "Then",
+          "text": "the Application Status should change to 'Reinstated'"
+        },
+        {
+          "keyword": "And",
+          "text": "the reinstatement process should be triggered"
+        }
+      ]
+    },
+    {
+      "name": "Application status updates to Bound after IMS binding completion",
+      "tags": [
+        "@positive",
+        "@integration"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have successfully triggered reinstatement for a policy"
+        },
+        {
+          "keyword": "And",
+          "text": "the Application Status is 'Reinstated'"
+        },
+        {
+          "keyword": "When",
+          "text": "the reinstatement is bound in IMS"
+        },
+        {
+          "keyword": "And",
+          "text": "IMS Status changes to 'Bound'"
+        },
+        {
+          "keyword": "Then",
+          "text": "the system should fetch the updated IMS status"
+        },
+        {
+          "keyword": "And",
+          "text": "the Application Status in EOX should change to 'Bound'"
+        }
+      ]
+    },
+    {
+      "name": "Reinstate action is visible for Notice of Cancellation applications",
+      "tags": [
+        "@positive",
+        "@ui"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing an application with 'Notice of Cancellation' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the application"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see 'Reinstate' as one of the available action buttons"
+        },
+        {
+          "keyword": "And",
+          "text": "the 'Reinstate' button should be clickable"
+        }
+      ]
+    },
+    {
+      "name": "Multiple policies can be reinstated sequentially",
+      "tags": [
+        "@positive",
+        "@multiple"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have multiple applications with 'Notice of Cancellation' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I reinstate the first application"
+        },
+        {
+          "keyword": "And",
+          "text": "I reinstate the second application"
+        },
+        {
+          "keyword": "Then",
+          "text": "both applications should show 'Reinstated' status"
+        },
+        {
+          "keyword": "And",
+          "text": "both reinstatement processes should be triggered independently"
+        }
+      ]
+    },
+    {
+      "name": "Policy reinstatement with successful IMS synchronization",
+      "tags": [
+        "@positive",
+        "@sync"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have an application in 'Notice of Cancellation' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I trigger the reinstatement process"
+        },
+        {
+          "keyword": "And",
+          "text": "the reinstatement syncs successfully with IMS"
+        },
+        {
+          "keyword": "Then",
+          "text": "the IMS binding process should complete"
+        },
+        {
+          "keyword": "And",
+          "text": "the final status should be 'Bound' in both systems"
+        }
+      ]
+    },
+    {
+      "name": "Application list displays Notice of Cancellation policies correctly",
+      "tags": [
+        "@positive",
+        "@display"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "there are applications with various statuses including 'Notice of Cancellation'"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the applications list"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see applications with 'Notice of Cancellation' status clearly displayed"
+        },
+        {
+          "keyword": "And",
+          "text": "these applications should be accessible for right-click actions"
+        }
+      ]
+    },
+    {
+      "name": "Reinstate action is not available for non-Notice of Cancellation applications",
+      "tags": [
+        "@negative",
+        "@validation"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am viewing an application with 'Active' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the application"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see 'Reinstate' in the available action buttons"
+        },
+        {
+          "keyword": "And",
+          "text": "only appropriate actions for the current status should be displayed"
+        }
+      ]
+    },
+    {
+      "name": "Handle IMS synchronization failure during reinstatement",
+      "tags": [
+        "@negative",
+        "@error-handling"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have triggered reinstatement for a policy"
+        },
+        {
+          "keyword": "And",
+          "text": "the Application Status is 'Reinstated'"
+        },
+        {
+          "keyword": "When",
+          "text": "IMS synchronization fails"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should receive an error notification"
+        },
+        {
+          "keyword": "And",
+          "text": "the system should handle the sync failure gracefully"
+        }
+      ]
+    },
+    {
+      "name": "Unauthorized user cannot access reinstate functionality",
+      "tags": [
+        "@negative",
+        "@security"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a non-Underwriter user"
+        },
+        {
+          "keyword": "And",
+          "text": "there is an application with 'Notice of Cancellation' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I right-click on the application"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see the 'Reinstate' action button"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not be able to trigger the reinstatement process"
+        }
+      ]
+    },
+    {
+      "name": "Network timeout during reinstatement process",
+      "tags": [
+        "@negative",
+        "@timeout"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have an application in 'Notice of Cancellation' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the 'Reinstate' action button"
+        },
+        {
+          "keyword": "And",
+          "text": "a network timeout occurs during the process"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should receive a timeout error message"
+        },
+        {
+          "keyword": "And",
+          "text": "the system should maintain data integrity"
+        }
+      ]
+    },
+    {
+      "name": "Reinstate policy that was recently moved to Notice of Cancellation",
+      "tags": [
+        "@edge-case",
+        "@timing"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "an application has just changed to 'Notice of Cancellation' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I immediately attempt to reinstate the policy"
+        },
+        {
+          "keyword": "Then",
+          "text": "the reinstatement should process successfully"
+        },
+        {
+          "keyword": "And",
+          "text": "there should be no timing conflicts"
+        }
+      ]
+    },
+    {
+      "name": "Reinstate policy with maximum allowed data in application fields",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have an application with maximum data length in all fields"
+        },
+        {
+          "keyword": "And",
+          "text": "the application status is 'Notice of Cancellation'"
+        },
+        {
+          "keyword": "When",
+          "text": "I trigger the reinstatement process"
+        },
+        {
+          "keyword": "Then",
+          "text": "the reinstatement should complete successfully"
+        },
+        {
+          "keyword": "And",
+          "text": "all data should be preserved during the status change"
+        }
+      ]
+    },
+    {
+      "name": "System behavior with concurrent reinstatement attempts",
+      "tags": [
+        "@edge-case",
+        "@concurrency"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I have an application in 'Notice of Cancellation' status"
+        },
+        {
+          "keyword": "When",
+          "text": "I click the 'Reinstate' button multiple times rapidly"
+        },
+        {
+          "keyword": "Then",
+          "text": "the system should process only one reinstatement request"
+        },
+        {
+          "keyword": "And",
+          "text": "duplicate requests should be prevented or handled gracefully"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: Policy Reinstatement from Notice of Cancellation\n  Allows underwriters to reinstate policies that are in Notice of Cancellation status and sync the status changes with IMS\n\n  Background:\n    Given I am logged in as an Underwriter\n    And I have access to the EOX application\n\n  @smoke @positive\n  Scenario: Successfully reinstate policy from Notice of Cancellation status\n    Given I am viewing the applications list\n    And there is an application with 'Notice of Cancellation' status\n    When I right-click on the application\n    And I click on the 'Reinstate' action button\n    Then the Application Status should change to 'Reinstated'\n    And the reinstatement process should be triggered\n\n  @positive @integration\n  Scenario: Application status updates to Bound after IMS binding completion\n    Given I have successfully triggered reinstatement for a policy\n    And the Application Status is 'Reinstated'\n    When the reinstatement is bound in IMS\n    And IMS Status changes to 'Bound'\n    Then the system should fetch the updated IMS status\n    And the Application Status in EOX should change to 'Bound'\n\n  @positive @ui\n  Scenario: Reinstate action is visible for Notice of Cancellation applications\n    Given I am viewing an application with 'Notice of Cancellation' status\n    When I right-click on the application\n    Then I should see 'Reinstate' as one of the available action buttons\n    And the 'Reinstate' button should be clickable\n\n  @positive @multiple\n  Scenario: Multiple policies can be reinstated sequentially\n    Given I have multiple applications with 'Notice of Cancellation' status\n    When I reinstate the first application\n    And I reinstate the second application\n    Then both applications should show 'Reinstated' status\n    And both reinstatement processes should be triggered independently\n\n  @positive @sync\n  Scenario: Policy reinstatement with successful IMS synchronization\n    Given I have an application in 'Notice of Cancellation' status\n    When I trigger the reinstatement process\n    And the reinstatement syncs successfully with IMS\n    Then the IMS binding process should complete\n    And the final status should be 'Bound' in both systems\n\n  @positive @display\n  Scenario: Application list displays Notice of Cancellation policies correctly\n    Given there are applications with various statuses including 'Notice of Cancellation'\n    When I view the applications list\n    Then I should see applications with 'Notice of Cancellation' status clearly displayed\n    And these applications should be accessible for right-click actions\n\n  @negative @validation\n  Scenario: Reinstate action is not available for non-Notice of Cancellation applications\n    Given I am viewing an application with 'Active' status\n    When I right-click on the application\n    Then I should not see 'Reinstate' in the available action buttons\n    And only appropriate actions for the current status should be displayed\n\n  @negative @error-handling\n  Scenario: Handle IMS synchronization failure during reinstatement\n    Given I have triggered reinstatement for a policy\n    And the Application Status is 'Reinstated'\n    When IMS synchronization fails\n    Then I should receive an error notification\n    And the system should handle the sync failure gracefully\n\n  @negative @security\n  Scenario: Unauthorized user cannot access reinstate functionality\n    Given I am logged in as a non-Underwriter user\n    And there is an application with 'Notice of Cancellation' status\n    When I right-click on the application\n    Then I should not see the 'Reinstate' action button\n    And I should not be able to trigger the reinstatement process\n\n  @negative @timeout\n  Scenario: Network timeout during reinstatement process\n    Given I have an application in 'Notice of Cancellation' status\n    When I click on the 'Reinstate' action button\n    And a network timeout occurs during the process\n    Then I should receive a timeout error message\n    And the system should maintain data integrity\n\n  @edge-case @timing\n  Scenario: Reinstate policy that was recently moved to Notice of Cancellation\n    Given an application has just changed to 'Notice of Cancellation' status\n    When I immediately attempt to reinstate the policy\n    Then the reinstatement should process successfully\n    And there should be no timing conflicts\n\n  @edge-case @boundary\n  Scenario: Reinstate policy with maximum allowed data in application fields\n    Given I have an application with maximum data length in all fields\n    And the application status is 'Notice of Cancellation'\n    When I trigger the reinstatement process\n    Then the reinstatement should complete successfully\n    And all data should be preserved during the status change\n\n  @edge-case @concurrency\n  Scenario: System behavior with concurrent reinstatement attempts\n    Given I have an application in 'Notice of Cancellation' status\n    When I click the 'Reinstate' button multiple times rapidly\n    Then the system should process only one reinstatement request\n    And duplicate requests should be prevented or handled gracefully"
+}

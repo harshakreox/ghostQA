@@ -1,0 +1,468 @@
+{
+  "id": "feature_1764931876.817037",
+  "name": "Compliance Dashboard Access for Driver and Non-Driver",
+  "description": "As a Driver or Non-Driver, I want to click on the Compliance Dashboard module to view my personal compliance record",
+  "created_at": "2025-12-05T16:21:16.817037",
+  "updated_at": "2025-12-05T16:21:20.262368",
+  "project_id": "ce1a8cc0-da85-48e2-b349-7bf9311e023f",
+  "background": [
+    {
+      "keyword": "Given",
+      "text": "I am on the application home page"
+    },
+    {
+      "keyword": "And",
+      "text": "I am logged in as an authenticated user"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Driver successfully views Compliance Dashboard module on home page",
+      "tags": [
+        "@smoke",
+        "@positive",
+        "@driver"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a Driver"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "the module should display the compliance icon"
+        },
+        {
+          "keyword": "And",
+          "text": "the module should display the \"My Compliance Record\" title"
+        }
+      ]
+    },
+    {
+      "name": "Non-Driver successfully views Compliance Dashboard module on home page",
+      "tags": [
+        "@smoke",
+        "@positive",
+        "@non-driver"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a Non-Driver"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "the module should display the compliance icon"
+        },
+        {
+          "keyword": "And",
+          "text": "the module should display the \"My Compliance Record\" title"
+        }
+      ]
+    },
+    {
+      "name": "Driver successfully navigates to personal compliance record",
+      "tags": [
+        "@positive",
+        "@navigation",
+        "@driver"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a Driver"
+        },
+        {
+          "keyword": "And",
+          "text": "I can see the Compliance Dashboard module on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to my individual compliance record detail page"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see my personal compliance data"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not see any list view of other users"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not see other users' compliance records"
+        }
+      ]
+    },
+    {
+      "name": "Non-Driver successfully navigates to personal compliance record",
+      "tags": [
+        "@positive",
+        "@navigation",
+        "@non-driver"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a Non-Driver"
+        },
+        {
+          "keyword": "And",
+          "text": "I can see the Compliance Dashboard module on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to my individual compliance record detail page"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see my personal compliance data"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not see any list view of other users"
+        },
+        {
+          "keyword": "And",
+          "text": "I should not see other users' compliance records"
+        }
+      ]
+    },
+    {
+      "name": "Compliance Dashboard module displays correct visual elements",
+      "tags": [
+        "@positive",
+        "@ui"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am on the home page"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "the compliance icon should be visible and properly rendered"
+        },
+        {
+          "keyword": "And",
+          "text": "the \"My Compliance Record\" title should be clearly displayed"
+        },
+        {
+          "keyword": "And",
+          "text": "the module should be clickable"
+        },
+        {
+          "keyword": "And",
+          "text": "the module should have appropriate visual styling"
+        }
+      ]
+    },
+    {
+      "name": "Multiple user role access verification",
+      "tags": [
+        "@positive",
+        "@role-verification"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a <user_role>"
+        },
+        {
+          "keyword": "When",
+          "text": "I access the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be able to click the module"
+        },
+        {
+          "keyword": "And",
+          "text": "I should access only my own compliance record"
+        }
+      ]
+    },
+    {
+      "name": "Unauthenticated user cannot access Compliance Dashboard",
+      "tags": [
+        "@negative",
+        "@security"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am not logged in"
+        },
+        {
+          "keyword": "When",
+          "text": "I try to access the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be redirected to the login page"
+        }
+      ]
+    },
+    {
+      "name": "Navigation fails when compliance service is unavailable",
+      "tags": [
+        "@negative",
+        "@error-handling"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a Driver"
+        },
+        {
+          "keyword": "And",
+          "text": "the compliance service is temporarily unavailable"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should see an appropriate error message"
+        },
+        {
+          "keyword": "And",
+          "text": "I should remain on the current page"
+        },
+        {
+          "keyword": "And",
+          "text": "I should be able to retry the action"
+        }
+      ]
+    },
+    {
+      "name": "Module visibility fails for users without compliance access permissions",
+      "tags": [
+        "@negative",
+        "@permissions"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a user without compliance access permissions"
+        },
+        {
+          "keyword": "When",
+          "text": "I view the home page"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should not see the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see other available modules for my role"
+        }
+      ]
+    },
+    {
+      "name": "Session timeout during compliance navigation",
+      "tags": [
+        "@negative",
+        "@session"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a Driver"
+        },
+        {
+          "keyword": "And",
+          "text": "my session is about to expire"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "And",
+          "text": "my session expires during navigation"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be redirected to the login page"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see a session timeout message"
+        }
+      ]
+    },
+    {
+      "name": "User with minimum compliance data can access dashboard",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a new Driver with minimal compliance data"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should successfully navigate to my compliance record page"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see my minimal compliance data displayed"
+        },
+        {
+          "keyword": "And",
+          "text": "the page should handle empty or minimal data gracefully"
+        }
+      ]
+    },
+    {
+      "name": "User with maximum compliance history can access dashboard",
+      "tags": [
+        "@edge-case",
+        "@boundary"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a Driver with extensive compliance history"
+        },
+        {
+          "keyword": "When",
+          "text": "I click on the Compliance Dashboard module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should successfully navigate to my compliance record page"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see my complete compliance history"
+        },
+        {
+          "keyword": "And",
+          "text": "the page should load and display large datasets efficiently"
+        }
+      ]
+    },
+    {
+      "name": "Compliance Dashboard access via keyboard navigation",
+      "tags": [
+        "@edge-case",
+        "@accessibility"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a Driver"
+        },
+        {
+          "keyword": "And",
+          "text": "I am using keyboard navigation"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate to the Compliance Dashboard module using Tab key"
+        },
+        {
+          "keyword": "And",
+          "text": "I press Enter key on the focused module"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be navigated to my individual compliance record detail page"
+        },
+        {
+          "keyword": "And",
+          "text": "the navigation should work the same as mouse click"
+        }
+      ]
+    },
+    {
+      "name": "Alternative access through direct URL navigation",
+      "tags": [
+        "@alternative-flow"
+      ],
+      "description": null,
+      "steps": [
+        {
+          "keyword": "Given",
+          "text": "I am logged in as a Driver"
+        },
+        {
+          "keyword": "When",
+          "text": "I navigate directly to the compliance record URL"
+        },
+        {
+          "keyword": "Then",
+          "text": "I should be taken to my individual compliance record detail page"
+        },
+        {
+          "keyword": "And",
+          "text": "I should see my personal compliance data"
+        },
+        {
+          "keyword": "And",
+          "text": "the page should display the same content as clicking the module"
+        }
+      ]
+    }
+  ],
+  "gherkin_content": "Feature: Compliance Dashboard Access for Driver and Non-Driver\n  As a Driver or Non-Driver, I want to click on the Compliance Dashboard module to view my personal compliance record\n\n  Background:\n    Given I am on the application home page\n    And I am logged in as an authenticated user\n\n  @smoke @positive @driver\n  Scenario: Driver successfully views Compliance Dashboard module on home page\n    Given I am logged in as a Driver\n    When I navigate to the home page\n    Then I should see the Compliance Dashboard module\n    And the module should display the compliance icon\n    And the module should display the \"My Compliance Record\" title\n\n  @smoke @positive @non-driver\n  Scenario: Non-Driver successfully views Compliance Dashboard module on home page\n    Given I am logged in as a Non-Driver\n    When I navigate to the home page\n    Then I should see the Compliance Dashboard module\n    And the module should display the compliance icon\n    And the module should display the \"My Compliance Record\" title\n\n  @positive @navigation @driver\n  Scenario: Driver successfully navigates to personal compliance record\n    Given I am logged in as a Driver\n    And I can see the Compliance Dashboard module on the home page\n    When I click on the Compliance Dashboard module\n    Then I should be navigated to my individual compliance record detail page\n    And I should see my personal compliance data\n    And I should not see any list view of other users\n    And I should not see other users' compliance records\n\n  @positive @navigation @non-driver\n  Scenario: Non-Driver successfully navigates to personal compliance record\n    Given I am logged in as a Non-Driver\n    And I can see the Compliance Dashboard module on the home page\n    When I click on the Compliance Dashboard module\n    Then I should be navigated to my individual compliance record detail page\n    And I should see my personal compliance data\n    And I should not see any list view of other users\n    And I should not see other users' compliance records\n\n  @positive @ui\n  Scenario: Compliance Dashboard module displays correct visual elements\n    Given I am on the home page\n    When I view the Compliance Dashboard module\n    Then the compliance icon should be visible and properly rendered\n    And the \"My Compliance Record\" title should be clearly displayed\n    And the module should be clickable\n    And the module should have appropriate visual styling\n\n  @positive @role-verification\n  Scenario: Multiple user role access verification\n    Given I am logged in as a <user_role>\n    When I access the home page\n    Then I should see the Compliance Dashboard module\n    And I should be able to click the module\n    And I should access only my own compliance record\n\n  @negative @security\n  Scenario: Unauthenticated user cannot access Compliance Dashboard\n    Given I am not logged in\n    When I try to access the home page\n    Then I should not see the Compliance Dashboard module\n    And I should be redirected to the login page\n\n  @negative @error-handling\n  Scenario: Navigation fails when compliance service is unavailable\n    Given I am logged in as a Driver\n    And the compliance service is temporarily unavailable\n    When I click on the Compliance Dashboard module\n    Then I should see an appropriate error message\n    And I should remain on the current page\n    And I should be able to retry the action\n\n  @negative @permissions\n  Scenario: Module visibility fails for users without compliance access permissions\n    Given I am logged in as a user without compliance access permissions\n    When I view the home page\n    Then I should not see the Compliance Dashboard module\n    And I should see other available modules for my role\n\n  @negative @session\n  Scenario: Session timeout during compliance navigation\n    Given I am logged in as a Driver\n    And my session is about to expire\n    When I click on the Compliance Dashboard module\n    And my session expires during navigation\n    Then I should be redirected to the login page\n    And I should see a session timeout message\n\n  @edge-case @boundary\n  Scenario: User with minimum compliance data can access dashboard\n    Given I am logged in as a new Driver with minimal compliance data\n    When I click on the Compliance Dashboard module\n    Then I should successfully navigate to my compliance record page\n    And I should see my minimal compliance data displayed\n    And the page should handle empty or minimal data gracefully\n\n  @edge-case @boundary\n  Scenario: User with maximum compliance history can access dashboard\n    Given I am logged in as a Driver with extensive compliance history\n    When I click on the Compliance Dashboard module\n    Then I should successfully navigate to my compliance record page\n    And I should see my complete compliance history\n    And the page should load and display large datasets efficiently\n\n  @edge-case @accessibility\n  Scenario: Compliance Dashboard access via keyboard navigation\n    Given I am logged in as a Driver\n    And I am using keyboard navigation\n    When I navigate to the Compliance Dashboard module using Tab key\n    And I press Enter key on the focused module\n    Then I should be navigated to my individual compliance record detail page\n    And the navigation should work the same as mouse click\n\n  @alternative-flow\n  Scenario: Alternative access through direct URL navigation\n    Given I am logged in as a Driver\n    When I navigate directly to the compliance record URL\n    Then I should be taken to my individual compliance record detail page\n    And I should see my personal compliance data\n    And the page should display the same content as clicking the module"
+}
