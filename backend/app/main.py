@@ -24,6 +24,11 @@ from auth_models import TokenData, UserRole
 # Gherkin imports
 from ai_gherkin_generator import AIGherkinGenerator, extract_text_from_file
 from gherkin_storage import get_gherkin_storage
+from folder_storage import get_folder_storage
+from models_folder import (
+    Folder, CreateFolderRequest, UpdateFolderRequest,
+    MoveFeatureToFolderRequest, BulkMoveFeaturesToFolderRequest
+)
 from gherkin_executor import GherkinExecutor
 from autonomous_gherkin_executor import AutonomousGherkinExecutor
 from models_gherkin import GherkinFeature
@@ -43,6 +48,8 @@ from release_models import (
     ReleaseStatus, EnvironmentType
 )
 from release_api import router as releases_router
+# Folder Management
+from folder_api import router as folder_router
 
 # ===== WINDOWS FIX FOR PLAYWRIGHT =====
 # Fix for Windows: Playwright needs ProactorEventLoop on Windows
@@ -74,7 +81,8 @@ except ImportError:
 app = FastAPI(title="Autonomous Test Automation Framework")
 
 storage = Storage()
-gherkin_storage = get_gherkin_storage() 
+gherkin_storage = get_gherkin_storage()
+folder_storage = get_folder_storage() 
 
 # Enable CORS
 app.add_middleware(
@@ -91,6 +99,15 @@ class RunAutonomousTestRequest(BaseModel):
     headless: bool = False
     scenario_filter: Optional[List[str]] = None
 
+class MoveTestCaseToFolderRequest(BaseModel):
+    """Request to move a test case to a folder"""
+    folder_id: Optional[str] = None  # None means move to root
+
+class MoveTraditionalSuiteToFolderRequest(BaseModel):
+    """Request to move a traditional suite to a folder"""
+    folder_id: Optional[str] = None  # None means move to root
+
+
 # Include routers
 app.include_router(auth_router)  # Authentication
 app.include_router(releases_router)
@@ -99,6 +116,8 @@ app.include_router(ai_router)
 app.include_router(agent_router)
 # Include autonomous orchestrator router
 app.include_router(orchestrator_router)
+# Include folder router
+app.include_router(folder_router)
 
 # Initialize storage
 storage = Storage()
@@ -302,6 +321,210 @@ async def delete_test_case(project_id: str, test_case_id: str):
     project.test_cases = [tc for tc in project.test_cases if tc.id != test_case_id]
     storage.save_project(project)
     return {"message": "Test case deleted successfully"}
+
+
+# ============ Test Case Folder Operations ============
+
+@app.put("/api/projects/{project_id}/test-cases/{test_case_id}/move")
+async def move_test_case_to_folder(
+    project_id: str,
+    test_case_id: str,
+    request: MoveTestCaseToFolderRequest,
+    current_user: TokenData = Depends(get_current_user)
+):
+    """Move a test case to a folder"""
+    project = storage.get_project(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    # Verify permission
+    if current_user.role != UserRole.ADMIN and project.owner_id != current_user.user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    # Find the test case
+    test_case = None
+    for tc in project.test_cases:
+        if tc.id == test_case_id:
+            test_case = tc
+            break
+
+    if not test_case:
+        raise HTTPException(status_code=404, detail="Test case not found")
+
+    # Validate folder if specified
+    if request.folder_id:
+        folder = folder_storage.load_folder(request.folder_id)
+        if not folder or folder.project_id != project_id:
+            raise HTTPException(status_code=400, detail="Invalid folder")
+        if folder.category != "action-based":
+            raise HTTPException(status_code=400, detail="Folder is not for action-based test cases")
+
+    # Update test case folder_id
+    test_case.folder_id = request.folder_id
+    storage.save_project(project)
+
+    return {"message": "Test case moved successfully", "folder_id": request.folder_id}
+
+
+@app.get("/api/projects/{project_id}/test-cases/by-folder/{folder_id}")
+async def get_test_cases_by_folder(
+    project_id: str,
+    folder_id: str,
+    current_user: TokenData = Depends(get_current_user)
+):
+    """Get all test cases in a specific folder (use 'root' for uncategorized)"""
+    project = storage.get_project(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    if current_user.role != UserRole.ADMIN and project.owner_id != current_user.user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    # Filter by folder_id
+    actual_folder_id = None if folder_id == "root" else folder_id
+
+    test_cases = [tc for tc in project.test_cases if tc.folder_id == actual_folder_id]
+
+    return {"test_cases": [tc.model_dump() for tc in test_cases]}
+
+
+@app.get("/api/projects/{project_id}/action-based-with-folders")
+async def get_action_based_with_folders(
+    project_id: str,
+    current_user: TokenData = Depends(get_current_user)
+):
+    """Get all action-based test cases organized by folders"""
+    project = storage.get_project(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    if current_user.role != UserRole.ADMIN and project.owner_id != current_user.user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    folder_tree = folder_storage.get_folder_tree(project_id, "action-based")
+    all_test_cases = project.test_cases
+
+    test_cases_by_folder = {}
+    root_test_cases = []
+
+    for tc in all_test_cases:
+        tc_dict = tc.model_dump()
+        folder_id = tc.folder_id
+        if folder_id:
+            if folder_id not in test_cases_by_folder:
+                test_cases_by_folder[folder_id] = []
+            test_cases_by_folder[folder_id].append(tc_dict)
+        else:
+            root_test_cases.append(tc_dict)
+
+    return {
+        "folder_tree": folder_tree,
+        "test_cases_by_folder": test_cases_by_folder,
+        "root_test_cases": root_test_cases,
+        "total_test_cases": len(all_test_cases),
+        "total_folders": len(folder_storage.list_folders(project_id, "action-based"))
+    }
+
+
+# ============ Traditional Suite Folder Operations ============
+
+@app.put("/api/traditional/suites/{suite_id}/move")
+async def move_traditional_suite_to_folder(
+    suite_id: str,
+    request: MoveTraditionalSuiteToFolderRequest,
+    current_user: TokenData = Depends(get_current_user)
+):
+    """Move a traditional suite to a folder"""
+    from gherkin_storage import get_gherkin_storage
+    traditional_storage = get_gherkin_storage()
+
+    suite = traditional_storage.load_traditional_suite_dict(suite_id)
+    if not suite:
+        raise HTTPException(status_code=404, detail="Suite not found")
+
+    project_id = suite.get("project_id")
+
+    # Validate folder if specified
+    if request.folder_id:
+        folder = folder_storage.load_folder(request.folder_id)
+        if not folder:
+            raise HTTPException(status_code=400, detail="Folder not found")
+        if project_id and folder.project_id != project_id:
+            raise HTTPException(status_code=400, detail="Folder belongs to different project")
+        if folder.category != "traditional":
+            raise HTTPException(status_code=400, detail="Folder is not for traditional test suites")
+
+    # Update suite folder_id
+    updated = traditional_storage.update_traditional_suite_folder(suite_id, request.folder_id)
+    if not updated:
+        raise HTTPException(status_code=500, detail="Failed to update suite")
+
+    return updated
+
+
+@app.get("/api/projects/{project_id}/traditional-suites/by-folder/{folder_id}")
+async def get_traditional_suites_by_folder(
+    project_id: str,
+    folder_id: str,
+    current_user: TokenData = Depends(get_current_user)
+):
+    """Get all traditional suites in a specific folder (use 'root' for uncategorized)"""
+    project = storage.get_project(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    if current_user.role != UserRole.ADMIN and project.owner_id != current_user.user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    from gherkin_storage import get_gherkin_storage
+    traditional_storage = get_gherkin_storage()
+
+    # Filter by folder_id
+    actual_folder_id = None if folder_id == "root" else folder_id
+
+    suites = traditional_storage.list_traditional_suites_by_folder(project_id, actual_folder_id)
+
+    return {"suites": suites}
+
+
+@app.get("/api/projects/{project_id}/traditional-with-folders")
+async def get_traditional_with_folders(
+    project_id: str,
+    current_user: TokenData = Depends(get_current_user)
+):
+    """Get all traditional test suites organized by folders"""
+    project = storage.get_project(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    if current_user.role != UserRole.ADMIN and project.owner_id != current_user.user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    from gherkin_storage import get_gherkin_storage
+    traditional_storage = get_gherkin_storage()
+
+    folder_tree = folder_storage.get_folder_tree(project_id, "traditional")
+    all_suites = traditional_storage.list_traditional_suites(project_id)
+
+    suites_by_folder = {}
+    root_suites = []
+
+    for suite in all_suites:
+        folder_id = suite.get("folder_id")
+        if folder_id:
+            if folder_id not in suites_by_folder:
+                suites_by_folder[folder_id] = []
+            suites_by_folder[folder_id].append(suite)
+        else:
+            root_suites.append(suite)
+
+    return {
+        "folder_tree": folder_tree,
+        "suites_by_folder": suites_by_folder,
+        "root_suites": root_suites,
+        "total_suites": len(all_suites),
+        "total_folders": len(folder_storage.list_folders(project_id, "traditional"))
+    }
 
 
 # ============ Test Execution ============
@@ -642,6 +865,7 @@ class GenerateGherkinTextRequest(BaseModel):
     project_id: Optional[str] = None
     project_context: Optional[str] = None
     end_to_end: bool = False
+    folder_id: Optional[str] = None  # Optional folder to place generated feature
 
 @app.post("/api/gherkin/generate-from-text")
 async def generate_gherkin_from_text(request: GenerateGherkinTextRequest):
@@ -676,7 +900,7 @@ async def generate_gherkin_from_text(request: GenerateGherkinTextRequest):
         )
 
         # Save to storage
-        feature_dict = gherkin_storage.save_feature(response.feature, request.project_id)
+        feature_dict = gherkin_storage.save_feature(response.feature, request.project_id, request.folder_id)
 
         return {
             "feature": feature_dict,
@@ -692,7 +916,8 @@ async def generate_gherkin_from_file(
     file: UploadFile = File(...),
     project_id: Optional[str] = Form(None),
     project_context: Optional[str] = Form(None),
-    end_to_end: bool = Form(False)
+    end_to_end: bool = Form(False),
+    folder_id: Optional[str] = Form(None)
 ):
     """Generate Gherkin test scenarios from uploaded file"""
     try:
@@ -740,7 +965,7 @@ async def generate_gherkin_from_file(
             )
 
             # Save
-            feature_dict = gherkin_storage.save_feature(response.feature, project_id)
+            feature_dict = gherkin_storage.save_feature(response.feature, project_id, folder_id)
 
             print(f"    Generated {len(response.feature.scenarios)} scenarios")
 
@@ -999,6 +1224,7 @@ def run_gherkin_windows_safe(feature, base_url, headless, tags, main_loop, broad
 class LinkFeatureToProjectRequest(BaseModel):
     feature_id: str
     project_id: str
+    folder_id: Optional[str] = None
 
 @app.post("/api/gherkin/link-to-project")
 async def link_feature_to_project(request: LinkFeatureToProjectRequest):
@@ -1012,9 +1238,9 @@ async def link_feature_to_project(request: LinkFeatureToProjectRequest):
         # Update project_id
         feature_dict['project_id'] = request.project_id
         
-        # Save back
+        # Save back with folder_id
         feature = gherkin_storage.load_feature(request.feature_id)
-        gherkin_storage.save_feature(feature, request.project_id)
+        gherkin_storage.save_feature(feature, request.project_id, request.folder_id)
         
         return {"message": "Feature linked to project successfully"}
     except Exception as e:

@@ -63,6 +63,7 @@ class GherkinFeature(BaseModel):
     description: Optional[str] = None
     background: Optional[List[GherkinStep]] = None  # Background steps
     scenarios: List[GherkinScenario]
+    folder_id: Optional[str] = None  # Optional folder for organization (None = root level)
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
     
@@ -209,6 +210,8 @@ class TraditionalTestSuite(BaseModel):
     name: str
     description: Optional[str] = None
     test_cases: List[TraditionalTestCase]
+    folder_id: Optional[str] = None  # For folder organization
+    project_id: Optional[str] = None  # Link to project
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
 

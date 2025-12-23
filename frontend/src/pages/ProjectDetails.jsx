@@ -42,6 +42,7 @@ import {
   FormControl,
   CircularProgress,
   Tooltip,
+  alpha,
 } from '@mui/material';
 import {
   ArrowBack,
@@ -65,12 +66,15 @@ import {
   DragIndicator,
   Link as LinkIcon,
   SmartToy as SmartToyIcon,
+  CreateNewFolder,
+  Folder as FolderIcon,
+  DriveFileMove,
 } from '@mui/icons-material';
 import axios from 'axios';
 import AutonomousRunDialog from '../components/AutonomousRunDialog';
 
 // Import generic components and hooks
-import { StatsCard, EmptyState, ConfirmDialog, SearchBar } from '../components';
+import { StatsCard, EmptyState, ConfirmDialog, SearchBar, FolderNavigation, FolderDialog } from '../components';
 import { useNotification, useContextMenu } from '../hooks';
 import { downloadFile } from '../utils';
 
@@ -123,10 +127,24 @@ export default function ProjectDetails() {
   // Autonomous Run dialog state
   const [autonomousRunOpen, setAutonomousRunOpen] = useState(false);
 
+  // Folder management state
+  const [folders, setFolders] = useState([]);
+  const [folderTree, setFolderTree] = useState([]);
+  const [featuresByFolder, setFeaturesByFolder] = useState({});
+  const [rootFeatures, setRootFeatures] = useState([]);
+  const [selectedFolderId, setSelectedFolderId] = useState(null);
+  const [folderDialogOpen, setFolderDialogOpen] = useState(false);
+  const [folderDialogMode, setFolderDialogMode] = useState('create');
+  const [editingFolder, setEditingFolder] = useState(null);
+  const [movingFeature, setMovingFeature] = useState(null);
+  const [folderParentId, setFolderParentId] = useState(null);
+  const [foldersLoading, setFoldersLoading] = useState(false);
+
   useEffect(() => {
     loadProject();
     loadGherkinFeatures();
     loadTraditionalSuites();
+    loadFoldersWithFeatures();
   }, [id]);
 
   const loadProject = async () => {
@@ -158,6 +176,103 @@ export default function ProjectDetails() {
     } catch (error) {
       console.error('Error loading Traditional suites:', error);
       setTraditionalSuites([]);
+    }
+  };
+
+
+  // Load folders and features organized by folder
+  const loadFoldersWithFeatures = async () => {
+    setFoldersLoading(true);
+    try {
+      const response = await axios.get(`/api/projects/${id}/features-with-folders`);
+      setFolderTree(response.data.folder_tree || []);
+      setFeaturesByFolder(response.data.features_by_folder || {});
+      setRootFeatures(response.data.root_features || []);
+
+      const foldersRes = await axios.get(`/api/projects/${id}/folders`);
+      setFolders(foldersRes.data.folders || []);
+    } catch (error) {
+      console.error('Error loading folders:', error);
+      setFolderTree([]);
+      setFeaturesByFolder({});
+      setRootFeatures([]);
+    } finally {
+      setFoldersLoading(false);
+    }
+  };
+
+  // Check if we're in folder view mode
+  const inFolderView = selectedFolderId !== null;
+
+  // Get folder path for breadcrumbs
+  const getFolderPath = (folderId) => {
+    if (!folderId) return [];
+    const path = [];
+    let currentId = folderId;
+    while (currentId) {
+      const folder = folders.find(f => f.id === currentId);
+      if (folder) {
+        path.unshift(folder);
+        currentId = folder.parent_folder_id;
+      } else {
+        break;
+      }
+    }
+    return path;
+  };
+
+  const handleCreateFolder = (parentId = null) => {
+    setFolderDialogMode('create');
+    setFolderParentId(parentId);
+    setEditingFolder(null);
+    setFolderDialogOpen(true);
+  };
+
+  const handleRenameFolder = (folder) => {
+    setFolderDialogMode('edit');
+    setEditingFolder(folder);
+    setFolderDialogOpen(true);
+  };
+
+  const handleDeleteFolderAction = async (folder) => {
+    if (!window.confirm(`Delete folder "${folder.name}"? Features will be moved to root.`)) {
+      return;
+    }
+    try {
+      await axios.delete(`/api/folders/${folder.id}`);
+      showNotification(`Folder "${folder.name}" deleted`, 'success');
+      await loadFoldersWithFeatures();
+      await loadGherkinFeatures();
+    } catch (error) {
+      console.error('Error deleting folder:', error);
+      showNotification('Failed to delete folder', 'error');
+    }
+  };
+
+  const handleMoveFeature = (feature) => {
+    setFolderDialogMode('move-feature');
+    setMovingFeature(feature);
+    setFolderDialogOpen(true);
+  };
+
+  const handleFolderDialogSubmit = async (data) => {
+    try {
+      if (folderDialogMode === 'create') {
+        await axios.post(`/api/projects/${id}/folders`, data);
+        showNotification('Folder created', 'success');
+      } else if (folderDialogMode === 'edit') {
+        await axios.put(`/api/folders/${editingFolder.id}`, data);
+        showNotification('Folder updated', 'success');
+      } else if (folderDialogMode === 'move-feature') {
+        await axios.put(`/api/gherkin/features/${movingFeature.id}/move`, data);
+        showNotification('Feature moved', 'success');
+      }
+      setFolderDialogOpen(false);
+      await loadFoldersWithFeatures();
+      await loadGherkinFeatures();
+    } catch (error) {
+      console.error('Error:', error);
+      showNotification(error.response?.data?.detail || 'Operation failed', 'error');
     }
   };
 
@@ -548,528 +663,594 @@ export default function ProjectDetails() {
         </Box>
       </Box>
 
-      {/* Stats Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatsCard
-            label="Total Test Cases"
-            value={totalTestCases}
-            icon={<Code />}
-            color="primary"
-            onClick={() => setTabValue(0)}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatsCard
-            label="Action-Based"
-            value={project.test_cases?.length || 0}
-            subtext={`${totalActions} actions`}
-            icon={<Code />}
-            color="info"
-            onClick={() => setTabValue(0)}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatsCard
-            label="Gherkin (BDD)"
-            value={gherkinFeatures?.length || 0}
-            subtext={`${totalScenarios} scenarios`}
-            icon={<Description />}
-            color="success"
-            onClick={() => setTabValue(1)}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatsCard
-            label="Traditional"
-            value={traditionalSuites?.length || 0}
-            subtext={`${totalTraditionalCases} test cases`}
-            icon={<TableChart />}
-            color="warning"
-            onClick={() => setTabValue(2)}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={2.4}>
-          <Card sx={{ height: '100%' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                    Base URL
-                  </Typography>
-                  <Tooltip title={project.base_url || 'Not set'}>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontFamily: 'monospace',
-                        fontWeight: 600,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {project.base_url || 'Not set'}
-                    </Typography>
-                  </Tooltip>
-                  <Chip label="Active" color="success" size="small" sx={{ fontWeight: 600, mt: 1 }} />
-                </Box>
-                <Box
+
+      {/* Folder Explorer View - shown when inside a folder */}
+      {inFolderView && (
+        <Box>
+          {/* Breadcrumb Navigation */}
+          <Paper sx={{ p: 2, mb: 3, bgcolor: 'grey.50' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <IconButton
+                onClick={() => setSelectedFolderId(null)}
+                sx={{
+                  bgcolor: 'white',
+                  boxShadow: 1,
+                  '&:hover': { bgcolor: 'grey.100' }
+                }}
+              >
+                <ArrowBack />
+              </IconButton>
+              <Breadcrumbs separator={<NavigateNext fontSize="small" />} sx={{ flex: 1 }}>
+                <Link
+                  component="button"
+                  variant="body1"
+                  onClick={() => setSelectedFolderId(null)}
                   sx={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 2,
-                    bgcolor: 'grey.100',
-                    color: 'grey.600',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                    ml: 1,
+                    gap: 0.5,
+                    fontWeight: 500,
                   }}
+                  underline="hover"
                 >
-                  <LinkIcon />
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      {/* Test Cases Tabs */}
-      <Paper>
-        <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)}>
-          <Tab
-            label={`Action-Based (${project.test_cases?.length || 0})`}
-            icon={<Code />}
-            iconPosition="start"
-          />
-          <Tab
-            label={`Gherkin (${gherkinFeatures?.length || 0})`}
-            icon={<Description />}
-            iconPosition="start"
-          />
-          <Tab
-            label={`Traditional (${traditionalSuites?.length || 0})`}
-            icon={<TableChart />}
-            iconPosition="start"
-          />
-        </Tabs>
-
-        {/* Action-Based Test Cases Tab */}
-        <TabPanel value={tabValue} index={0}>
-          <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              Action-Based Test Cases
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <SearchBar
-                placeholder="Search test cases..."
-                value={actionSearch}
-                onSearch={setActionSearch}
-              />
-              <Button
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => navigate(`/projects/${id}/test-cases/new`)}
-                sx={{ whiteSpace: 'nowrap' }}
-              >
-                Add Test Case
-              </Button>
+                  <Code sx={{ fontSize: 20 }} />
+                  {project.name}
+                </Link>
+                <Link
+                  component="button"
+                  variant="body1"
+                  onClick={() => setSelectedFolderId(null)}
+                  underline="hover"
+                >
+                  Features
+                </Link>
+                {getFolderPath(selectedFolderId).map((folder, index, arr) => (
+                  <Link
+                    key={folder.id}
+                    component="button"
+                    variant="body1"
+                    onClick={() => setSelectedFolderId(folder.id)}
+                    underline={index === arr.length - 1 ? 'none' : 'hover'}
+                    sx={{
+                      fontWeight: index === arr.length - 1 ? 600 : 400,
+                      color: index === arr.length - 1 ? 'text.primary' : 'inherit',
+                    }}
+                  >
+                    {folder.name}
+                  </Link>
+                ))}
+              </Breadcrumbs>
             </Box>
+          </Paper>
+
+          {/* Current Folder Info */}
+          <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box
+              sx={{
+                width: 56,
+                height: 56,
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #ffa726 0%, #fb8c00 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+              }}
+            >
+              <FolderIcon sx={{ fontSize: 32 }} />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                {getFolderPath(selectedFolderId).slice(-1)[0]?.name || 'Folder'}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {(featuresByFolder[selectedFolderId] || []).length} features
+                {folders.filter(f => f.parent_folder_id === selectedFolderId).length > 0 &&
+                  ` • ${folders.filter(f => f.parent_folder_id === selectedFolderId).length} subfolders`}
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              startIcon={<CreateNewFolder />}
+              onClick={() => handleCreateFolder(selectedFolderId)}
+              sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
+            >
+              New Subfolder
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<Psychology />}
+              onClick={() => navigate(`/generate?projectId=${id}&folderId=${selectedFolderId}`)}
+            >
+              Generate with AI
+            </Button>
           </Box>
-          <Divider />
 
-          {filteredActionTestCases.length === 0 ? (
-            <Box sx={{ p: 8, textAlign: 'center' }}>
-              <Code sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-              <Typography variant="h6" sx={{ mb: 1 }}>
-                No Action-Based Test Cases Yet
+          {/* Subfolders */}
+          {folders.filter(f => f.parent_folder_id === selectedFolderId).length > 0 && (
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.secondary', mb: 1.5, px: 1 }}>
+                SUBFOLDERS
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Create traditional action-based test cases
-              </Typography>
-              <Button
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => navigate(`/projects/${id}/test-cases/new`)}
-              >
-                Create Test Case
-              </Button>
-            </Box>
-          ) : (
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }} align="center">Actions</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }} align="center">Status</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }} align="right">Menu</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredActionTestCases.map((testCase) => (
-                    <TableRow
-                      key={testCase.id}
-                      sx={{
-                        '&:hover': {
-                          backgroundColor: 'action.hover',
-                          cursor: 'pointer',
-                        },
-                      }}
-                      onClick={() => navigate(`/projects/${id}/test-cases/${testCase.id}/edit`)}
-                    >
-                      <TableCell>
-                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                          {testCase.name}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" color="text.secondary">
-                          {testCase.description}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Chip
-                          label={testCase.actions.length}
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+                {folders.filter(f => f.parent_folder_id === selectedFolderId).map((folder) => (
+                  <Card
+                    key={folder.id}
+                    variant="outlined"
+                    sx={{
+                      minWidth: 160,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      '&:hover': {
+                        borderColor: 'primary.main',
+                        transform: 'translateY(-2px)',
+                        boxShadow: 2,
+                      },
+                    }}
+                    onClick={() => setSelectedFolderId(folder.id)}
+                  >
+                    <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <FolderIcon sx={{ color: 'warning.main', fontSize: 28 }} />
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+                            {folder.name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {(featuresByFolder[folder.id] || []).length} features
+                          </Typography>
+                        </Box>
+                        <IconButton
                           size="small"
-                          color="primary"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        <Chip
-                          label="Ready"
-                          size="small"
-                          color="success"
-                          variant="outlined"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </TableCell>
-                      <TableCell align="right" onClick={(e) => e.stopPropagation()}>
-                        <IconButton onClick={(e) => handleMenuOpen(e, testCase)}>
-                          <MoreVert />
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMenuOpen(e, { ...folder, isFolder: true });
+                          }}
+                        >
+                          <MoreVert fontSize="small" />
                         </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                ))}
+              </Box>
+            </Box>
           )}
-        </TabPanel>
 
-        {/* Gherkin Features Tab */}
-        <TabPanel value={tabValue} index={1}>
-          <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              Gherkin Features (BDD)
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <SearchBar
-                placeholder="Search features..."
-                value={gherkinSearch}
-                onSearch={setGherkinSearch}
-              />
-              {gherkinFeatures?.length > 0 && (
-                <>
+          {/* Features in this folder */}
+          <Paper>
+            <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                FEATURES ({(featuresByFolder[selectedFolderId] || []).length})
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <SearchBar
+                  placeholder="Search features..."
+                  value={gherkinSearch}
+                  onSearch={setGherkinSearch}
+                />
+                {(featuresByFolder[selectedFolderId] || []).length > 0 && (
                   <Button
                     variant="outlined"
+                    size="small"
                     startIcon={<Download />}
                     onClick={(e) => setExportAnchorEl(e.currentTarget)}
                   >
-                    Export All
+                    Export
                   </Button>
-                  <Menu
-                    anchorEl={exportAnchorEl}
-                    open={Boolean(exportAnchorEl)}
-                    onClose={() => setExportAnchorEl(null)}
-                  >
-                    <MenuItem onClick={() => handleExportProject('zip')}>
-                      <ListItemIcon>
-                        <Archive fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText>
-                        Export as ZIP (.feature files)
-                      </ListItemText>
-                    </MenuItem>
-                    <MenuItem onClick={() => handleExportProject('json')}>
-                      <ListItemIcon>
-                        <GetApp fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText>
-                        Export as JSON
-                      </ListItemText>
-                    </MenuItem>
-                  </Menu>
-                </>
-              )}
-              <Button
-                variant="contained"
-                startIcon={<Psychology />}
-                onClick={() => navigate(`/generate?projectId=${id}`)}
-              >
-                Generate with AI
-              </Button>
+                )}
+              </Box>
             </Box>
-          </Box>
-          <Divider />
+            <Divider />
 
-          {filteredGherkinFeatures.length === 0 ? (
-            <Box sx={{ p: 8, textAlign: 'center' }}>
-              <Description sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-              <Typography variant="h6" sx={{ mb: 1 }}>
-                No Gherkin Features Yet
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Generate BDD test scenarios using AI
-              </Typography>
-              <Button
-                variant="contained"
-                startIcon={<Psychology />}
-                onClick={() => navigate(`/generate?projectId=${id}`)}
-              >
-                Generate with AI
-              </Button>
-            </Box>
-          ) : (
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 600 }}>Feature Name</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }} align="center">Scenarios</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }} align="center">Created</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }} align="right">Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredGherkinFeatures.map((feature) => (
-                    <TableRow
-                      key={feature.id}
-                      sx={{
-                        '&:hover': {
-                          backgroundColor: 'action.hover',
-                          cursor: 'pointer',
-                        },
-                      }}
-                      onClick={() => handleViewFeature(feature.id)}
+            {(() => {
+              const folderFeatures = featuresByFolder[selectedFolderId] || [];
+              const filtered = folderFeatures.filter(f =>
+                f.name.toLowerCase().includes(gherkinSearch.toLowerCase()) ||
+                f.description?.toLowerCase().includes(gherkinSearch.toLowerCase())
+              );
+
+              if (filtered.length === 0) {
+                return (
+                  <Box sx={{ p: 6, textAlign: 'center' }}>
+                    <Description sx={{ fontSize: 48, color: 'grey.300', mb: 1 }} />
+                    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                      No features in this folder
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      startIcon={<Psychology />}
+                      onClick={() => navigate(`/generate?projectId=${id}&folderId=${selectedFolderId}`)}
                     >
-                      <TableCell>
-                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                          {feature.name}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" color="text.secondary">
-                          {feature.description || 'No description'}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Chip
-                          label={feature.scenario_count}
-                          size="small"
-                          color="success"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        <Typography variant="body2" color="text.secondary">
-                          {new Date(feature.created_at).toLocaleDateString()}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="right" onClick={(e) => e.stopPropagation()}>
-                        <Stack direction="row" spacing={1} justifyContent="flex-end">
-                          {isAdmin && (
-                            <Button
-                              size="small"
-                              startIcon={<PlayArrow />}
-                              onClick={() => navigate(`/run-tests?projectId=${id}&featureId=${feature.id}`)}
-                            >
-                              Run
-                            </Button>
-                          )}
-                          <Button
-                            size="small"
-                            startIcon={<Download />}
-                            onClick={() => handleExportSingleFeature(feature.id, feature.name, 'feature')}
-                          >
-                            Export
-                          </Button>
-                          <IconButton
-                            size="small"
-                            onClick={(e) => handleMenuOpen(e, { ...feature, isGherkin: true })}
-                          >
-                            <MoreVert />
-                          </IconButton>
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </TabPanel>
+                      Generate Features
+                    </Button>
+                  </Box>
+                );
+              }
 
-        {/* Traditional Test Suites Tab */}
-        <TabPanel value={tabValue} index={2}>
-          <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              Traditional Test Suites
+              return (
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 600 }}>Feature Name</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }} align="center">Scenarios</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }} align="center">Created</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }} align="right">Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {filtered.map((feature) => (
+                        <TableRow
+                          key={feature.id}
+                          sx={{
+                            '&:hover': { bgcolor: 'action.hover', cursor: 'pointer' },
+                          }}
+                          onClick={() => handleViewFeature(feature.id)}
+                        >
+                          <TableCell>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Description sx={{ color: 'success.main', fontSize: 20 }} />
+                              <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                                {feature.name}
+                              </Typography>
+                            </Box>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" color="text.secondary">
+                              {feature.description || 'No description'}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Chip label={feature.scenario_count} size="small" color="success" />
+                          </TableCell>
+                          <TableCell align="center">
+                            <Typography variant="body2" color="text.secondary">
+                              {new Date(feature.created_at).toLocaleDateString()}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="right" onClick={(e) => e.stopPropagation()}>
+                            <Stack direction="row" spacing={1} justifyContent="flex-end">
+                              {isAdmin && (
+                                <Button
+                                  size="small"
+                                  startIcon={<PlayArrow />}
+                                  onClick={() => navigate(`/run-tests?projectId=${id}&featureId=${feature.id}`)}
+                                >
+                                  Run
+                                </Button>
+                              )}
+                              <Tooltip title="Move to folder">
+                                <IconButton size="small" onClick={() => handleMoveFeature(feature)}>
+                                  <DriveFileMove fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                              <IconButton
+                                size="small"
+                                onClick={(e) => handleMenuOpen(e, { ...feature, isGherkin: true })}
+                              >
+                                <MoreVert />
+                              </IconButton>
+                            </Stack>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              );
+            })()}
+          </Paper>
+        </Box>
+      )}
+
+
+      {/* Main Dashboard View - hidden when in folder view */}
+      {!inFolderView && (
+        <>
+          {/* Project Info Card */}
+          <Card sx={{ mb: 4 }}>
+            <CardContent>
+              <Grid container spacing={3} alignItems="center">
+                <Grid item xs={12} md={6}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 2,
+                        bgcolor: 'grey.100',
+                        color: 'grey.600',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <LinkIcon />
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        Base URL
+                      </Typography>
+                      <Tooltip title={project.base_url || 'Not set'}>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontFamily: 'monospace',
+                            fontWeight: 600,
+                            maxWidth: 400,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {project.base_url || 'Not set'}
+                        </Typography>
+                      </Tooltip>
+                    </Box>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Box sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' }, gap: 2 }}>
+                    <Chip label="Active" color="success" sx={{ fontWeight: 600 }} />
+                    <Chip
+                      label={`${totalTestCases} Total Tests`}
+                      variant="outlined"
+                      sx={{ fontWeight: 600 }}
+                    />
+                  </Box>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+
+          {/* Quick Stats Summary */}
+          <Paper sx={{ p: 3, mb: 4 }}>
+            <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
+              QUICK STATS
             </Typography>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <SearchBar
-                placeholder="Search suites..."
-                value={traditionalSearch}
-                onSearch={setTraditionalSearch}
-              />
-              {traditionalSuites?.length > 0 && (
-                <>
-                  <Button
-                    variant="outlined"
-                    startIcon={<Download />}
-                    onClick={(e) => setTraditionalExportAnchorEl(e.currentTarget)}
-                  >
-                    Export All
-                  </Button>
-                  <Menu
-                    anchorEl={traditionalExportAnchorEl}
-                    open={Boolean(traditionalExportAnchorEl)}
-                    onClose={() => setTraditionalExportAnchorEl(null)}
-                  >
-                    <MenuItem onClick={() => handleExportTraditionalProject('csv')}>
-                      <ListItemIcon>
-                        <Download fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText>
-                        Export as CSV (all test cases)
-                      </ListItemText>
-                    </MenuItem>
-                    <MenuItem onClick={() => handleExportTraditionalProject('zip')}>
-                      <ListItemIcon>
-                        <Archive fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText>
-                        Export as ZIP (CSV files)
-                      </ListItemText>
-                    </MenuItem>
-                    <MenuItem onClick={() => handleExportTraditionalProject('json')}>
-                      <ListItemIcon>
-                        <GetApp fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText>
-                        Export as JSON
-                      </ListItemText>
-                    </MenuItem>
-                  </Menu>
-                </>
-              )}
-              <Button
-                variant="contained"
-                startIcon={<Psychology />}
-                onClick={() => navigate(`/generate?projectId=${id}`)}
-              >
-                Generate with AI
-              </Button>
-            </Box>
-          </Box>
-          <Divider />
+            <Grid container spacing={3}>
+              <Grid item xs={6} sm={3}>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                    {totalTestCases}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Total Tests
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#3b82f6' }}>
+                    {project.test_cases?.length || 0}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Action-Based
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#22c55e' }}>
+                    {gherkinFeatures?.length || 0}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Gherkin Features
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#f59e0b' }}>
+                    {traditionalSuites?.length || 0}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Traditional Suites
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
 
-          {filteredTraditionalSuites.length === 0 ? (
-            <Box sx={{ p: 8, textAlign: 'center' }}>
-              <TableChart sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-              <Typography variant="h6" sx={{ mb: 1 }}>
-                No Traditional Test Suites Yet
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Generate traditional table format test cases using AI
-              </Typography>
-              <Button
-                variant="contained"
-                startIcon={<Psychology />}
-                onClick={() => navigate(`/generate?projectId=${id}`)}
+          {/* Test Type Category Cards */}
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
+            Test Categories
+          </Typography>
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            {/* Action-Based Test Cases Card */}
+            <Grid item xs={12} md={4}>
+              <Card
+                sx={{
+                  height: '100%',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&:hover': {
+                    transform: 'translateY(-8px)',
+                    boxShadow: '0 12px 40px rgba(59, 130, 246, 0.25)',
+                  },
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 6,
+                    background: 'linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)',
+                  },
+                }}
+                onClick={() => navigate(`/projects/${id}/action-based`)}
               >
-                Generate with AI
-              </Button>
-            </Box>
-          ) : (
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 600 }}>Suite Name</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }} align="center">Test Cases</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }} align="center">Created</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }} align="right">Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredTraditionalSuites.map((suite) => (
-                    <TableRow
-                      key={suite.id}
-                      sx={{
-                        '&:hover': {
-                          backgroundColor: 'action.hover',
-                          cursor: 'pointer',
-                        },
-                      }}
-                      onClick={() => handleViewSuite(suite.id)}
-                    >
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <TableChart sx={{ color: 'warning.main', fontSize: 20 }} />
-                          <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                            {suite.name}
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" color="text.secondary">
-                          {suite.description || 'No description'}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Chip
-                          label={suite.test_case_count}
-                          size="small"
-                          color="warning"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        <Typography variant="body2" color="text.secondary">
-                          {new Date(suite.created_at).toLocaleDateString()}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="right" onClick={(e) => e.stopPropagation()}>
-                        <Stack direction="row" spacing={1} justifyContent="flex-end">
-                          <Button
-                            size="small"
-                            startIcon={<Download />}
-                            onClick={() => handleExportSingleSuite(suite.id, suite.name, 'csv')}
-                          >
-                            CSV
-                          </Button>
-                          <IconButton
-                            size="small"
-                            onClick={(e) => handleMenuOpen(e, { ...suite, isTraditional: true })}
-                          >
-                            <MoreVert />
-                          </IconButton>
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </TabPanel>
-      </Paper>
+                <CardContent sx={{ p: 4 }}>
+                  <Box
+                    sx={{
+                      width: 80,
+                      height: 80,
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mb: 3,
+                      boxShadow: '0 8px 24px rgba(59, 130, 246, 0.3)',
+                    }}
+                  >
+                    <Code sx={{ fontSize: 40, color: 'white' }} />
+                  </Box>
+                  <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
+                    Action-Based
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Selenium-style test cases with actions, locators, and step-by-step instructions
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Chip
+                      label={`${project.test_cases?.length || 0} Test Cases`}
+                      color="primary"
+                      sx={{ fontWeight: 600 }}
+                    />
+                    <Chip
+                      label={`${totalActions} Actions`}
+                      variant="outlined"
+                      sx={{ fontWeight: 600 }}
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Gherkin/BDD Test Cases Card */}
+            <Grid item xs={12} md={4}>
+              <Card
+                sx={{
+                  height: '100%',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&:hover': {
+                    transform: 'translateY(-8px)',
+                    boxShadow: '0 12px 40px rgba(34, 197, 94, 0.25)',
+                  },
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 6,
+                    background: 'linear-gradient(90deg, #22c55e 0%, #4ade80 100%)',
+                  },
+                }}
+                onClick={() => navigate(`/projects/${id}/gherkin`)}
+              >
+                <CardContent sx={{ p: 4 }}>
+                  <Box
+                    sx={{
+                      width: 80,
+                      height: 80,
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #22c55e 0%, #4ade80 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mb: 3,
+                      boxShadow: '0 8px 24px rgba(34, 197, 94, 0.3)',
+                    }}
+                  >
+                    <Description sx={{ fontSize: 40, color: 'white' }} />
+                  </Box>
+                  <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
+                    Gherkin/BDD
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Behavior-driven development scenarios with Given-When-Then syntax
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Chip
+                      label={`${gherkinFeatures?.length || 0} Features`}
+                      color="success"
+                      sx={{ fontWeight: 600 }}
+                    />
+                    <Chip
+                      label={`${totalScenarios} Scenarios`}
+                      variant="outlined"
+                      sx={{ fontWeight: 600 }}
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Traditional Test Cases Card */}
+            <Grid item xs={12} md={4}>
+              <Card
+                sx={{
+                  height: '100%',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&:hover': {
+                    transform: 'translateY(-8px)',
+                    boxShadow: '0 12px 40px rgba(245, 158, 11, 0.25)',
+                  },
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 6,
+                    background: 'linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%)',
+                  },
+                }}
+                onClick={() => navigate(`/projects/${id}/traditional`)}
+              >
+                <CardContent sx={{ p: 4 }}>
+                  <Box
+                    sx={{
+                      width: 80,
+                      height: 80,
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mb: 3,
+                      boxShadow: '0 8px 24px rgba(245, 158, 11, 0.3)',
+                    }}
+                  >
+                    <TableChart sx={{ fontSize: 40, color: 'white' }} />
+                  </Box>
+                  <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
+                    Traditional
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Table-format test cases with preconditions, steps, and expected outcomes
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Chip
+                      label={`${traditionalSuites?.length || 0} Suites`}
+                      color="warning"
+                      sx={{ fontWeight: 600 }}
+                    />
+                    <Chip
+                      label={`${totalTraditionalCases} Test Cases`}
+                      variant="outlined"
+                      sx={{ fontWeight: 600 }}
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+
+</>
+      )}
 
       {/* Context Menu */}
       <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
@@ -1726,6 +1907,19 @@ export default function ProjectDetails() {
         open={autonomousRunOpen}
         onClose={() => setAutonomousRunOpen(false)}
         project={project}
+      />
+
+
+      {/* Folder Dialog */}
+      <FolderDialog
+        open={folderDialogOpen}
+        onClose={() => setFolderDialogOpen(false)}
+        onSubmit={handleFolderDialogSubmit}
+        mode={folderDialogMode}
+        folder={editingFolder}
+        feature={movingFeature}
+        folders={folderTree}
+        parentFolderId={folderParentId}
       />
 
       <Snackbar

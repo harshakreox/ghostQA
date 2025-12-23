@@ -41,8 +41,8 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
 
   // Check admin access
   if (adminOnly && !isAdmin) {
-    // Redirect non-admins to home page with a message
-    return <Navigate to="/" state={{ accessDenied: true }} replace />;
+    // Redirect non-admins to projects page with a message
+    return <Navigate to="/projects" state={{ accessDenied: true }} replace />;
   }
 
   return children;

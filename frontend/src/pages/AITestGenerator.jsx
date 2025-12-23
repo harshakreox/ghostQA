@@ -78,7 +78,9 @@ export default function AITestGenerator() {
   const [tabValue, setTabValue] = useState(0);
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(preselectedProjectId || '');
-  
+  const [folders, setFolders] = useState([]);
+  const [selectedFolder, setSelectedFolder] = useState('');
+
   // Input state
   const [brdText, setBrdText] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
@@ -141,6 +143,21 @@ export default function AITestGenerator() {
     }
   };
 
+  const loadFolders = async (projectId) => {
+    if (!projectId) {
+      setFolders([]);
+      setSelectedFolder('');
+      return;
+    }
+    try {
+      const response = await axios.get(`/api/projects/${projectId}/folders`);
+      setFolders(response.data.folders || []);
+    } catch (error) {
+      console.error('Error loading folders:', error);
+      setFolders([]);
+    }
+  };
+
   const checkApiKey = async () => {
     setCheckingAPI(true);
     try {
@@ -181,6 +198,7 @@ export default function AITestGenerator() {
       const response = await axios.post(endpoint, {
         brd_content: brdText,
         project_id: selectedProject || null,
+        folder_id: selectedFolder || null,
         project_context: additionalContext || null,
         end_to_end: isEndToEnd,
       });
@@ -210,6 +228,7 @@ export default function AITestGenerator() {
       const formData = new FormData();
       formData.append('file', selectedFile);
       if (selectedProject) formData.append('project_id', selectedProject);
+      if (selectedFolder) formData.append('folder_id', selectedFolder);
       if (additionalContext) formData.append('project_context', additionalContext);
       formData.append('end_to_end', isEndToEnd);
 
@@ -275,6 +294,7 @@ export default function AITestGenerator() {
       const formData = new FormData();
       formData.append('file', dataDictFile);
       if (selectedProject) formData.append('project_id', selectedProject);
+      if (selectedFolder) formData.append('folder_id', selectedFolder);
       if (formName) formData.append('form_name', formName);
       formData.append('output_format', formatType);
 
@@ -458,10 +478,11 @@ export default function AITestGenerator() {
       try {
         await axios.post('/api/gherkin/link-to-project', {
           feature_id: generatedFeature.id,
-          project_id: selectedProject
+          project_id: selectedProject,
+          folder_id: selectedFolder || null
         });
 
-        showNotification(`Successfully linked feature with ${selectedScenarios.length} scenarios to project!`, 'success');
+        showNotification(`Successfully added feature to ${selectedFolder ? 'folder' : 'project'}!`, 'success');
 
         setTimeout(() => {
           navigate(`/projects/${selectedProject}`);
@@ -655,7 +676,7 @@ export default function AITestGenerator() {
             </Tooltip>
           </Box>
           <Typography variant="body2" color="text.secondary">
-            Upload or paste your BRD document and let AI generate BDD test scenarios in Gherkin format
+            Upload or paste your User Story document and let AI generate BDD test scenarios in Gherkin format
           </Typography>
         </Box>
 
@@ -679,7 +700,10 @@ export default function AITestGenerator() {
               <Select
                 value={selectedProject}
                 label="Select Project"
-                onChange={(e) => setSelectedProject(e.target.value)}
+                onChange={(e) => {
+                  setSelectedProject(e.target.value);
+                  loadFolders(e.target.value);
+                }}
               >
                 <MenuItem value="">
                   <em>None - I'll add to project later</em>
@@ -691,6 +715,27 @@ export default function AITestGenerator() {
                 ))}
               </Select>
             </FormControl>
+
+            {/* Folder Selection (only show if project selected and has folders) */}
+            {selectedProject && folders.length > 0 && (
+              <FormControl fullWidth sx={{ mt: 2 }}>
+                <InputLabel>Target Folder (Optional)</InputLabel>
+                <Select
+                  value={selectedFolder}
+                  label="Target Folder (Optional)"
+                  onChange={(e) => setSelectedFolder(e.target.value)}
+                >
+                  <MenuItem value="">
+                    <em>Root level - no folder</em>
+                  </MenuItem>
+                  {folders.map((folder) => (
+                    <MenuItem key={folder.id} value={folder.id}>
+                      {folder.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
 
             {/* Display selected project's UI frameworks */}
             {selectedProject && (() => {
@@ -821,7 +866,7 @@ export default function AITestGenerator() {
                 />
                 <Description sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
                 <Typography variant="h6" sx={{ mb: 1 }}>
-                  {selectedFile ? selectedFile.name : 'Click to upload BRD document'}
+                  {selectedFile ? selectedFile.name : 'Click to upload User Story document'}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Supported formats: PDF, DOCX, TXT
@@ -913,27 +958,34 @@ export default function AITestGenerator() {
           <Card>
             <CardContent>
               <TextField
-                label="Paste BRD Content"
+                label="Paste BRD / User Story Content"
                 value={brdText}
                 onChange={(e) => setBrdText(e.target.value)}
                 fullWidth
                 multiline
-                rows={15}
-                placeholder="Paste your Business Requirements Document here...
+                rows={14}
+                placeholder={`Paste your Business Requirements Document or User Story here...
 
 Example:
 Feature: User Login
+
 The system shall allow users to authenticate using email and password.
+
+Requirements:
 - Users must enter a valid email address
 - Password must be at least 8 characters
 - System shall display error messages for invalid credentials
-- After successful login, user is redirected to dashboard
-..."
-                sx={{ mb: 2 }}
+
+After successful login, user is redirected to dashboard...`}
+                helperText={`${brdText.length} characters (minimum 50 required)`}
+                error={brdText.length > 0 && brdText.length < 50}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    fontFamily: 'monospace',
+                    fontSize: '0.9rem',
+                  },
+                }}
               />
-              <Typography variant="caption" color="text.secondary">
-                Characters: {brdText.length} (minimum 50)
-              </Typography>
 
               {/* NEW: E2E Checkbox */}
               <Box sx={{ mt: 2, mb: 2 }}>

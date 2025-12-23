@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist/
+dist-ssr/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Data - Ignore all runtime data (each system has its own)
+backend/app/data/projects/*.json
+backend/app/data/features/*.json
+backend/app/data/traditional/*.json
+backend/app/data/folders/*.json
+backend/app/data/reports/*.json
+backend/app/data/users/*.json
+backend/app/data/releases.json
+backend/app/data/test_data_knowledge.json
+
+# Results and agent_knowledge - ignore contents but keep .gitkeep
+backend/app/data/results/*
+!backend/app/data/results/.gitkeep
+backend/app/data/agent_knowledge/*
+!backend/app/data/agent_knowledge/.gitkeep
+
+# Keep directory structure
+!backend/app/data/.gitkeep
+!backend/app/data/projects/.gitkeep
+!backend/app/data/features/.gitkeep
+!backend/app/data/traditional/.gitkeep
+!backend/app/data/folders/.gitkeep
+!backend/app/data/reports/.gitkeep
+!backend/app/data/users/.gitkeep
+
+# Logs
+*.log
+logs/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Testing
+.playwright/
+test-results/
+playwright-report/
+screenshots/

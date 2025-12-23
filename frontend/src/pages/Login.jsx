@@ -48,7 +48,7 @@ export default function Login() {
   const [registerPassword, setRegisterPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const from = location.state?.from?.pathname || '/';
+  const from = location.state?.from?.pathname || '/projects';
 
   const toggleMode = () => {
     setIsLogin(!isLogin);
@@ -70,7 +70,7 @@ export default function Login() {
     const result = await login(loginUsername, loginPassword);
 
     if (result.success) {
-      const destination = result.user?.role === 'user' ? '/projects' : (from === '/' ? '/' : from);
+      const destination = result.user?.role === 'user' ? '/projects' : (from === '/' || from === '/projects' ? '/dashboard' : from);
       navigate(destination, { replace: true, state: { welcomeUser: loginUsername } });
     } else {
       setError(result.error);

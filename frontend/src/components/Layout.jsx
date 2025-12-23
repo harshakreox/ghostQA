@@ -48,7 +48,7 @@ const collapsedDrawerWidth = 72;
 
 // All menu items with role requirements
 const allMenuItems = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/', roles: ['admin'] },
+  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', roles: ['admin'] },
   { text: 'Projects', icon: <ProjectsIcon />, path: '/projects', roles: ['admin', 'user'] },
   { text: 'Run Tests', icon: <AutoAwesomeIcon />, path: '/run-tests', roles: ['admin'] },
   { text: 'Releases', icon: <RocketIcon />, path: '/releases', roles: ['admin'] },

@@ -22,6 +22,9 @@ import AITestGenerator from './pages/AITestGenerator';
 import UnifiedTestRunner from './components/UnifiedTestRunner';
 import UserManagement from './pages/UserManagement';
 import OrchestratorControlPanel from './pages/OrchestratorControlPanel';
+import TestCategoryView from './pages/TestCategoryView';
+import Landing from './pages/Landing';
+import HowItWorks from './pages/HowItWorks';
 
 function App() {
   return (
@@ -31,7 +34,9 @@ function App() {
         <ForceChangePasswordDialog />
         <BrowserRouter>
           <Routes>
-            {/* Public route - Login */}
+            {/* Public routes */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/login" element={<Login />} />
 
             {/* Protected routes - wrapped in Layout */}
@@ -41,12 +46,13 @@ function App() {
                 <ProtectedRoute>
                   <Layout>
                     <Routes>
-                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/projects" element={<Projects />} />
                       <Route path="/projects/:id" element={<ProjectDetails />} />
                       <Route path="/projects/:id/edit" element={<ProjectEdit />} />
                       <Route path="/projects/:id/test-cases/new" element={<TestCaseEditor />} />
                       <Route path="/projects/:id/test-cases/:testCaseId/edit" element={<TestCaseEditor />} />
+                      <Route path="/projects/:id/:category" element={<TestCategoryView />} />
 
                       {/* Admin-only routes */}
                       <Route

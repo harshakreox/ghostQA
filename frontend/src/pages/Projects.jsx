@@ -4,12 +4,9 @@ import {
   Box,
   Button,
   Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+  Grid,
+  Card,
+  CardContent,
   IconButton,
   Dialog,
   DialogTitle,
@@ -18,7 +15,6 @@ import {
   TextField,
   Chip,
   LinearProgress,
-  Paper,
   Menu,
   MenuItem,
   ListItemIcon,
@@ -34,6 +30,8 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Tooltip,
+  Divider,
 } from '@mui/material';
 import {
   Add,
@@ -48,8 +46,14 @@ import {
   Visibility,
   VisibilityOff,
   Widgets,
+  Language,
+  Schedule,
+  Description,
+  TableChart,
+  Science,
 } from '@mui/icons-material';
 import axios from 'axios';
+import { format } from 'date-fns';
 
 // Import generic components and hooks
 import { PageHeader, EmptyState, ConfirmDialog, SearchBar } from '../components';
@@ -250,16 +254,16 @@ export default function Projects() {
       )}
 
       {filteredProjects.length === 0 && searchQuery ? (
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
+        <Card sx={{ p: 4, textAlign: 'center' }}>
           <Typography variant="h6" color="text.secondary">
             No projects found matching "{searchQuery}"
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             Try a different search term
           </Typography>
-        </Paper>
+        </Card>
       ) : projects.length === 0 ? (
-        <Paper sx={{ p: 4 }}>
+        <Card sx={{ p: 4 }}>
           <EmptyState
             icon={FolderOpen}
             title="No Projects Yet"
@@ -269,90 +273,170 @@ export default function Projects() {
             onAction={() => setOpenDialog(true)}
             size="large"
           />
-        </Paper>
+        </Card>
       ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 600 }}>Project Name</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Base URL</TableCell>
-                <TableCell sx={{ fontWeight: 600 }} align="center">
-                  Test Cases
-                </TableCell>
-                <TableCell sx={{ fontWeight: 600 }} align="center">
-                  Status
-                </TableCell>
-                <TableCell sx={{ fontWeight: 600 }} align="right">
-                  Actions
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredProjects.map((project) => (
-                <TableRow
-                  key={project.id}
-                  sx={{
-                    '&:hover': {
-                      backgroundColor: 'action.hover',
-                      cursor: 'pointer',
-                    },
-                  }}
-                  onClick={() => navigate(`/projects/${project.id}`)}
-                >
-                  <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Grid container spacing={3}>
+          {filteredProjects.map((project) => (
+            <Grid item xs={12} md={6} lg={4} key={project.id}>
+              <Card
+                sx={{
+                  height: '100%',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    boxShadow: 8,
+                    transform: 'translateY(-4px)',
+                  },
+                }}
+                onClick={() => navigate(`/projects/${project.id}`)}
+              >
+                <CardContent sx={{ p: 3 }}>
+                  {/* Header */}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
                       <Box
                         sx={{
-                          width: 40,
-                          height: 40,
+                          width: 48,
+                          height: 48,
                           borderRadius: 2,
                           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           color: 'white',
+                          flexShrink: 0,
                         }}
                       >
-                        <Code />
+                        <Code sx={{ fontSize: 24 }} />
                       </Box>
-                      <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                        {project.name}
-                      </Typography>
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            fontWeight: 600,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {project.name}
+                        </Typography>
+                        <Chip
+                          label="Active"
+                          size="small"
+                          color="success"
+                          sx={{ fontWeight: 600, height: 20, fontSize: '0.7rem' }}
+                        />
+                      </Box>
                     </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" color="text.secondary">
-                      {project.description}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
-                      {project.base_url || 'Not set'}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Chip
-                      label={project.test_cases?.length || 0}
+                    <IconButton
                       size="small"
-                      color="primary"
-                      sx={{ fontWeight: 600 }}
-                    />
-                  </TableCell>
-                  <TableCell align="center">
-                    <Chip label="Active" size="small" color="success" sx={{ fontWeight: 600 }} />
-                  </TableCell>
-                  <TableCell align="right" onClick={(e) => e.stopPropagation()}>
-                    <IconButton onClick={(e) => openMenu(e, project)}>
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openMenu(e, project);
+                      }}
+                    >
                       <MoreVert />
                     </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                  </Box>
+
+                  {/* Description */}
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 2,
+                      height: 40,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                    }}
+                  >
+                    {project.description || 'No description'}
+                  </Typography>
+
+                  {/* Base URL */}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                    <Language fontSize="small" sx={{ color: 'text.secondary' }} />
+                    <Tooltip title={project.base_url || 'Not set'}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontFamily: 'monospace',
+                          color: 'text.secondary',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          flex: 1,
+                        }}
+                      >
+                        {project.base_url || 'Not set'}
+                      </Typography>
+                    </Tooltip>
+                  </Box>
+
+                  <Divider sx={{ my: 2 }} />
+
+                  {/* Test Type Indicators */}
+                  <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+                    <Tooltip title="Action-Based Test Cases">
+                      <Chip
+                        icon={<Code sx={{ fontSize: 16 }} />}
+                        label={project.test_cases?.length || 0}
+                        size="small"
+                        variant="outlined"
+                        color="info"
+                        sx={{ fontWeight: 600 }}
+                      />
+                    </Tooltip>
+                    <Tooltip title="Gherkin/BDD Features">
+                      <Chip
+                        icon={<Description sx={{ fontSize: 16 }} />}
+                        label="BDD"
+                        size="small"
+                        variant="outlined"
+                        color="success"
+                        sx={{ fontWeight: 600 }}
+                      />
+                    </Tooltip>
+                    <Tooltip title="Traditional Test Cases">
+                      <Chip
+                        icon={<TableChart sx={{ fontSize: 16 }} />}
+                        label="Traditional"
+                        size="small"
+                        variant="outlined"
+                        color="warning"
+                        sx={{ fontWeight: 600 }}
+                      />
+                    </Tooltip>
+                  </Box>
+
+                  {/* Footer */}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Schedule fontSize="small" sx={{ color: 'text.secondary', fontSize: 16 }} />
+                      <Typography variant="caption" color="text.secondary">
+                        {project.created_at
+                          ? format(new Date(project.created_at), 'MMM dd, yyyy')
+                          : 'Recently created'}
+                      </Typography>
+                    </Box>
+                    {project.ui_config?.frameworks?.length > 0 && (
+                      <Chip
+                        icon={<Widgets sx={{ fontSize: 14 }} />}
+                        label={project.ui_config.frameworks.length}
+                        size="small"
+                        sx={{ height: 22, fontSize: '0.7rem' }}
+                      />
+                    )}
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       )}
 
       {/* Project Menu */}
@@ -381,6 +465,18 @@ export default function Projects() {
             <ListItemText>Run Tests</ListItemText>
           </MenuItem>
         )}
+        <MenuItem
+          onClick={() => {
+            navigate(`/generate?projectId=${selectedProject?.id}`);
+            closeMenu();
+          }}
+        >
+          <ListItemIcon>
+            <Science fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Generate with AI</ListItemText>
+        </MenuItem>
+        <Divider />
         <MenuItem
           onClick={() => {
             navigate(`/projects/${selectedProject?.id}/edit`);

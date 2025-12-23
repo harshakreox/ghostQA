@@ -58,6 +58,7 @@ class TestCase(BaseModel):
     name: str
     description: str
     actions: List[TestAction]
+    folder_id: Optional[str] = None  # For folder organization
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
 

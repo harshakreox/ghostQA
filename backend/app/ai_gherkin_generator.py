@@ -693,8 +693,10 @@ The test executor will automatically use the correct credentials for each role."
 
         return f"""You are an expert QA engineer creating test cases in TRADITIONAL TABLE FORMAT.
 
-Business Requirements Document:
+Business Requirements Document (may contain markdown formatting like headers ##, bold **, lists -):
 {brd_content}{context_info}{base_url_info}{framework_context}{credentials_context}
+
+Note: Parse any markdown formatting to understand document structure. Generate plain text test steps without markdown syntax.
 
 Generate {scenario_count} test cases in TRADITIONAL TABLE FORMAT with these columns:
 - Test Case No: Sequential number (TC001, TC002, etc.)
@@ -860,8 +862,10 @@ Return ONLY valid JSON, no markdown blocks, no explanations."""
 
         return f"""You are an expert QA engineer creating ONE comprehensive END-TO-END test scenario in Gherkin format.
 
-Business Requirements Document:
+Business Requirements Document (may contain markdown formatting like headers ##, bold **, lists -):
 {brd_content}{context_info}{base_url_info}{framework_context}{credentials_context}
+
+Note: Parse any markdown formatting to understand document structure. Generate plain text test steps without markdown syntax.
 
 Generate a SINGLE, COMPREHENSIVE Gherkin scenario that covers the COMPLETE HAPPY PATH user journey from start to finish.
 
@@ -964,8 +968,10 @@ Return ONLY valid JSON, no markdown blocks, no explanations."""
 
         return f"""You are an expert QA engineer creating focused test scenarios in Gherkin format.
 
-Business Requirements Document:
+Business Requirements Document (may contain markdown formatting like headers ##, bold **, lists -):
 {brd_content}{context_info}{base_url_info}{framework_context}{credentials_context}
+
+Note: Parse any markdown formatting to understand document structure. Generate plain text test steps without markdown syntax.
 
 Generate a Gherkin feature file with 10-15 practical, functional test scenarios.
 

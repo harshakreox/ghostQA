@@ -9,3 +9,11 @@ export { default as SearchBar } from './SearchBar';
 export { default as Layout } from './Layout';
 export { default as CreativeLoader } from './CreativeLoader';
 export { default as GherkinScenarioCard } from './GherkinScenarioCard';
+
+// Folder management components
+export { default as FolderTree } from './FolderTree';
+export { default as FolderDialog } from './FolderDialog';
+export { default as FolderNavigation } from './FolderNavigation';
+
+// Editor components
+export { default as MarkdownEditor } from './MarkdownEditor';
