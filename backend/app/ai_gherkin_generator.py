@@ -113,7 +113,7 @@ class AIGherkinGenerator:
         """Generate Gherkin test scenarios from BRD"""
 
         print(f" Generating Gherkin test scenarios with {self.api_type}...")
-        print(f"   Mode: {'End-to-End (15-25 scenarios)' if end_to_end else 'Focused (10-15 scenarios)'}")
+        print(f"   Mode: {'End-to-End (40-50 scenarios)' if end_to_end else 'Focused (35-40 scenarios)'}")
         if ui_config and ui_config.frameworks:
             print(f"   Frameworks: {', '.join(ui_config.frameworks)}")
         if credentials:
@@ -152,7 +152,7 @@ class AIGherkinGenerator:
         """Generate Traditional table format test cases from BRD"""
 
         print(f" Generating Traditional test cases with {self.api_type}...")
-        print(f"   Mode: {'End-to-End (comprehensive)' if end_to_end else 'Focused (10-15 test cases)'}")
+        print(f"   Mode: {'End-to-End (40-50 test cases)' if end_to_end else 'Focused (35-40 test cases)'}")
         if ui_config and ui_config.frameworks:
             print(f"   Frameworks: {', '.join(ui_config.frameworks)}")
         if credentials:
@@ -689,7 +689,7 @@ The test executor will automatically use the correct credentials for each role."
         # Build credentials context
         credentials_context = self._build_credentials_context(credentials)
 
-        scenario_count = "15-25" if end_to_end else "10-15"
+        scenario_count = "40-50" if end_to_end else "35-40"
 
         return f"""You are an expert QA engineer creating test cases in TRADITIONAL TABLE FORMAT.
 
@@ -709,10 +709,10 @@ Generate {scenario_count} test cases in TRADITIONAL TABLE FORMAT with these colu
 REQUIREMENTS:
 
 1. BALANCED COVERAGE:
-   - Positive scenarios (5-6): Successful operations, happy paths
-   - Negative scenarios (3-4): Error handling, validation failures
-   - Edge cases (2-3): Boundary conditions, special inputs
-   - Alternative flows (1-2): Different valid approaches
+   - Positive scenarios (15-20): Successful operations, happy paths
+   - Negative scenarios (10-12): Error handling, validation failures
+   - Edge cases (5-6): Boundary conditions, special inputs
+   - Alternative flows (2-4): Different valid approaches
 
 2. EACH TEST CASE MUST HAVE:
    - Clear, unique scenario name
@@ -951,7 +951,7 @@ GENERATE ONE COMPREHENSIVE SCENARIO WITH 15-30 STEPS.
 Return ONLY valid JSON, no markdown blocks, no explanations."""
 
     def _build_focused_prompt(self, brd_content: str, project_context: Optional[str] = None, base_url: Optional[str] = None, ui_config: Optional[UIFrameworkConfig] = None, credentials: Optional[List[TestCredential]] = None) -> str:
-        """Build focused prompt for 10-15 specific scenarios"""
+        """Build focused prompt for 35-40 specific scenarios"""
         context_info = f"\n\nProject Context:\n{project_context}" if project_context else ""
         base_url_info = f"\n\nApplication URL: {base_url}" if base_url else ""
 
@@ -973,21 +973,21 @@ Business Requirements Document (may contain markdown formatting like headers ##,
 
 Note: Parse any markdown formatting to understand document structure. Generate plain text test steps without markdown syntax.
 
-Generate a Gherkin feature file with 10-15 practical, functional test scenarios.
+Generate a Gherkin feature file with 35-40 practical, functional test scenarios.
 
 REQUIREMENTS:
 
-1. FOCUSED TESTING (10-15 scenarios):
+1. FOCUSED TESTING (35-40 scenarios):
    - Test specific features/functions
    - Isolated, independent scenarios
    - Clear, concise test cases
    - Each scenario tests ONE specific aspect
 
 2. BALANCED COVERAGE:
-   - Positive scenarios (5-6): Successful operations, happy paths
-   - Negative scenarios (3-4): Error handling, validation failures
-   - Edge cases (2-3): Boundary conditions, special inputs
-   - Alternative flows (1-2): Different valid approaches
+   - Positive scenarios (15-20): Successful operations, happy paths
+   - Negative scenarios (10-12): Error handling, validation failures
+   - Edge cases (5-6): Boundary conditions, special inputs
+   - Alternative flows (2-4): Different valid approaches
 
 3. PROPER GHERKIN STRUCTURE with JSON FORMAT:
 
@@ -1122,13 +1122,13 @@ REQUIREMENTS:
    1. Project credentials (if configured)
    2. Auto-generated realistic data (if enabled)
 
-6. SCENARIO DISTRIBUTION FOR FOCUSED (10-15 total):
-   - 5-6 positive scenarios (successful operations)
-   - 3-4 negative scenarios (validation, error handling)
-   - 2-3 edge cases (boundaries, special inputs)
-   - 1-2 alternative flows
+6. SCENARIO DISTRIBUTION FOR FOCUSED (35-40 total):
+   - 15-20 positive scenarios (successful operations)
+   - 10-12 negative scenarios (validation, error handling)
+   - 5-6 edge cases (boundaries, special inputs)
+   - 2-4 alternative flows
 
-GENERATE 10-15 FOCUSED SCENARIOS.
+GENERATE 35-40 FOCUSED SCENARIOS.
 Return ONLY valid JSON, no markdown blocks, no explanations."""
     
     def _call_llm(self, prompt: str) -> str:

@@ -132,7 +132,7 @@ BRD Content:
 {f"Project Context: {project_context}" if project_context else ""}
 {f"Application URL: {base_url}" if base_url else ""}
 
-Generate 5-10 test cases covering happy paths, negative scenarios, and edge cases.
+Generate 35-40 test cases covering happy paths, negative scenarios, and edge cases.
 
 Return ONLY valid JSON:
 {{

@@ -1,0 +1,374 @@
+/**
+ * Settings Page - Unified settings and user management
+ */
+
+import { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Paper,
+  Tabs,
+  Tab,
+  Grid,
+  Card,
+  CardContent,
+  Button,
+  TextField,
+  Switch,
+  FormControlLabel,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  IconButton,
+  Chip,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Avatar,
+  alpha,
+  Tooltip,
+} from '@mui/material';
+import {
+  Person,
+  Group,
+  Settings as SettingsIcon,
+  Security,
+  Notifications,
+  Add,
+  Edit,
+  Delete,
+  Check,
+  Close,
+  AdminPanelSettings,
+  Key,
+} from '@mui/icons-material';
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+
+// Helper to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('auth_token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+function TabPanel({ children, value, index }) {
+  return (
+    <Box hidden={value !== index} sx={{ py: 3 }}>
+      {value === index && children}
+    </Box>
+  );
+}
+
+export default function Settings() {
+  const { user, isAdmin } = useAuth();
+  const [tabValue, setTabValue] = useState(0);
+
+  // User management state
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [userDialog, setUserDialog] = useState({ open: false, user: null });
+  const [deleteDialog, setDeleteDialog] = useState({ open: false, user: null });
+
+  // New user form
+  const [newUser, setNewUser] = useState({
+    username: '',
+    email: '',
+    password: '',
+    role: 'user',
+  });
+
+  useEffect(() => {
+    if (isAdmin) {
+      loadUsers();
+    }
+  }, [isAdmin]);
+
+  const loadUsers = async () => {
+    try {
+      const response = await axios.get('/api/auth/users', { headers: getAuthHeaders() });
+      setUsers(response.data || []);
+    } catch (error) {
+      console.error('Failed to load users:', error);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const handleCreateUser = async () => {
+    try {
+      await axios.post('/api/auth/register', newUser, { headers: getAuthHeaders() });
+      setUserDialog({ open: false, user: null });
+      setNewUser({ username: '', email: '', password: '', role: 'user' });
+      loadUsers();
+    } catch (error) {
+      console.error('Failed to create user:', error);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!deleteDialog.user) return;
+    try {
+      await axios.delete(`/api/auth/users/${deleteDialog.user.id}`, { headers: getAuthHeaders() });
+      setDeleteDialog({ open: false, user: null });
+      loadUsers();
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+    }
+  };
+
+  const handleToggleUserRole = async (userId, currentRole) => {
+    const newRole = currentRole === 'admin' ? 'user' : 'admin';
+    try {
+      await axios.put(`/api/auth/users/${userId}`, { role: newRole }, { headers: getAuthHeaders() });
+      loadUsers();
+    } catch (error) {
+      console.error('Failed to update user role:', error);
+    }
+  };
+
+  return (
+    <Box>
+      {/* Header */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+          Settings
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Manage users, preferences, and system configuration
+        </Typography>
+      </Box>
+
+      {/* Tabs */}
+      <Paper sx={{ borderRadius: 2, mb: 3 }}>
+        <Tabs
+          value={tabValue}
+          onChange={(e, v) => setTabValue(v)}
+          sx={{ borderBottom: 1, borderColor: 'divider', px: 2 }}
+        >
+          <Tab icon={<Group />} iconPosition="start" label="Users" />
+          <Tab icon={<Person />} iconPosition="start" label="Profile" />
+          <Tab icon={<Security />} iconPosition="start" label="Security" />
+        </Tabs>
+      </Paper>
+
+      {/* Users Tab */}
+      <TabPanel value={tabValue} index={0}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            User Management
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => setUserDialog({ open: true, user: null })}
+            sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
+          >
+            Add User
+          </Button>
+        </Box>
+
+        <Paper sx={{ borderRadius: 2 }}>
+          <List>
+            {users.map((u, idx) => (
+              <Box key={u.id}>
+                {idx > 0 && <Divider />}
+                <ListItem sx={{ py: 2 }}>
+                  <Avatar
+                    sx={{
+                      mr: 2,
+                      background: u.role === 'admin'
+                        ? 'linear-gradient(135deg, #f57c00 0%, #ff9800 100%)'
+                        : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    }}
+                  >
+                    {u.username?.charAt(0).toUpperCase()}
+                  </Avatar>
+                  <ListItemText
+                    primary={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                          {u.username}
+                        </Typography>
+                        <Chip
+                          size="small"
+                          label={u.role}
+                          color={u.role === 'admin' ? 'warning' : 'primary'}
+                          sx={{ height: 20, fontSize: '0.7rem' }}
+                        />
+                        {u.id === user?.id && (
+                          <Chip size="small" label="You" variant="outlined" sx={{ height: 20, fontSize: '0.7rem' }} />
+                        )}
+                      </Box>
+                    }
+                    secondary={u.email}
+                  />
+                  <ListItemSecondaryAction>
+                    <Tooltip title="Toggle Admin">
+                      <IconButton
+                        onClick={() => handleToggleUserRole(u.id, u.role)}
+                        disabled={u.id === user?.id}
+                      >
+                        <AdminPanelSettings color={u.role === 'admin' ? 'warning' : 'action'} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete User">
+                      <IconButton
+                        onClick={() => setDeleteDialog({ open: true, user: u })}
+                        disabled={u.id === user?.id}
+                        color="error"
+                      >
+                        <Delete />
+                      </IconButton>
+                    </Tooltip>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              </Box>
+            ))}
+          </List>
+        </Paper>
+      </TabPanel>
+
+      {/* Profile Tab */}
+      <TabPanel value={tabValue} index={1}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 3, borderRadius: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
+                Your Profile
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 4 }}>
+                <Avatar
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    fontSize: '2rem',
+                    background: isAdmin
+                      ? 'linear-gradient(135deg, #f57c00 0%, #ff9800 100%)'
+                      : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  }}
+                >
+                  {user?.username?.charAt(0).toUpperCase()}
+                </Avatar>
+                <Box>
+                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    {user?.username}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {user?.email}
+                  </Typography>
+                  <Chip
+                    size="small"
+                    label={isAdmin ? 'Administrator' : 'User'}
+                    color={isAdmin ? 'warning' : 'primary'}
+                    sx={{ mt: 1 }}
+                  />
+                </Box>
+              </Box>
+              <Divider sx={{ my: 3 }} />
+              <Typography variant="body2" color="text.secondary">
+                To change your password or update profile information, contact an administrator.
+              </Typography>
+            </Paper>
+          </Grid>
+        </Grid>
+      </TabPanel>
+
+      {/* Security Tab */}
+      <TabPanel value={tabValue} index={2}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 3, borderRadius: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
+                Security Settings
+              </Typography>
+              <List>
+                <ListItem>
+                  <ListItemText
+                    primary="Session Timeout"
+                    secondary="Sessions expire after 2 hours of inactivity"
+                  />
+                </ListItem>
+                <Divider />
+                <ListItem>
+                  <ListItemText
+                    primary="Password Requirements"
+                    secondary="Minimum 6 characters required"
+                  />
+                </ListItem>
+              </List>
+            </Paper>
+          </Grid>
+        </Grid>
+      </TabPanel>
+
+      {/* Add User Dialog */}
+      <Dialog
+        open={userDialog.open}
+        onClose={() => setUserDialog({ open: false, user: null })}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Add New User</DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              label="Username"
+              value={newUser.username}
+              onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+              fullWidth
+            />
+            <TextField
+              label="Email"
+              type="email"
+              value={newUser.email}
+              onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+              fullWidth
+            />
+            <TextField
+              label="Password"
+              type="password"
+              value={newUser.password}
+              onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+              fullWidth
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={newUser.role === 'admin'}
+                  onChange={(e) => setNewUser({ ...newUser, role: e.target.checked ? 'admin' : 'user' })}
+                />
+              }
+              label="Administrator"
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setUserDialog({ open: false, user: null })}>Cancel</Button>
+          <Button variant="contained" onClick={handleCreateUser}>Create User</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialog.open}
+        onClose={() => setDeleteDialog({ open: false, user: null })}
+      >
+        <DialogTitle>Delete User</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete user <strong>{deleteDialog.user?.username}</strong>?
+            This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialog({ open: false, user: null })}>Cancel</Button>
+          <Button variant="contained" color="error" onClick={handleDeleteUser}>Delete</Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+}

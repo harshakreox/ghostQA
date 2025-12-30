@@ -21,6 +21,7 @@ import {
   Badge,
   Snackbar,
   Alert,
+  alpha,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -28,45 +29,44 @@ import {
   FolderOpen as ProjectsIcon,
   Assessment as ReportsIcon,
   Code as CodeIcon,
-  PlayArrow as PlayIcon,
-  Rocket as RocketIcon,
-  Psychology as PsychologyIcon,
+  Science as ScienceIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
-  AutoAwesome as AutoAwesomeIcon,
-  Person as PersonIcon,
   Logout as LogoutIcon,
-  AdminPanelSettings as AdminIcon,
   AccessTime as TimeIcon,
-  Group as GroupIcon,
-  SmartToy as SmartToyIcon,
+  Settings as SettingsIcon,
+  AdminPanelSettings as AdminIcon,
+  PlayArrow as PlayIcon,
+  Business as BusinessIcon,
+  CorporateFare as OrganizationsIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+import { useOrganization } from '../context/OrganizationContext';
 
 const drawerWidth = 280;
 const collapsedDrawerWidth = 72;
 
 // All menu items with role requirements
 const allMenuItems = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', roles: ['admin'] },
-  { text: 'Projects', icon: <ProjectsIcon />, path: '/projects', roles: ['admin', 'user'] },
-  { text: 'Run Tests', icon: <AutoAwesomeIcon />, path: '/run-tests', roles: ['admin'] },
-  { text: 'Releases', icon: <RocketIcon />, path: '/releases', roles: ['admin'] },
-  { text: 'Reports', icon: <ReportsIcon />, path: '/reports', roles: ['admin'] },
-  { text: 'AI Generator', icon: <PsychologyIcon />, path: '/generate', roles: ['admin', 'user'] },
-  { text: 'Users', icon: <GroupIcon />, path: '/users', roles: ['admin'] },
-  { text: 'Orchestrator', icon: <SmartToyIcon />, path: '/orchestrator', roles: ['admin'] },
+  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', roles: ['admin'], description: 'Overview & insights' },
+  { text: 'Projects', icon: <ProjectsIcon />, path: '/projects', roles: ['admin', 'user'], description: 'Manage test projects' },
+  { text: 'Test Lab', icon: <ScienceIcon />, path: '/test-lab', roles: ['admin'], description: 'Run & execute tests' },
+  { text: 'AI Generator', icon: <CodeIcon />, path: '/generate', roles: ['admin', 'user'], description: 'Generate test cases' },
+  { text: 'Reports', icon: <ReportsIcon />, path: '/reports', roles: ['admin'], description: 'Test results & analytics' },
+  { text: 'Organizations', icon: <OrganizationsIcon />, path: '/organizations', roles: ['admin'], description: 'Manage all organizations (Super Admin)' },
+  { text: 'Settings', icon: <SettingsIcon />, path: '/settings', roles: ['admin'], description: 'Users & configuration' },
 ];
 
 export default function Layout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [welcomeToast, setWelcomeToast] = useState({ open: false, name: '' });
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAdmin, logout, getTimeUntilExpiry, refreshSession } = useAuth();
+  const { isOrgAdmin, isManager, orgRole } = useOrganization();
 
   // Filter menu items based on user role
   const menuItems = allMenuItems.filter(item =>

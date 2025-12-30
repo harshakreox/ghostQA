@@ -392,7 +392,7 @@ Return ONLY valid JSON, no markdown formatting or extra text."""
         )
 
     def _extract_form_fields_from_html(self, html: str) -> List[Dict[str, Any]]:
-        """Extract form fields from HTML"""
+        """Extract form fields from HTML with comprehensive metadata"""
         from bs4 import BeautifulSoup
 
         fields = []
@@ -405,15 +405,32 @@ Return ONLY valid JSON, no markdown formatting or extra text."""
                 if field_type in ('hidden', 'submit', 'button'):
                     continue
 
+                # Get all available identifiers for better data generation
+                field_name = inp.get('name', '')
+                field_id = inp.get('id', '')
+                field_placeholder = inp.get('placeholder', '')
+                field_aria = inp.get('aria-label', '')
+                field_autocomplete = inp.get('autocomplete', '')  # e.g., "email", "tel", "given-name"
+                field_label = self._find_label_for_input(soup, inp)
+
+                # Also check for data attributes that might indicate field purpose
+                data_testid = inp.get('data-testid', '') or inp.get('data-test', '') or inp.get('data-cy', '')
+
                 field = {
-                    "name": inp.get('name') or inp.get('id') or '',
+                    "name": field_name or field_id or '',
+                    "id": field_id,
                     "type": field_type if inp.name != 'select' else 'select',
                     "selector": self._build_selector(inp),
                     "required": inp.has_attr('required'),
-                    "placeholder": inp.get('placeholder', ''),
-                    "aria_label": inp.get('aria-label', ''),
-                    "label": self._find_label_for_input(soup, inp)
+                    "placeholder": field_placeholder,
+                    "aria_label": field_aria,
+                    "autocomplete": field_autocomplete,  # This is very useful for field type detection!
+                    "label": field_label,
+                    "data_testid": data_testid
                 }
+
+                # Log for debugging
+                logger.debug(f"[FIELD] Found: name={field_name}, label={field_label}, placeholder={field_placeholder}, autocomplete={field_autocomplete}")
 
                 # Get options for select fields
                 if inp.name == 'select':
@@ -577,35 +594,105 @@ Return ONLY valid JSON, no markdown formatting or extra text."""
         return actions
 
     def _generate_field_value(self, field: Dict) -> str:
-        """Generate appropriate test data for a field"""
-        if self.data_generator:
-            # Use TestDataGenerator for smart data generation
-            field_name = field.get("name") or field.get("label") or field.get("placeholder") or ""
-            return self.data_generator.generate_for_field(field_name)
-
-        # Fallback basic generation
+        """Generate appropriate test data for a field based on ALL available metadata"""
+        # Combine ALL field identifiers for better matching
+        field_name = field.get("name", "")
+        field_label = field.get("label", "")
+        field_placeholder = field.get("placeholder", "")
+        field_aria = field.get("aria_label", "") or field.get("aria-label", "")
+        field_id = field.get("id", "")
         field_type = field.get("type", "text").lower()
-        field_name = (field.get("name") or field.get("label") or "").lower()
+        field_autocomplete = field.get("autocomplete", "").lower()  # e.g., "email", "tel", "given-name"
 
-        if field_type == "email" or "email" in field_name:
-            return f"test_{datetime.now().strftime('%H%M%S')}@example.com"
-        if field_type == "password" or "password" in field_name:
-            return "TestPass123!"
-        if "name" in field_name:
-            if "first" in field_name:
+        # Combine all identifiers into searchable text
+        all_identifiers = f"{field_name} {field_label} {field_placeholder} {field_aria} {field_id} {field_autocomplete}".lower()
+
+        # AUTOCOMPLETE attribute is the most reliable indicator - check first!
+        # Common autocomplete values: email, tel, given-name, family-name, username, current-password, new-password
+        if field_autocomplete:
+            if field_autocomplete in ('email', 'username email'):
+                return f"test_{datetime.now().strftime('%H%M%S')}@example.com"
+            if field_autocomplete in ('tel', 'tel-national', 'tel-local'):
+                return "555-123-4567"
+            if field_autocomplete in ('given-name', 'first-name'):
                 return "John"
-            if "last" in field_name:
+            if field_autocomplete in ('family-name', 'last-name', 'surname'):
                 return "Doe"
-            return "John Doe"
-        if "phone" in field_name or field_type == "tel":
-            return "555-123-4567"
-        if "address" in field_name:
-            return "123 Test Street"
-        if "city" in field_name:
-            return "Test City"
-        if "zip" in field_name or "postal" in field_name:
-            return "12345"
+            if field_autocomplete in ('name', 'full-name'):
+                return "John Doe"
+            if field_autocomplete in ('username', 'nickname'):
+                return f"user_{datetime.now().strftime('%H%M%S')}"
+            if field_autocomplete in ('current-password', 'new-password', 'password'):
+                return "TestPass123!"
+            if field_autocomplete in ('street-address', 'address-line1'):
+                return "123 Test Street"
+            if field_autocomplete in ('address-level2',):  # city
+                return "Test City"
+            if field_autocomplete in ('address-level1',):  # state
+                return "California"
+            if field_autocomplete in ('postal-code', 'zip'):
+                return "12345"
+            if field_autocomplete in ('country', 'country-name'):
+                return "United States"
+            if field_autocomplete in ('bday', 'birthday'):
+                return "1990-01-15"
+            if field_autocomplete in ('organization', 'company'):
+                return "Test Company Inc."
 
+        logger.debug(f"[DATA-GEN] Field identifiers: {all_identifiers[:80]}...")
+
+        if self.data_generator:
+            # Use the most descriptive identifier for data generation
+            best_identifier = field_label or field_placeholder or field_aria or field_name or ""
+            if best_identifier:
+                return self.data_generator.generate_for_field(best_identifier)
+
+        # Fallback: pattern matching on combined identifiers
+        # Email detection
+        if field_type == "email" or any(x in all_identifiers for x in ['email', 'e-mail', 'mail']):
+            return f"test_{datetime.now().strftime('%H%M%S')}@example.com"
+
+        # Password detection
+        if field_type == "password" or 'password' in all_identifiers or 'passwd' in all_identifiers:
+            return "TestPass123!"
+
+        # Name fields
+        if any(x in all_identifiers for x in ['first name', 'firstname', 'first_name', 'fname', 'given name']):
+            return "John"
+        if any(x in all_identifiers for x in ['last name', 'lastname', 'last_name', 'lname', 'surname', 'family name']):
+            return "Doe"
+        if any(x in all_identifiers for x in ['full name', 'fullname', 'your name']) or ('name' in all_identifiers and 'user' not in all_identifiers):
+            return "John Doe"
+
+        # Username detection
+        if any(x in all_identifiers for x in ['username', 'user name', 'user_name', 'userid', 'login']):
+            return f"user_{datetime.now().strftime('%H%M%S')}"
+
+        # Phone detection
+        if field_type == "tel" or any(x in all_identifiers for x in ['phone', 'mobile', 'cell', 'telephone', 'contact number']):
+            return "555-123-4567"
+
+        # Address fields
+        if any(x in all_identifiers for x in ['street', 'address line', 'address1', 'street address']):
+            return "123 Test Street"
+        if 'city' in all_identifiers or 'town' in all_identifiers:
+            return "Test City"
+        if any(x in all_identifiers for x in ['state', 'province', 'region']):
+            return "California"
+        if any(x in all_identifiers for x in ['zip', 'postal', 'postcode']):
+            return "12345"
+        if 'country' in all_identifiers:
+            return "United States"
+
+        # Company/organization
+        if any(x in all_identifiers for x in ['company', 'organization', 'org name', 'business']):
+            return "Test Company Inc."
+
+        # Date fields
+        if field_type == "date" or any(x in all_identifiers for x in ['date of birth', 'dob', 'birthday', 'birth date']):
+            return "1990-01-15"
+
+        # Generic fallback with timestamp
         return f"test_value_{datetime.now().strftime('%H%M%S')}"
 
     async def determine_action_from_step(
@@ -779,6 +866,27 @@ Return ONLY valid JSON, no markdown formatting or extra text."""
         for field in fields:
             selector = field.get("selector")
             value = values.get(selector) if values else self._generate_field_value(field)
+
+            # Validate value - must not be a field descriptor or step description
+            value_lower = value.lower() if value else ''
+            invalid_patterns = [
+                'email_address', 'mail_address', 'auto_complete', 'autocomplete',
+                'complete_remaining', 'remaining_fields', 'required_fields',
+                'fill_form', 'complete_form', 'valid_email', 'test_field'
+            ]
+            action_words = ['complete', 'remaining', 'required', 'enter', 'valid', 'field', 'form']
+            normalized = value_lower.replace(' ', '_').replace('-', '_')
+
+            if any(p in normalized for p in invalid_patterns) or sum(1 for w in action_words if w in value_lower) >= 2:
+                logger.warning(f"[VI] Invalid value '{value}' detected, generating proper value")
+                # Generate proper fallback based on field type
+                field_name = (field.get("name") or field.get("label") or "").lower()
+                if 'email' in field_name or field.get("type") == "email":
+                    value = f"test_{datetime.now().strftime('%H%M%S%f')[:10]}@testmail.com"
+                elif 'password' in field_name or field.get("type") == "password":
+                    value = "TestPass123!"
+                else:
+                    value = f"TestValue{datetime.now().strftime('%H%M%S')}"
 
             try:
                 field_type = field.get("type", "text")

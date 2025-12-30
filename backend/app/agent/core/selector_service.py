@@ -276,6 +276,10 @@ class SelectorService:
         # Semantic Element Intelligence for advanced element understanding
         self.semantic_intelligence = get_semantic_intelligence()
 
+        # Scenario-level cache for O(1) lookups
+        self._scenario_cache = None  # ScenarioKnowledge object
+        self._used_selectors: Dict[str, Dict[str, Any]] = {}  # Track selectors used
+
         # Stats tracking
         self._tier_hits: Dict[ResolutionTier, int] = {tier: 0 for tier in ResolutionTier}
         self._total_resolutions = 0
@@ -288,6 +292,45 @@ class SelectorService:
     def set_ai_callback(self, callback: Callable):
         """Set the AI decision callback"""
         self.ai_callback = callback
+
+    def set_scenario_cache(self, scenario_cache):
+        """
+        Set scenario-specific cache for faster lookups.
+        When set, selector resolution checks this cache FIRST (O(1))
+        before querying the full knowledge base.
+        """
+        self._scenario_cache = scenario_cache
+        self._used_selectors.clear()
+        if scenario_cache and scenario_cache.selectors:
+            # Pre-populate used selectors from cache, converting ElementKnowledge to dicts
+            for key, selector_data in scenario_cache.selectors.items():
+                if hasattr(selector_data, 'selectors'):
+                    # It's an ElementKnowledge object - convert to dict
+                    if selector_data.selectors:
+                        best = max(selector_data.selectors, key=lambda s: s.confidence)
+                        self._used_selectors[key] = {
+                            'selector': best.value,
+                            'selector_type': best.selector_type,
+                            'confidence': best.confidence
+                        }
+                    elif selector_data.best_selector:
+                        self._used_selectors[key] = {
+                            'selector': selector_data.best_selector,
+                            'selector_type': 'css',
+                            'confidence': 0.9
+                        }
+                elif isinstance(selector_data, dict):
+                    self._used_selectors[key] = selector_data
+            print(f"[SELECTOR-CACHE] Loaded {len(scenario_cache.selectors)} cached selectors", flush=True)
+
+    def clear_scenario_cache(self):
+        """Clear the scenario cache between scenarios"""
+        self._scenario_cache = None
+        self._used_selectors.clear()
+
+    def get_used_selectors(self) -> Dict[str, Dict[str, Any]]:
+        """Get all selectors used during this resolution session"""
+        return self._used_selectors.copy()
 
     def resolve(
         self,
@@ -678,30 +721,124 @@ class SelectorService:
         page: str
     ) -> Optional[SelectorResult]:
         """Try to find selector from learned knowledge"""
-        # Direct lookup with exact domain/page
-        knowledge = self.knowledge_index.lookup(domain, page, intent)
-        if knowledge and knowledge.selectors:
-            best = max(knowledge.selectors, key=lambda s: s.confidence)
-            if best.confidence >= self.MIN_CONFIDENCE:
-                logger.info(f"KB direct hit: '{intent}' -> '{best.value}'")
-                return SelectorResult(
-                    selector=best.value,
-                    selector_type=best.selector_type,
-                    confidence=best.confidence,
-                    tier=ResolutionTier.KNOWLEDGE_BASE,
-                    alternatives=[
-                        {"selector": s.value, "type": s.selector_type, "confidence": s.confidence}
-                        for s in knowledge.selectors if s != best
-                    ],
-                    metadata={"element_key": intent}
-                )
+        print(f"[KB-LOOKUP] Searching for: '{intent}' on {domain}{page}", flush=True)
+
+        # ===== SCENARIO CACHE CHECK (O(1) - fastest path) =====
+        if self._scenario_cache and self._scenario_cache.selectors:
+            # Build key variations for cache lookup
+            cache_keys = [
+                intent,
+                f"{intent}_field",
+                f"form_field_{intent}",
+                intent.replace(" ", "_"),
+                intent.replace("_", " "),
+            ]
+            if intent.startswith("form_field_"):
+                cache_keys.append(intent[11:])
+            if intent.endswith("_field"):
+                cache_keys.append(intent[:-6])
+
+            for key in cache_keys:
+                if key in self._scenario_cache.selectors:
+                    cached = self._scenario_cache.selectors[key]
+
+                    # Handle both ElementKnowledge objects and dicts
+                    if hasattr(cached, 'selectors'):
+                        # It's an ElementKnowledge object
+                        if cached.selectors:
+                            best = max(cached.selectors, key=lambda s: s.confidence)
+                            selector_value = best.value
+                            selector_type = best.selector_type
+                            confidence = best.confidence
+                        elif cached.best_selector:
+                            selector_value = cached.best_selector
+                            selector_type = 'css'
+                            confidence = 0.9
+                        else:
+                            continue  # No selectors available
+                    elif isinstance(cached, dict):
+                        # It's a dict (legacy format)
+                        selector_value = cached.get('selector') or cached.get('value')
+                        selector_type = cached.get('selector_type', 'css')
+                        confidence = cached.get('confidence', 0.95)
+                    else:
+                        continue  # Unknown format
+
+                    if selector_value:
+                        print(f"[SCENARIO-CACHE] HIT! '{intent}' (via key '{key}') -> '{selector_value}'", flush=True)
+                        # Track usage as dict for compatibility
+                        self._used_selectors[key] = {
+                            'selector': selector_value,
+                            'selector_type': selector_type,
+                            'confidence': confidence
+                        }
+                        return SelectorResult(
+                            selector=selector_value,
+                            selector_type=selector_type,
+                            confidence=confidence,
+                            tier=ResolutionTier.KNOWLEDGE_BASE,
+                            alternatives=[],
+                            metadata={"source": "scenario_cache", "element_key": key}
+                        )
+
+            print(f"[SCENARIO-CACHE] MISS for '{intent}', falling back to full KB", flush=True)
+
+        # ===== FULL KNOWLEDGE BASE CHECK =====
+        # Try multiple key variations for better matching
+        key_variations = [
+            intent,                          # Original: "username"
+            f"{intent}_field",               # With field: "username_field"
+            f"form_field_{intent}",          # Form field: "form_field_username"
+            intent.replace(" ", "_"),        # Spaces to underscore
+            intent.replace("_", " "),        # Underscore to spaces
+        ]
+
+        # Add variations without common prefixes
+        if intent.startswith("form_field_"):
+            key_variations.append(intent[11:])  # Remove "form_field_"
+        if intent.endswith("_field"):
+            key_variations.append(intent[:-6])  # Remove "_field"
+
+        # Try each variation
+        for key in key_variations:
+            knowledge = self.knowledge_index.lookup(domain, page, key)
+            if knowledge and knowledge.selectors:
+                best = max(knowledge.selectors, key=lambda s: s.confidence)
+                if best.confidence >= self.MIN_CONFIDENCE:
+                    print(f"[KB-LOOKUP] HIT! '{intent}' (via key '{key}') -> '{best.value}'", flush=True)
+                    logger.info(f"KB direct hit: '{intent}' -> '{best.value}'")
+                    # Track for scenario cache
+                    self._used_selectors[key] = {
+                        'selector': best.value,
+                        'selector_type': best.selector_type,
+                        'confidence': best.confidence
+                    }
+                    return SelectorResult(
+                        selector=best.value,
+                        selector_type=best.selector_type,
+                        confidence=best.confidence,
+                        tier=ResolutionTier.KNOWLEDGE_BASE,
+                        alternatives=[
+                            {"selector": s.value, "type": s.selector_type, "confidence": s.confidence}
+                            for s in knowledge.selectors if s != best
+                        ],
+                        metadata={"element_key": key, "original_intent": intent}
+                    )
 
         # Fuzzy search by intent with domain/page filtering
+        print(f"[KB-LOOKUP] Direct lookup failed, trying fuzzy search...", flush=True)
         matches = self.knowledge_index.find_by_intent(intent, domain, page)
         if matches:
             best_match = matches[0]
             if best_match.confidence >= self.MIN_CONFIDENCE:
+                print(f"[KB-LOOKUP] FUZZY HIT! '{intent}' -> '{best_match.selector}' (key: {best_match.element_key})", flush=True)
                 logger.info(f"KB fuzzy hit: '{intent}' -> '{best_match.selector}' (key: {best_match.element_key})")
+                # Track for scenario cache
+                self._used_selectors[best_match.element_key] = {
+                    'selector': best_match.selector,
+                    'selector_type': best_match.selector_type,
+                    'confidence': best_match.confidence
+                }
                 return SelectorResult(
                     selector=best_match.selector,
                     selector_type=best_match.selector_type,
@@ -714,11 +851,7 @@ class SelectorService:
                     metadata={"matched_key": best_match.element_key}
                 )
 
-        # DISABLED: Cross-domain matching pollutes selectors between projects
-        # (Sauce Demo selectors were returned for Foundry Test - BAD!)
-        # Keeping selectors domain-isolated for now
-        pass  # Skip global search
-
+        print(f"[KB-LOOKUP] MISS - no learned selector for '{intent}'", flush=True)
         return None
 
     # ==================== Tier 2: Framework Rules ====================

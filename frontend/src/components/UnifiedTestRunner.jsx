@@ -92,12 +92,8 @@ const authAxios = {
   delete: (url, config = {}) => axios.delete(url, { ...config, headers: { ...config.headers, ...getAuthHeaders() } }),
 };
 
-// Execution modes
-const EXECUTION_MODES = {
-  AUTONOMOUS: { value: 'autonomous', label: 'Autonomous', description: 'AI-driven, self-healing' },
-  GUIDED: { value: 'guided', label: 'Guided', description: 'AI assists with failures' },
-  STRICT: { value: 'strict', label: 'Strict', description: 'Exact step matching' },
-};
+// Execution mode - always use smart/guided mode (brain optimizes automatically)
+const EXECUTION_MODE = 'guided';
 
 export default function UnifiedTestRunner({ projectId: propProjectId }) {
   const navigate = useNavigate();
@@ -127,7 +123,8 @@ export default function UnifiedTestRunner({ projectId: propProjectId }) {
   const [selectedScenarios, setSelectedScenarios] = useState([]);
 
   // Execution state
-  const [executionMode, setExecutionMode] = useState('guided');
+  // Execution mode is fixed to 'guided' - brain optimizes AI usage automatically
+  const executionMode = EXECUTION_MODE;
   const [headless, setHeadless] = useState(false);
   const [running, setRunning] = useState(false);
   const [logs, setLogs] = useState([]);
@@ -278,10 +275,29 @@ export default function UnifiedTestRunner({ projectId: propProjectId }) {
 
   const loadLearningStats = async () => {
     try {
-      const response = await authAxios.get('/api/agent/metrics/ai-dependency');
-      setLearningStats(response.data);
+      // Use the new brain stats endpoint for comprehensive metrics
+      const response = await authAxios.get('/api/agent/brain/stats');
+      // Map to the format expected by the UI
+      setLearningStats({
+        current_ai_dependency_percent: response.data.knowledge?.ai_dependency_percent || 0,
+        total_elements_known: response.data.knowledge?.total_elements || 0,
+        patterns_learned: response.data.knowledge?.patterns_learned || 0,
+        average_confidence: response.data.knowledge?.average_confidence || 0,
+        recommendation: response.data.recommendation,
+        health_score: response.data.health?.score || 0,
+        health_status: response.data.health?.status || 'training',
+        memory: response.data.memory || {},
+        decisions: response.data.decisions || {}
+      });
     } catch (error) {
       console.error('Error loading learning stats:', error);
+      // Fallback to old endpoint if new one fails
+      try {
+        const fallback = await authAxios.get('/api/agent/metrics/ai-dependency');
+        setLearningStats(fallback.data);
+      } catch (e) {
+        console.error('Fallback also failed:', e);
+      }
     }
   };
 
@@ -426,8 +442,8 @@ export default function UnifiedTestRunner({ projectId: propProjectId }) {
         addLog(`Running Gherkin feature: ${selectedGherkinFeature.name}`);
         addLog(`Using AI-powered autonomous executor`);
 
-        setStatusMessage(`Executing tests in ${executionMode} mode...`);
-        addLog(`Execution mode: ${executionMode}`);
+        setStatusMessage('Executing tests with Smart Mode...');
+        addLog('Smart Mode: Brain-optimized execution');
         addLog(`Headless: ${headless}`);
         addLog('');
 
@@ -444,19 +460,24 @@ export default function UnifiedTestRunner({ projectId: propProjectId }) {
 
         if (response.data) {
           const result = response.data;
+          // Now using unified executor - get real learning stats
+          const totalScenarios = result.total_scenarios || 0;
+          const aiDependency = result.ai_dependency_percent ?? 100;
+          const newSelectorsLearned = result.new_selectors_learned ?? 0;
+
           setResult({
             success: true,
             report_id: `autonomous_${Date.now()}`,
             summary: {
-              total: result.total_scenarios || 0,
+              total: totalScenarios,
               passed: result.passed || 0,
               failed: result.failed || 0,
-              pass_rate: result.total_scenarios > 0
-                ? Math.round((result.passed / result.total_scenarios) * 100)
+              pass_rate: totalScenarios > 0
+                ? Math.round((result.passed / totalScenarios) * 100)
                 : 0,
               duration_seconds: result.total_duration || 0,
-              ai_dependency_percent: 100,
-              new_selectors_learned: 0
+              ai_dependency_percent: aiDependency,
+              new_selectors_learned: newSelectorsLearned
             },
             results: (result.scenario_results || []).map(sr => ({
               test_id: sr.scenario_name,
@@ -471,10 +492,12 @@ export default function UnifiedTestRunner({ projectId: propProjectId }) {
           setStatusMessage('Test execution completed!');
           addLog('');
           addLog('========== RESULTS ==========');
-          addLog(`Total: ${result.total_scenarios || 0}`);
+          addLog(`Total: ${totalScenarios}`);
           addLog(`Passed: ${result.passed || 0}`);
           addLog(`Failed: ${result.failed || 0}`);
           addLog(`Duration: ${(result.total_duration || 0).toFixed(2)}s`);
+          addLog(`AI Dependency: ${aiDependency.toFixed(1)}%`);
+          addLog(`New Selectors Learned: ${newSelectorsLearned}`);
           addLog('=============================');
 
           showNotification(
@@ -485,8 +508,8 @@ export default function UnifiedTestRunner({ projectId: propProjectId }) {
         return;
       }
 
-      setStatusMessage(`Executing tests in ${executionMode} mode...`);
-      addLog(`Execution mode: ${executionMode}`);
+      setStatusMessage('Executing tests with Smart Mode...');
+      addLog('Smart Mode: Brain-optimized execution');
       addLog(`Headless: ${headless}`);
       addLog('');
 
@@ -664,7 +687,19 @@ export default function UnifiedTestRunner({ projectId: propProjectId }) {
       {learningStats && (
         <Paper sx={{ p: 2, mb: 3, background: 'linear-gradient(135deg, #667eea15 0%, #764ba215 100%)' }}>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={3}>
+            <Grid item xs={6} md={2}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Psychology sx={{ color: learningStats.health_status === 'excellent' ? '#2e7d32' :
+                                         learningStats.health_status === 'good' ? '#1976d2' : '#667eea' }} />
+                <Box>
+                  <Typography variant="caption" color="text.secondary">Brain Health</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    {learningStats.health_score?.toFixed(0) || 0}%
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={6} md={2}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <School sx={{ color: '#667eea' }} />
                 <Box>
@@ -675,7 +710,7 @@ export default function UnifiedTestRunner({ projectId: propProjectId }) {
                 </Box>
               </Box>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={6} md={2}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Memory sx={{ color: '#667eea' }} />
                 <Box>
@@ -686,26 +721,38 @@ export default function UnifiedTestRunner({ projectId: propProjectId }) {
                 </Box>
               </Box>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={6} md={2}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <TrendingDown sx={{ color: '#4caf50' }} />
                 <Box>
-                  <Typography variant="caption" color="text.secondary">Patterns Learned</Typography>
+                  <Typography variant="caption" color="text.secondary">Patterns</Typography>
                   <Typography variant="h6" sx={{ fontWeight: 700 }}>
                     {learningStats.patterns_learned || 0}
                   </Typography>
                 </Box>
               </Box>
             </Grid>
-            <Grid item xs={12} md={3}>
-              <Tooltip title={learningStats.recommendation || ''}>
+            <Grid item xs={6} md={2}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Speed sx={{ color: '#9c27b0' }} />
+                <Box>
+                  <Typography variant="caption" color="text.secondary">Confidence</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    {learningStats.average_confidence?.toFixed(0) || 0}%
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={6} md={2}>
+              <Tooltip title={learningStats.recommendation || 'Brain is learning from each test run'}>
                 <Chip
-                  icon={<Speed />}
-                  label={learningStats.current_ai_dependency_percent > 50 ? 'Learning' :
-                         learningStats.current_ai_dependency_percent > 20 ? 'Good' : 'Excellent'}
-                  color={learningStats.current_ai_dependency_percent > 50 ? 'warning' :
-                         learningStats.current_ai_dependency_percent > 20 ? 'info' : 'success'}
-                  variant="outlined"
+                  icon={<Psychology />}
+                  label={learningStats.health_status?.toUpperCase() || 'LEARNING'}
+                  color={learningStats.health_status === 'excellent' ? 'success' :
+                         learningStats.health_status === 'good' ? 'info' :
+                         learningStats.health_status === 'learning' ? 'warning' : 'default'}
+                  variant="filled"
+                  sx={{ fontWeight: 'bold' }}
                 />
               </Tooltip>
             </Grid>
@@ -1133,24 +1180,14 @@ export default function UnifiedTestRunner({ projectId: propProjectId }) {
               <Collapse in={showAdvanced}>
                 <Box sx={{ mt: 2 }}>
                   <Typography variant="subtitle2" sx={{ mb: 1 }}>Execution Mode</Typography>
-                  <ToggleButtonGroup
-                    value={executionMode}
-                    exclusive
-                    onChange={(e, mode) => mode && setExecutionMode(mode)}
-                    size="small"
-                    fullWidth
-                    disabled={running}
-                  >
-                    {Object.values(EXECUTION_MODES).map((mode) => (
-                      <Tooltip key={mode.value} title={mode.description}>
-                        <ToggleButton value={mode.value}>
-                          {mode.label}
-                        </ToggleButton>
-                      </Tooltip>
-                    ))}
-                  </ToggleButtonGroup>
+                  <Chip
+                    icon={<Psychology />}
+                    label="Smart Mode"
+                    color="primary"
+                    variant="filled"
+                  />
                   <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
-                    {EXECUTION_MODES[executionMode.toUpperCase()]?.description}
+                    Brain-optimized: Uses learned knowledge first, AI only when needed
                   </Typography>
                 </Box>
               </Collapse>

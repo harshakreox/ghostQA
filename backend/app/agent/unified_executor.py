@@ -28,6 +28,8 @@ from .knowledge.knowledge_index import KnowledgeIndex
 from .knowledge.learning_engine import LearningEngine
 from .knowledge.pattern_store import PatternStore
 from .explorer.app_explorer import ApplicationExplorer, ExplorationConfig
+from .context.project_context import ProjectContext, get_project_context
+from .context.navigation_intelligence import NavigationIntelligence, NavigationResult
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -185,6 +187,10 @@ class UnifiedTestExecutor:
             self.pattern_store,
             str(self.data_dir)
         )
+
+        # Project context for navigation intelligence (set per project)
+        self._project_context: Optional[ProjectContext] = None
+        self._nav_intelligence: Optional[NavigationIntelligence] = None
 
         # Agent will be initialized per execution
         self._agent: Optional[AutonomousTestAgent] = None
@@ -349,6 +355,14 @@ class UnifiedTestExecutor:
             text = target or value or "step"
             return f"{keyword} {text}".strip()
 
+        elif action == "resolve_precondition":
+            page = target or "page"
+            return f"Ensure on '{page}' page (navigate if needed)"
+
+        elif action == "smart_navigate":
+            page = target or "page"
+            return f"Navigate to '{page}' page"
+
         else:
             # Default: show action and target
             if target:
@@ -491,15 +505,35 @@ class UnifiedTestExecutor:
         text = step.get("text", "")
         full_step = f"{keyword} {text}".lower()
 
+        print(f"\n[GHERKIN-INTERPRET] === STEP ===", flush=True)
+        print(f"[GHERKIN-INTERPRET] Keyword: '{keyword}'", flush=True)
+        print(f"[GHERKIN-INTERPRET] Text: '{text}'", flush=True)
+        print(f"[GHERKIN-INTERPRET] Full: '{full_step}'", flush=True)
+
         # Navigation patterns
         if any(p in full_step for p in ["navigate to", "go to", "open", "visit"]):
             import re
-            url_match = re.search(r'(?:to|open|visit)\s+["\']?([^"\']+)["\']?', text, re.I)
+            # Pattern 1: Explicit URL (http://, https://, or contains / or .)
+            url_match = re.search(r'(?:to|open|visit)\s+["\']?(https?://[^\s"\']+)["\']?', text, re.I)
             if url_match:
                 return {"action": "navigate", "value": url_match.group(1)}
+
+            # Pattern 2: Relative path (starts with /)
+            path_match = re.search(r'(?:to|open|visit)\s+["\']?(/[^\s"\']+)["\']?', text, re.I)
+            if path_match:
+                return {"action": "navigate", "value": path_match.group(1)}
+
+            # Pattern 3: Page concept like "registration page", "login page"
+            # Instead of navigating directly, find and click the link/button
             page_match = re.search(r'(?:the\s+)?(\w+)\s+page', text, re.I)
             if page_match:
-                return {"action": "navigate", "target": f"{page_match.group(1)} page"}
+                page_name = page_match.group(1).lower()
+                # Return a smart navigation that will find the link/button first
+                return {
+                    "action": "smart_navigate",
+                    "target": page_name,
+                    "description": f"Find and click link/button to {page_name} page"
+                }
 
         # Click patterns
         if any(p in full_step for p in ["click", "press", "tap", "select"]):
@@ -581,19 +615,29 @@ class UnifiedTestExecutor:
                     return {"action": "wait", "value": str(wait_time)}
                 return {"action": "wait", "value": str(wait_time * 1000)}
 
-        # "Given I am on X page" or "I am on X page" - context/location assertion
-        if any(p in full_step for p in ["i am on", "am on the"]):
+        # "Given I am on X page/form/screen" - PRECONDITION requiring navigation
+        print(f"[GHERKIN-DEBUG] Interpreting: keyword='{keyword}', text='{text}'", flush=True)
+        print(f"[GHERKIN-DEBUG] full_step='{full_step}'", flush=True)
+        if any(p in full_step for p in ["i am on", "am on the", "should be on", "user is on"]):
             import re
             # Check for URL in the step
             url_match = re.search(r'(?:at|on)\s+(https?://[^\s]+)', text, re.I)
             if url_match:
                 return {"action": "navigate", "value": url_match.group(1)}
-            # Check for page name
-            page_match = re.search(r'(?:on\s+the\s+)(\w+(?:\s+\w+)?)\s+page', text, re.I)
+            # Check for page/form/screen name - match "registration page", "signup form", "login screen"
+            # Pattern matches: "on the registration form", "on registration page", "on the signup screen"
+            page_match = re.search(r'(?:on\s+(?:the\s+)?)?(\w+(?:\s+\w+)?)\s+(?:page|form|screen|view)', text, re.I)
             if page_match:
-                # Context step - just verify we're on the right page (skip if no URL)
-                return {"action": "noop", "description": f"Context: on {page_match.group(1)} page"}
-            # Generic "I am on" - skip as context
+                target_page = page_match.group(1).strip().lower()
+                print(f"[GHERKIN-DEBUG] Matched precondition -> target: '{target_page}'", flush=True)
+                # Return a PRECONDITION action that will use navigation intelligence
+                return {
+                    "action": "resolve_precondition",
+                    "target": target_page,
+                    "precondition_text": text,
+                    "description": f"Ensure we are on {target_page} page (navigate if needed)"
+                }
+            # Generic "I am on" with no specific page - treat as context
             return {"action": "noop", "description": text}
 
         # "Then I should be redirected to X" - URL assertion
@@ -618,7 +662,12 @@ class UnifiedTestExecutor:
             "requires_ai": True
         }
     def _interpret_with_ai(self, step, credentials=None):
-        """Use AI to interpret Gherkin step when patterns fail"""
+        """Use AI to interpret Gherkin step when patterns fail.
+
+        IMPORTANT: This function should NEVER inject credentials into values!
+        Data resolution happens AFTER this step and will set appropriate values
+        based on whether it's a registration or login flow.
+        """
         import os, json
 
         keyword = step.get("keyword", "")
@@ -627,26 +676,20 @@ class UnifiedTestExecutor:
 
         self._log(f"[AI] Interpreting: {step_text[:60]}...")
 
-        creds = credentials or {}
-        username = creds.get('username') or creds.get('admin_username', 'testuser@example.com')
-        password = creds.get('password') or creds.get('admin_password', 'testpass123')
-
-        # Build AI prompt
+        # Build AI prompt - NO CREDENTIALS! Data resolution handles this later.
         prompt = f"""Convert this test step to an action. Return ONLY JSON.
 
 STEP: "{step_text}"
 
-CREDENTIALS TO USE:
-- Username: {username}
-- Password: {password}
-
 Return JSON: {{"action": "click|fill|navigate|wait|assert_visible", "target": "element", "value": "optional value"}}
 
 RULES:
-- For username fields: use "{username}" as value
-- For password fields: use "{password}" as value
-- For click: just set target
-- For wait: set value to milliseconds
+- For form fields (username, email, password, etc.): set action="fill", target to field name, value="" (empty - will be filled later)
+- For click actions: set action="click", target to element description
+- For wait: set action="wait", value to milliseconds
+- For assertions: set action="assert_visible", target to expected text
+
+IMPORTANT: Do NOT put actual data values - just identify the action and target field.
 """
 
         # Try Anthropic
@@ -665,21 +708,26 @@ RULES:
                 if "{" in resp:
                     resp = resp[resp.find("{"):resp.rfind("}")+1]
                 result = json.loads(resp)
+                # ALWAYS clear value for fill actions - data resolution will set it
+                if result.get("action") == "fill":
+                    result["value"] = ""
                 self._log(f"[AI] Result: {result.get('action')} -> {result.get('target')}")
                 return result
             except Exception as e:
                 self._log(f"[AI] Error: {e}")
 
-        # Fallback heuristic
+        # Fallback heuristic - NEVER inject credentials, just identify field type
         text_lower = text.lower()
         if any(w in text_lower for w in ['click', 'press', 'tap']):
             return {"action": "click", "target": text}
-        elif any(w in text_lower for w in ['username', 'user', 'email', 'login']):
-            return {"action": "fill", "target": "username", "value": username}
+        elif any(w in text_lower for w in ['username', 'user', 'login']) and 'email' not in text_lower:
+            return {"action": "fill", "target": "username", "value": ""}  # Empty! Data resolution fills it
+        elif 'email' in text_lower:
+            return {"action": "fill", "target": "email", "value": ""}  # Empty! Data resolution fills it
         elif 'password' in text_lower:
-            return {"action": "fill", "target": "password", "value": password}
-        elif any(w in text_lower for w in ['enter', 'type', 'fill']):
-            return {"action": "fill", "target": text, "value": ""}
+            return {"action": "fill", "target": "password", "value": ""}  # Empty! Data resolution fills it
+        elif any(w in text_lower for w in ['enter', 'type', 'fill', 'complete']):
+            return {"action": "fill", "target": text, "value": ""}  # Empty! Data resolution fills it
         elif any(w in text_lower for w in ['see', 'visible', 'displayed']):
             return {"action": "assert_visible", "target": text}
         elif any(w in text_lower for w in ['navigate', 'go to', 'open']):
@@ -747,6 +795,9 @@ RULES:
         self._log(f"Starting unified test execution for {project_name}")
         self._log(f"Mode: {execution_mode.value}, Tests: {len(test_cases)}, Headless: {headless}")
 
+        # Track current context for cleanup
+        current_context = None
+
         try:
             # Initialize Playwright
             self._playwright = await async_playwright().start()
@@ -755,40 +806,8 @@ RULES:
                 slow_mo=100 if not headless else 0,
                 args=["--start-maximized"] if not headless else []
             )
-            context = await self._browser.new_context(
-                no_viewport=True if not headless else False,
-                viewport={"width": 1920, "height": 1080} if headless else None
-            )
-            self._page = await context.new_page()
 
-            # Initialize agent
-            self._agent = AutonomousTestAgent(
-                page=self._page,
-                data_dir=str(self.data_dir),
-                config=self.config
-            )
-
-            # Set AI callback if provided
-            if ai_callback and execution_mode != ExecutionMode.STRICT:
-                self._agent.set_ai_callback(ai_callback)
-
-            # Set step callback
-            async def on_step(step, status):
-                if self._step_callback:
-                    self._step_callback({
-                        "step_number": step.step_number,
-                        "action": step.action,
-                        "status": status,
-                        "target": step.target
-                    })
-            self._agent.set_callbacks(on_step=on_step)
-
-            # Pre-exploration to build knowledge (optional)
-            if self._collect_training_data:
-                self._log("Performing quick pre-scan for knowledge building...")
-                await self._quick_explore(base_url)
-
-            # Execute each test
+            # Execute each test with FRESH browser context
             self._log(f"Starting test execution phase ({len(test_cases)} tests)")
             for i, test_case in enumerate(test_cases):
                 # Check for stop request before each test
@@ -798,8 +817,101 @@ RULES:
 
                 self._log(f"")
                 self._log(f"{'='*50}")
-                self._log(f"Executing test {i+1}/{len(test_cases)}: {test_case.name}")
+                self._log(f"Executing scenario {i+1}/{len(test_cases)}: {test_case.name}")
                 self._log(f"Steps: {len(test_case.steps)}")
+
+                # ============================================================
+                # SCENARIO ISOLATION: Create NEW browser context for each scenario
+                # This ensures completely fresh state (cookies, localStorage, sessionStorage)
+                # ============================================================
+                print(f"\n[ISOLATION] === CREATING FRESH BROWSER CONTEXT ===", flush=True)
+                print(f"[ISOLATION] Scenario: {test_case.name}", flush=True)
+                print(f"[ISOLATION] Previous context exists: {current_context is not None}", flush=True)
+                self._log(f"[ISOLATION] Creating fresh browser context for scenario...")
+                try:
+                    # Close previous context if exists
+                    if current_context:
+                        try:
+                            print(f"[ISOLATION] Closing previous context...", flush=True)
+                            await current_context.close()
+                            print(f"[ISOLATION] Previous context closed successfully", flush=True)
+                            self._log(f"[ISOLATION] Closed previous browser context")
+                        except Exception as close_err:
+                            print(f"[ISOLATION] Warning closing context: {close_err}", flush=True)
+                            self._log(f"[ISOLATION] Warning closing context: {close_err}")
+
+                    # Create brand new context (fresh cookies, storage, cache)
+                    print(f"[ISOLATION] Creating new browser context...", flush=True)
+                    current_context = await self._browser.new_context(
+                        no_viewport=True if not headless else False,
+                        viewport={"width": 1920, "height": 1080} if headless else None
+                    )
+                    print(f"[ISOLATION] New context created: {current_context}", flush=True)
+
+                    self._page = await current_context.new_page()
+                    print(f"[ISOLATION] New page created: {self._page.url}", flush=True)
+
+                    # Create fresh agent for this scenario
+                    print(f"[ISOLATION] Creating fresh agent...", flush=True)
+                    self._agent = AutonomousTestAgent(
+                        page=self._page,
+                        data_dir=str(self.data_dir),
+                        config=self.config
+                    )
+                    print(f"[ISOLATION] Fresh agent created", flush=True)
+
+                    # Initialize project context and navigation intelligence
+                    project_id = test_case.project_id if hasattr(test_case, 'project_id') else "default"
+                    self._project_context = get_project_context(project_id, str(self.data_dir))
+                    self._project_context.set_base_info(base_url)
+                    self._nav_intelligence = NavigationIntelligence(self._page, self._project_context)
+                    print(f"[ISOLATION] Navigation intelligence initialized for project: {project_id}", flush=True)
+
+                    # Set AI callback if provided
+                    if ai_callback and execution_mode != ExecutionMode.STRICT:
+                        self._agent.set_ai_callback(ai_callback)
+
+                    # Set step callback
+                    async def on_step(step, status):
+                        if self._step_callback:
+                            self._step_callback({
+                                "step_number": step.step_number,
+                                "action": step.action,
+                                "status": status,
+                                "target": step.target
+                            })
+                    self._agent.set_callbacks(on_step=on_step)
+
+                    # Navigate to base URL
+                    print(f"[ISOLATION] Navigating to base URL: {base_url}", flush=True)
+                    await self._page.goto(base_url, wait_until="domcontentloaded", timeout=30000)
+                    await self._page.wait_for_timeout(500)
+                    print(f"[ISOLATION] Navigation complete, current URL: {self._page.url}", flush=True)
+
+                    self._log(f"[ISOLATION] Fresh context ready, navigated to {base_url}")
+                    print(f"[ISOLATION] === FRESH CONTEXT READY ===\n", flush=True)
+
+                except Exception as e:
+                    self._log(f"[ISOLATION] Error creating context: {e}")
+                    logger.error(f"Failed to create browser context: {e}")
+                    # Create failed result and continue to next scenario
+                    results.append(UnifiedTestResult(
+                        test_id=test_case.id,
+                        test_name=test_case.name,
+                        format=test_case.format,
+                        status="failed",
+                        total_steps=len(test_case.steps),
+                        passed_steps=0,
+                        failed_steps=len(test_case.steps),
+                        recovered_steps=0,
+                        duration_ms=0,
+                        started_at=datetime.utcnow().isoformat(),
+                        completed_at=datetime.utcnow().isoformat(),
+                        step_results=[],
+                        error_message=f"Failed to create browser context: {e}",
+                        logs=[f"Context error: {str(e)}"]
+                    ))
+                    continue
 
                 if self._progress_callback:
                     self._progress_callback({
@@ -808,6 +920,28 @@ RULES:
                         "test_name": test_case.name,
                         "percent": int((i + 1) / len(test_cases) * 100)
                     })
+
+                # ============================================================
+                # SCENARIO CACHE: Load pre-cached selectors for this scenario
+                # ============================================================
+                scenario_id = test_case.id
+                scenario_name = test_case.name
+                from urllib.parse import urlparse
+                domain = urlparse(base_url).netloc
+
+                scenario_cache = self.knowledge_index.get_scenario_cache(
+                    scenario_id=scenario_id,
+                    scenario_name=scenario_name,
+                    domain=domain
+                )
+
+                if scenario_cache:
+                    self._log(f"[SCENARIO-CACHE] Loaded {len(scenario_cache.selectors)} cached selectors")
+                    self._log(f"  Previous runs: {scenario_cache.run_count}, Success rate: {scenario_cache.success_rate:.1%}")
+                    # Pass scenario cache to agent for faster lookups
+                    self._agent.set_scenario_cache(scenario_cache)
+                else:
+                    self._log(f"[SCENARIO-CACHE] No cache found, will learn during execution")
 
                 try:
                     self._log(f"Calling agent.execute_test...")
@@ -819,6 +953,20 @@ RULES:
                     )
                     self._log(f"Test execution returned: {result.status}")
                     results.append(result)
+
+                    # ============================================================
+                    # SCENARIO CACHE: Save learned selectors for next run
+                    # ============================================================
+                    used_selectors = self._agent.get_used_selectors()
+                    if used_selectors:
+                        self.knowledge_index.save_scenario_cache(
+                            scenario_id=scenario_id,
+                            scenario_name=scenario_name,
+                            domain=domain,
+                            used_selectors=used_selectors,
+                            success=(result.status == "passed")
+                        )
+                        self._log(f"[SCENARIO-CACHE] Saved {len(used_selectors)} selectors to cache")
 
                     # Aggregate metrics
                     total_ai_calls += result.ai_calls_made
@@ -956,6 +1104,12 @@ RULES:
         all_steps.extend(test_case.steps)
 
         self._log(f"Test has {len(all_steps)} steps")
+        print(f"\n[DEBUG] ========== STEP CONVERSION ==========", flush=True)
+        print(f"[DEBUG] Test format: {test_case.format}", flush=True)
+        print(f"[DEBUG] Test name: {test_case.name}", flush=True)
+        print(f"[DEBUG] Number of steps: {len(all_steps)}", flush=True)
+        for i, s in enumerate(all_steps[:3]):
+            print(f"[DEBUG] Step {i}: {s}", flush=True)
 
         # Convert Gherkin steps to executable actions
         if test_case.format == TestFormat.GHERKIN:
@@ -973,61 +1127,436 @@ RULES:
                     converted_steps.append(step)
             all_steps = converted_steps
 
-        # Resolve credential placeholders in step values
-        print(f"[CRED-DEBUG] Credentials received: {credentials}")
+            # ============================================================
+            # AUTO-NAVIGATION: If scenario implies a specific page but no
+            # navigation step exists, add one at the beginning.
+            # This is how a manual tester thinks - "registration test means
+            # I need to be on the registration page first"
+            # ============================================================
+            print(f"\n[DEBUG] ========== AUTO-NAV CHECK ==========", flush=True)
+            test_name_lower = (test_case.name or '').lower()
+            first_step_action = all_steps[0].get('action', '').lower() if all_steps else ''
+            print(f"[DEBUG] Test name lower: '{test_name_lower}'", flush=True)
+            print(f"[DEBUG] First step action: '{first_step_action}'", flush=True)
+            print(f"[DEBUG] First step full: {all_steps[0] if all_steps else 'NONE'}", flush=True)
+
+            # Check if first step is NOT a navigation/precondition step
+            nav_actions = ['navigate', 'goto', 'resolve_precondition', 'smart_navigate']
+            needs_auto_nav = first_step_action not in nav_actions
+            print(f"[DEBUG] Needs auto nav: {needs_auto_nav}", flush=True)
+
+            if needs_auto_nav:
+                # Detect what page we need based on scenario name
+                auto_nav_target = None
+                if any(kw in test_name_lower for kw in ['register', 'registration', 'signup', 'sign up', 'sign-up', 'create account']):
+                    auto_nav_target = 'registration'
+                elif any(kw in test_name_lower for kw in ['login', 'log in', 'signin', 'sign in', 'sign-in', 'authenticate']):
+                    auto_nav_target = 'login'
+                elif any(kw in test_name_lower for kw in ['profile', 'account settings', 'my account']):
+                    auto_nav_target = 'profile'
+                elif any(kw in test_name_lower for kw in ['dashboard', 'home page', 'main page']):
+                    auto_nav_target = 'dashboard'
+
+                if auto_nav_target:
+                    print(f"\n[AUTO-NAV] Scenario '{test_case.name}' needs {auto_nav_target} page", flush=True)
+                    print(f"[AUTO-NAV] First step is '{first_step_action}' - adding navigation step", flush=True)
+
+                    # Insert navigation step at the beginning
+                    nav_step = {
+                        'action': 'resolve_precondition',
+                        'target': auto_nav_target,
+                        'precondition_text': f'Auto-navigate to {auto_nav_target} page',
+                        'description': f'Navigate to {auto_nav_target} page (auto-detected from scenario name)'
+                    }
+                    all_steps.insert(0, nav_step)
+                    print(f"[AUTO-NAV] Inserted step: {nav_step}", flush=True)
+                    self._log(f"[AUTO-NAV] Added navigation to {auto_nav_target} page")
+                else:
+                    print(f"[DEBUG] No auto_nav_target detected for: '{test_name_lower}'", flush=True)
+        else:
+            print(f"[DEBUG] Test format is NOT GHERKIN: {test_case.format}", flush=True)
+
+        # ============================================================
+        # SMART DATA RESOLUTION: Registration vs Login
+        # ============================================================
+        # Registration flows: Generate UNIQUE test data
+        # Login flows: Use project credentials
+        # ============================================================
+
+        import random
+        import string
+        import time
+
+        # Detect if this is a REGISTRATION flow based on scenario/test name
+        test_name_lower = (test_case.name or '').lower()
+        scenario_name_lower = (test_case.scenario_name or '').lower() if hasattr(test_case, 'scenario_name') else ''
+        combined_name = f"{test_name_lower} {scenario_name_lower}"
+
+        registration_keywords = ['register', 'registration', 'signup', 'sign up', 'sign-up',
+                                 'create account', 'new user', 'new account', 'join']
+        login_keywords = ['login', 'log in', 'signin', 'sign in', 'sign-in', 'authenticate']
+
+        is_registration_flow = any(kw in combined_name for kw in registration_keywords)
+        is_login_flow = any(kw in combined_name for kw in login_keywords) and not is_registration_flow
+
+        print(f"\n{'='*60}")
+        print(f"[DATA-RESOLUTION] ===== STARTING DATA RESOLUTION =====")
+        print(f"[FLOW-DETECT] Test: '{test_case.name}'")
+        print(f"[FLOW-DETECT] Is Registration: {is_registration_flow}, Is Login: {is_login_flow}")
+
+        # Generate unique test data for this execution
+        timestamp = int(time.time() * 1000) % 100000  # Last 5 digits of timestamp
+        random_suffix = ''.join(random.choices(string.ascii_lowercase, k=4))
+        unique_id = f"{timestamp}{random_suffix}"
+
+        # First names pool - rotate through these
+        first_names = ['Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Quinn', 'Avery', 'Dakota', 'Skyler']
+        last_names = ['Smith', 'Johnson', 'Brown', 'Davis', 'Wilson', 'Moore', 'Anderson', 'Thomas', 'Jackson', 'White']
+
+        generated_data = {
+            'email': f"testuser{unique_id}@testmail.com",
+            'username': f"user{unique_id}",
+            'password': f"TestPass{unique_id}!",
+            'firstname': random.choice(first_names),
+            'lastname': random.choice(last_names),
+            'phone': f"555{random.randint(1000000, 9999999)}",
+        }
+
+        print(f"[DATA-GEN] Generated unique data: email={generated_data['email']}, user={generated_data['username']}")
+
+        # Extract project credentials for LOGIN flows
+        project_username = ''
+        project_password = ''
         if credentials:
-            username = credentials.get('username') or credentials.get('admin_username', '')
-            password = credentials.get('password') or credentials.get('admin_password', '')
-            print(f"[CRED-DEBUG] Resolved creds: user={username[:3] if username else 'N/A'}***, pass={'***' if password else 'N/A'}")
-            
-            for step in all_steps:
-                value = step.get('value', '') or ''
-                target = (step.get('target', '') or '').lower()
-                action = (step.get('action', '') or '').lower()
-                print(f"[CRED-DEBUG] Step: action={action}, target={target}, value='{value}'")
-                
-                # For fill/type actions, resolve credentials
-                if action in ('fill', 'type', 'input'):
-                    value_lower = value.lower() if value else ''
-                    
-                    # CASE 1: Target is username field (value might be empty or placeholder)
-                    if any(x in target for x in ['username', 'user', 'email', 'login', 'userid']):
-                        if not value or value_lower in ['my', 'the', 'valid', 'test', 'my username', 'username', 'the username']:
-                            if username:
-                                step['value'] = username
-                                print(f"[CRED-DEBUG] -> Set username: {username[:3]}***")
-                                self._log(f"  Using credential for {target}: {username[:3]}***")
-                    
-                    # CASE 2: Target is password field
-                    elif any(x in target for x in ['password', 'passwd', 'pwd', 'pass']):
-                        if not value or value_lower in ['my', 'the', 'valid', 'test', 'my password', 'password', 'the password']:
-                            if password:
-                                step['value'] = password
-                                print(f"[CRED-DEBUG] -> Set password: ****")
-                                self._log(f"  Using credential for {target}: ****")
-                    
-                    # CASE 3: Target is firstname/lastname - generate or use from credentials
-                    elif any(x in target for x in ['firstname', 'first', 'fname']):
-                        if not value or value_lower in ['my', 'the', 'valid', 'test']:
-                            step['value'] = 'Test'
-                            print(f"[CRED-DEBUG] -> Set firstname: Test")
-                    elif any(x in target for x in ['lastname', 'last', 'lname']):
-                        if not value or value_lower in ['my', 'the', 'valid', 'test']:
-                            step['value'] = 'User'
-                            print(f"[CRED-DEBUG] -> Set lastname: User")
-                    
-                    # CASE 4: Value contains credential placeholder keywords
-                    elif value_lower:
-                        if any(x in value_lower for x in ['username', 'user', 'email', 'login']):
-                            step['value'] = username
-                            print(f"[CRED-DEBUG] -> Resolved value to username: {username[:3]}***")
-                        elif any(x in value_lower for x in ['password', 'pass']):
-                            step['value'] = password
-                            print(f"[CRED-DEBUG] -> Resolved value to password: ****")
+            if isinstance(credentials, dict):
+                project_username = credentials.get('username') or credentials.get('admin_username', '')
+                project_password = credentials.get('password') or credentials.get('admin_password', '')
+            elif isinstance(credentials, list) and len(credentials) > 0:
+                for cred in credentials:
+                    if hasattr(cred, 'username'):
+                        project_username = cred.username
+                        project_password = getattr(cred, 'password', '')
+                        break
+                    elif isinstance(cred, dict):
+                        project_username = cred.get('username', '')
+                        project_password = cred.get('password', '')
+                        if project_username:
+                            break
+
+        project_username = str(project_username) if project_username else ''
+        project_password = str(project_password) if project_password else ''
+
+        if is_login_flow and project_username:
+            print(f"[CRED-DEBUG] LOGIN flow - using project credentials: {project_username[:3]}***")
+        elif is_registration_flow:
+            print(f"[CRED-DEBUG] REGISTRATION flow - using generated unique data")
+        else:
+            print(f"[CRED-DEBUG] Unknown flow - will determine per-field")
+
+        # Process each step for data resolution
+        # Track which fields have been filled to detect duplicates
+        filled_fields = set()
+
+        for step in all_steps:
+            value = step.get('value', '') or ''
+            target = (step.get('target', '') or '').lower()
+            action = (step.get('action', '') or '').lower()
+            original_gherkin = step.get('original_gherkin', {})
+            gherkin_text = original_gherkin.get('text', '').lower() if original_gherkin else ''
+
+            search_text = f"{target} {gherkin_text}"
+
+            # For fill/type actions, resolve data
+            if action in ('fill', 'type', 'input'):
+                value_lower = value.lower() if value else ''
+                placeholder_values = ['my', 'the', 'valid', 'test', 'new', 'a', '']
+
+                # Detect if value looks like an HTML attribute, field type, or step description instead of real data
+                # These should NEVER be used as actual values - they're field descriptors or action words
+                invalid_value_patterns = [
+                    'email_address', 'email-address', 'emailaddress', 'mail_address',
+                    'auto_complete', 'autocomplete', 'auto-complete',
+                    'username_field', 'password_field', 'email_field',
+                    'input_email', 'input_password', 'input_username',
+                    'text_field', 'form_field', 'field_value',
+                    # Action/step description words that should never be values
+                    'complete_remaining', 'remaining_fields', 'required_fields',
+                    'fill_form', 'complete_form', 'enter_data', 'fill_fields',
+                    'valid_email', 'valid_password', 'valid_data',
+                    'test_field', 'test_input', 'test_value',
+                    'the_form', 'all_fields', 'remaining_required'
+                ]
+                normalized_value = value_lower.replace(' ', '_').replace('-', '_')
+                if value and any(p in normalized_value for p in invalid_value_patterns):
+                    print(f"[DATA] WARNING: Value '{value}' looks like a field descriptor, not data! Clearing.")
+                    value = ''
+                    value_lower = ''
+                # Also reject values that look like step descriptions (contain action words)
+                action_words = ['complete', 'remaining', 'required', 'enter', 'valid', 'field', 'form']
+                if value and sum(1 for w in action_words if w in value_lower) >= 2:
+                    print(f"[DATA] WARNING: Value '{value}' looks like step text, not data! Clearing.")
+                    value = ''
+                    value_lower = ''
+
+                # Email field
+                if any(x in search_text for x in ['email', 'e-mail']):
+                    if 'email' in filled_fields:
+                        print(f"[DATA] WARNING: Duplicate email field detected! Skipping to avoid overwrite.")
+                        step['action'] = 'noop'  # Convert to no-op to prevent double-fill
+                        step['_skipped_reason'] = 'duplicate_email_field'
+                        continue
+                    filled_fields.add('email')
+
+                    # DEBUG: Log what value was before we override
+                    print(f"[DATA-DEBUG] Email field detected. Current value BEFORE resolution: '{value}'")
+                    print(f"[DATA-DEBUG] is_registration_flow={is_registration_flow}, is_login_flow={is_login_flow}")
+
+                    # For REGISTRATION: ALWAYS use generated data (override AI-injected admin creds)
+                    # For LOGIN: Use project credentials if available
+                    if is_registration_flow:
+                        step['value'] = generated_data['email']
+                        print(f"[DATA] -> Registration email (forced): {generated_data['email']}")
+                    elif is_login_flow and project_username and '@' in project_username:
+                        step['value'] = project_username
+                        print(f"[DATA] -> Login email: {project_username[:3]}***")
+                    elif not value or any(p in value_lower for p in placeholder_values + ['email', 'my email']):
+                        step['value'] = generated_data['email']
+                        print(f"[DATA] -> Generated email: {generated_data['email']}")
+
+                # Username field (not email)
+                elif any(x in search_text for x in ['username', 'user name', 'userid', 'user id', 'login']):
+                    # For REGISTRATION: ALWAYS use generated data
+                    # For LOGIN: Use project credentials if available
+                    if is_registration_flow:
+                        step['value'] = generated_data['username']
+                        print(f"[DATA] -> Registration username (forced): {generated_data['username']}")
+                    elif is_login_flow and project_username:
+                        step['value'] = project_username
+                        print(f"[DATA] -> Login username: {project_username[:3]}***")
+                    elif not value or any(p in value_lower for p in placeholder_values + ['username', 'user']):
+                        step['value'] = generated_data['username']
+                        print(f"[DATA] -> Generated username: {generated_data['username']}")
+
+                # Password field
+                elif any(x in search_text for x in ['password', 'passwd', 'pwd']):
+                    # For REGISTRATION: ALWAYS use generated data
+                    # For LOGIN: Use project credentials if available
+                    if is_registration_flow:
+                        step['value'] = generated_data['password']
+                        print(f"[DATA] -> Registration password (forced): {generated_data['password'][:4]}***")
+                    elif is_login_flow and project_password:
+                        step['value'] = project_password
+                        print(f"[DATA] -> Login password: ****")
+                    elif not value or any(p in value_lower for p in placeholder_values + ['password', 'pass']):
+                        step['value'] = generated_data['password']
+                        print(f"[DATA] -> Generated password: {generated_data['password'][:4]}***")
+
+                # Confirm password field
+                elif any(x in search_text for x in ['confirm', 'repeat', 'retype', 're-enter']):
+                    # Always use generated password for registration, project password for login
+                    if is_registration_flow:
+                        step['value'] = generated_data['password']
+                        print(f"[DATA] -> Confirm password (forced): {generated_data['password'][:4]}***")
+                    elif is_login_flow and project_password:
+                        step['value'] = project_password
+                        print(f"[DATA] -> Confirm password (login): ****")
+                    else:
+                        step['value'] = generated_data['password']
+                        print(f"[DATA] -> Confirm password set")
+
+                # First name field
+                elif any(x in target for x in ['firstname', 'first', 'fname', 'first name', 'given']):
+                    if is_registration_flow or not value or any(p in value_lower for p in placeholder_values + ['name', 'first']):
+                        step['value'] = generated_data['firstname']
+                        print(f"[DATA] -> First name: {generated_data['firstname']}")
+
+                # Last name field
+                elif any(x in target for x in ['lastname', 'last', 'lname', 'last name', 'surname', 'family']):
+                    if is_registration_flow or not value or any(p in value_lower for p in placeholder_values + ['name', 'last']):
+                        step['value'] = generated_data['lastname']
+                        print(f"[DATA] -> Last name: {generated_data['lastname']}")
+
+                # Phone field
+                elif any(x in target for x in ['phone', 'mobile', 'tel', 'contact']):
+                    if is_registration_flow or not value or any(p in value_lower for p in placeholder_values + ['phone', 'number']):
+                        step['value'] = generated_data['phone']
+                        print(f"[DATA] -> Phone: {generated_data['phone']}")
 
         # Log each step for debugging
         for i, step in enumerate(all_steps):
             self._log(f"  Step {i+1}: {step.get('action')} -> {step.get('target', 'N/A')}")
+
+        # ============================================================
+        # PRECONDITION RESOLUTION: THINK LIKE A TESTER!
+        #
+        # A real tester understands:
+        # 1. Some pages are PUBLIC (login, register, home) - just navigate
+        # 2. Some pages are PROTECTED (dashboard, profile, settings) - LOGIN FIRST!
+        #
+        # If credentials are available and target is a protected page,
+        # we MUST login first before navigating there.
+        # ============================================================
+        precondition_navigation_done = False
+
+        # Define page types
+        PUBLIC_PAGES = ['login', 'register', 'registration', 'signup', 'sign-up', 'home', 'landing', 'forgot-password', 'reset-password']
+        PROTECTED_PAGES = ['dashboard', 'profile', 'settings', 'account', 'admin', 'orders', 'cart', 'checkout', 'my-account', 'preferences']
+
+        print(f"\n{'='*60}", flush=True)
+        print(f"[TESTER-BRAIN] ===== PRECONDITION RESOLUTION =====", flush=True)
+        print(f"[TESTER-BRAIN] Credentials available: {bool(credentials)}", flush=True)
+        if credentials:
+            uname = credentials.get('username') or credentials.get('admin_username', 'N/A')
+            print(f"[TESTER-BRAIN] Username: {uname[:3] if uname else 'N/A'}***", flush=True)
+
+        for i, step in enumerate(all_steps):
+            action = step.get('action', '').lower()
+
+            if action == 'resolve_precondition':
+                target_page = step.get('target', '').lower()
+                precondition_text = step.get('precondition_text', step.get('description', ''))
+
+                self._log(f"[TESTER] Analyzing precondition: '{precondition_text}'")
+                self._log(f"[TESTER] Target page: {target_page}")
+
+                # Determine if this is a protected page
+                is_protected = any(p in target_page for p in PROTECTED_PAGES)
+                is_public = any(p in target_page for p in PUBLIC_PAGES)
+
+                print(f"[TESTER-BRAIN] Page '{target_page}' - Protected: {is_protected}, Public: {is_public}", flush=True)
+
+                try:
+                    # ============================================================
+                    # PROTECTED PAGE: Login first, then navigate
+                    # ============================================================
+                    if is_protected and credentials:
+                        username = credentials.get('username') or credentials.get('admin_username', '')
+                        password = credentials.get('password') or credentials.get('admin_password', '')
+
+                        if username and password:
+                            self._log(f"[TESTER] Protected page detected! Logging in first...")
+                            print(f"[TESTER-BRAIN] === PERFORMING LOGIN FIRST ===", flush=True)
+
+                            # Step 1: Navigate to login page
+                            login_url = f"{base_url.rstrip('/')}/login"
+                            self._log(f"[TESTER] Step 1: Navigate to login page: {login_url}")
+                            try:
+                                await self._page.goto(login_url, wait_until='domcontentloaded', timeout=15000)
+                                await asyncio.sleep(1)
+                            except Exception as nav_err:
+                                for alt in ['/signin', '/auth/login', '/account/login', '/user/login']:
+                                    try:
+                                        alt_url = f"{base_url.rstrip('/')}{alt}"
+                                        await self._page.goto(alt_url, wait_until='domcontentloaded', timeout=10000)
+                                        self._log(f"[TESTER] Found login at: {alt_url}")
+                                        break
+                                    except:
+                                        continue
+
+                            # Step 2: Fill username/email field
+                            self._log(f"[TESTER] Step 2: Enter username: {username[:3]}***")
+                            username_selectors = [
+                                'input[name="username"]', 'input[name="email"]', 'input[name="login"]',
+                                'input[type="email"]', 'input[type="text"]',
+                                '#username', '#email', '#login', '#user',
+                                '[data-testid="username"]', '[data-testid="email"]',
+                                'input[placeholder*="mail" i]', 'input[placeholder*="user" i]'
+                            ]
+                            for selector in username_selectors:
+                                try:
+                                    elem = await self._page.wait_for_selector(selector, timeout=2000)
+                                    if elem:
+                                        await elem.fill(username)
+                                        self._log(f"[TESTER] Username entered in: {selector}")
+                                        break
+                                except:
+                                    continue
+
+                            # Step 3: Fill password field
+                            self._log(f"[TESTER] Step 3: Enter password: ****")
+                            password_selectors = [
+                                'input[name="password"]', 'input[type="password"]',
+                                '#password', '[data-testid="password"]'
+                            ]
+                            for selector in password_selectors:
+                                try:
+                                    elem = await self._page.wait_for_selector(selector, timeout=2000)
+                                    if elem:
+                                        await elem.fill(password)
+                                        self._log(f"[TESTER] Password entered in: {selector}")
+                                        break
+                                except:
+                                    continue
+
+                            # Step 4: Click login button
+                            self._log(f"[TESTER] Step 4: Click login button")
+                            login_btn_selectors = [
+                                'button[type="submit"]', 'input[type="submit"]',
+                                'button:has-text("Login")', 'button:has-text("Sign in")',
+                                'button:has-text("Log in")', 'button:has-text("Submit")',
+                                '[data-testid="login-button"]', '[data-testid="submit"]',
+                                '#login-button', '#submit', '.login-btn', '.submit-btn'
+                            ]
+                            for selector in login_btn_selectors:
+                                try:
+                                    elem = await self._page.wait_for_selector(selector, timeout=2000)
+                                    if elem:
+                                        await elem.click()
+                                        self._log(f"[TESTER] Clicked login button: {selector}")
+                                        break
+                                except:
+                                    continue
+
+                            # Step 5: Wait for login to complete
+                            self._log(f"[TESTER] Step 5: Waiting for login to complete...")
+                            await asyncio.sleep(2)
+
+                            current_url = self._page.url
+                            self._log(f"[TESTER] Current URL after login: {current_url}")
+
+                            # Step 6: Navigate to target page
+                            target_url = f"{base_url.rstrip('/')}/{target_page}"
+                            self._log(f"[TESTER] Step 6: Navigate to target: {target_url}")
+                            try:
+                                await self._page.goto(target_url, wait_until='domcontentloaded', timeout=15000)
+                                await asyncio.sleep(1)
+                                self._log(f"[TESTER] SUCCESS - Logged in and navigated to {target_page}")
+                                step['action'] = 'noop'
+                                step['description'] = f"Logged in and navigated to {target_page} page"
+                                precondition_navigation_done = True
+                            except Exception as e:
+                                self._log(f"[TESTER] Navigation to {target_page} failed: {e}")
+                        else:
+                            self._log(f"[TESTER] WARNING: Protected page but no credentials!")
+
+                    # ============================================================
+                    # PUBLIC PAGE: Just navigate directly
+                    # ============================================================
+                    elif is_public or not is_protected:
+                        self._log(f"[TESTER] Public page - navigating directly")
+                        target_url = f"{base_url.rstrip('/')}/{target_page}"
+                        try:
+                            await self._page.goto(target_url, wait_until='domcontentloaded', timeout=15000)
+                            await asyncio.sleep(1)
+                            self._log(f"[TESTER] SUCCESS - navigated to {target_page}")
+                            step['action'] = 'noop'
+                            step['description'] = f"Navigated to {target_page} page"
+                            precondition_navigation_done = True
+                        except Exception as e:
+                            self._log(f"[TESTER] Direct navigation failed: {e}")
+                            if self._nav_intelligence:
+                                nav_result = await self._nav_intelligence.navigate_to(target_page)
+                                if nav_result.success:
+                                    step['action'] = 'noop'
+                                    precondition_navigation_done = True
+
+                except Exception as e:
+                    self._log(f"[TESTER] Precondition error: {e}")
+                    step['action'] = 'noop'
+                    step['error_message'] = str(e)
+
+        print(f"[TESTER-BRAIN] Precondition resolution complete", flush=True)
+        print(f"{'='*60}\n", flush=True)
 
         # Build agent-compatible test case
         agent_test = {
@@ -1037,10 +1566,13 @@ RULES:
         }
 
         # Execute with agent
+        # If we already navigated via precondition, tell agent to skip initial navigation
+        self._log(f"[EXEC] Precondition navigation done: {precondition_navigation_done}")
         try:
             agent_result = await self._agent.execute_test(
                 agent_test,
-                base_url=base_url
+                base_url=base_url,
+                skip_initial_navigation=precondition_navigation_done
             )
         except Exception as e:
             self._log(f"Agent execution error: {str(e)}", "error")
@@ -1086,6 +1618,9 @@ RULES:
         # Collect training data
         if self._collect_training_data:
             self._record_training_data(test_case, agent_result)
+
+        # UPDATE GHERKIN: If agent discovered missing fields, update the Gherkin file
+        await self._update_gherkin_with_discovered_steps(test_case)
 
         # Get agent stats
         agent_stats = self._agent.get_stats()
@@ -1280,6 +1815,15 @@ RULES:
         **kwargs
     ) -> UnifiedExecutionReport:
         """Execute a Gherkin feature file"""
+
+        # ============================================================
+        # PRE-EXECUTION: Analyze and optimize feature structure
+        # Like a tester would: check for missing Background, common steps
+        # ============================================================
+        feature_id = feature.get("id")
+        if feature_id:
+            await self._optimize_feature_structure(feature_id, feature)
+
         # Convert all scenarios
         unified_tests = self.convert_gherkin_feature(feature)
 
@@ -1290,6 +1834,53 @@ RULES:
             unified_tests = [t for t in unified_tests if any(tag in t.tags for tag in tag_filter)]
 
         return await self.execute(unified_tests, base_url, project_id, project_name, **kwargs)
+
+    async def _optimize_feature_structure(self, feature_id: str, feature: Dict[str, Any]):
+        """
+        Optimize feature structure before execution.
+
+        Like an experienced tester would:
+        1. Check if Background is missing
+        2. Analyze scenarios for common steps
+        3. Create Background from common steps
+        4. Use KB to suggest missing setup steps
+        """
+        try:
+            from gherkin_storage import get_gherkin_storage
+            gherkin_storage = get_gherkin_storage()
+
+            background = feature.get("background", [])
+            scenarios = feature.get("scenarios", [])
+
+            self._log(f"[OPTIMIZE] Analyzing feature structure...")
+            self._log(f"  - Background steps: {len(background)}")
+            self._log(f"  - Scenarios: {len(scenarios)}")
+
+            # Check 1: If no Background and multiple scenarios, try to create one
+            if not background and len(scenarios) >= 2:
+                self._log(f"[OPTIMIZE] No Background found, analyzing scenarios for common steps...")
+
+                created = gherkin_storage.analyze_and_create_background(feature_id)
+                if created:
+                    self._log(f"[OPTIMIZE] Background created from common scenario steps!")
+                    # Reload feature to get updated structure
+                    updated_feature = gherkin_storage.load_feature_dict(feature_id)
+                    if updated_feature:
+                        feature.update(updated_feature)
+                else:
+                    self._log(f"[OPTIMIZE] No common steps found for Background")
+
+            # Check 2: Suggest additional Background steps from KB
+            suggestions = gherkin_storage.suggest_background_from_kb(feature_id)
+            if suggestions:
+                self._log(f"[OPTIMIZE] KB suggests {len(suggestions)} additional setup step(s):")
+                for s in suggestions:
+                    self._log(f"  - {s.get('keyword')} {s.get('text')}")
+                # Note: We log suggestions but don't auto-add them (user should review)
+
+        except Exception as e:
+            self._log(f"[OPTIMIZE] Feature optimization skipped: {e}")
+            logger.debug(f"Feature optimization error: {e}")
 
     def get_learning_stats(self) -> Dict[str, Any]:
         """Get current learning statistics"""
@@ -1302,3 +1893,86 @@ RULES:
     def import_knowledge(self, input_file: str):
         """Import knowledge from file"""
         self.learning_engine.import_learnings(input_file, merge=True)
+
+    async def _update_gherkin_with_discovered_steps(self, test_case: UnifiedTestCase):
+        """
+        Update the Gherkin file with steps discovered during execution.
+
+        If the agent discovered missing fields (like confirm password) and filled them,
+        add those as steps to the Gherkin so future runs don't need AI.
+        """
+        try:
+            # Get discovered fields from the agent
+            discovered_fields = self._agent.get_discovered_fields()
+
+            if not discovered_fields:
+                return  # Nothing to update
+
+            # Get feature_id and scenario_name from test case
+            original_data = getattr(test_case, 'original_data', None)
+            if not original_data:
+                self._log("[GHERKIN-UPDATE] No original data, skipping Gherkin update")
+                return
+
+            feature_data = original_data.get('feature', {})
+            feature_id = feature_data.get('id')
+            scenario_name = test_case.scenario_name
+
+            if not feature_id or not scenario_name:
+                self._log(f"[GHERKIN-UPDATE] Missing feature_id ({feature_id}) or scenario_name ({scenario_name})")
+                return
+
+            # Convert discovered fields to Gherkin steps
+            gherkin_steps = []
+            for field in discovered_fields:
+                field_name = field.get('field_name', 'unknown')
+                value_type = field.get('value_type', 'text')
+
+                # Create appropriate Gherkin step text
+                if value_type == 'password':
+                    if 'confirm' in field_name.lower():
+                        step_text = f'I enter my password again in the "{field_name}" field'
+                    else:
+                        step_text = f'I enter my password in the "{field_name}" field'
+                elif value_type == 'email':
+                    step_text = f'I enter my email in the "{field_name}" field'
+                elif value_type == 'username':
+                    step_text = f'I enter my username in the "{field_name}" field'
+                elif value_type == 'firstname':
+                    step_text = f'I enter my first name in the "{field_name}" field'
+                elif value_type == 'lastname':
+                    step_text = f'I enter my last name in the "{field_name}" field'
+                elif value_type == 'phone':
+                    step_text = f'I enter my phone number in the "{field_name}" field'
+                else:
+                    step_text = f'I fill in the "{field_name}" field'
+
+                gherkin_steps.append({
+                    "keyword": "And",
+                    "text": step_text,
+                    "field_name": field_name  # For smart duplicate detection
+                })
+
+            if gherkin_steps:
+                # Update the Gherkin file
+                from gherkin_storage import get_gherkin_storage
+                gherkin_storage = get_gherkin_storage()
+
+                success = gherkin_storage.add_discovered_steps_to_scenario(
+                    feature_id=feature_id,
+                    scenario_name=scenario_name,
+                    discovered_steps=gherkin_steps,
+                    insert_before_step_keyword="When"
+                )
+
+                if success:
+                    self._log(f"[GHERKIN-UPDATE] Added {len(gherkin_steps)} discovered step(s) to '{scenario_name}'")
+                    for step in gherkin_steps:
+                        self._log(f"  + {step['keyword']} {step['text']}")
+
+            # Clear discovered fields after processing
+            self._agent.clear_discovered_fields()
+
+        except Exception as e:
+            self._log(f"[GHERKIN-UPDATE] Error updating Gherkin: {e}")
+            logger.warning(f"Failed to update Gherkin with discovered steps: {e}")

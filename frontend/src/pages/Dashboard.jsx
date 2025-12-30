@@ -4,10 +4,13 @@ import {
   Grid,
   Card,
   CardContent,
+  CardActionArea,
   Typography,
   LinearProgress,
   Chip,
   Paper,
+  Skeleton,
+  alpha,
 } from '@mui/material';
 import {
   TrendingUp,
@@ -17,6 +20,9 @@ import {
   PlayArrow,
   Add,
   Refresh,
+  Science,
+  Assessment,
+  AutoAwesome,
 } from '@mui/icons-material';
 import {
   BarChart,
@@ -34,9 +40,58 @@ import {
 
 // Import generic components and hooks
 import { StatsCard, PageHeader, EmptyState } from '../components';
+import BrainDashboard from '../components/BrainDashboard';
 import { useApiData } from '../hooks';
 
 const COLORS = ['#2e7d32', '#d32f2f', '#ed6c02'];
+
+const quickActions = [
+  {
+    title: 'Run Tests',
+    description: 'Execute test scenarios',
+    icon: PlayArrow,
+    path: '/test-lab',
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  },
+  {
+    title: 'New Project',
+    description: 'Create a test project',
+    icon: Add,
+    path: '/projects',
+    gradient: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+  },
+  {
+    title: 'AI Generator',
+    description: 'Generate test cases',
+    icon: AutoAwesome,
+    path: '/generate',
+    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+  },
+  {
+    title: 'View Reports',
+    description: 'Analyze test results',
+    icon: Assessment,
+    path: '/reports',
+    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+  },
+];
+
+function StatsSkeleton() {
+  return (
+    <Grid container spacing={3} sx={{ mb: 4 }}>
+      {[1, 2, 3, 4].map((i) => (
+        <Grid item xs={12} sm={6} md={3} key={i}>
+          <Paper sx={{ p: 3, borderRadius: 2 }}>
+            <Skeleton variant="circular" width={48} height={48} sx={{ mb: 2 }} />
+            <Skeleton variant="text" width="60%" height={40} />
+            <Skeleton variant="text" width="40%" />
+          </Paper>
+        </Grid>
+      ))}
+    </Grid>
+  );
+}
+
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -73,9 +128,7 @@ export default function Dashboard() {
     { name: 'Skipped', value: recentReports.reduce((sum, r) => sum + (r.skipped || 0), 0) },
   ];
 
-  if (loading) {
-    return <LinearProgress />;
-  }
+  
 
   return (
     <Box>
@@ -100,7 +153,27 @@ export default function Dashboard() {
         ]}
       />
 
-      {/* Metrics Cards - Using StatsCard component */}
+      {/* Quick Actions */}
+      <Grid container spacing={2} sx={{ mb: 4 }}>
+        {quickActions.map((action) => (
+          <Grid item xs={6} sm={3} key={action.title}>
+            <Card sx={{ borderRadius: 3, background: action.gradient, color: 'white', transition: 'all 0.3s ease', '&:hover': { transform: 'translateY(-4px)', boxShadow: 6 } }}>
+              <CardActionArea onClick={() => navigate(action.path)} sx={{ p: 2.5 }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                  <Box sx={{ width: 56, height: 56, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1.5 }}>
+                    <action.icon sx={{ fontSize: 28 }} />
+                  </Box>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{action.title}</Typography>
+                  <Typography variant="caption" sx={{ opacity: 0.9 }}>{action.description}</Typography>
+                </Box>
+              </CardActionArea>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Stats Cards */}
+      {loading ? <StatsSkeleton /> : (
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
@@ -139,6 +212,7 @@ export default function Dashboard() {
           />
         </Grid>
       </Grid>
+      )}
 
       {/* Charts */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -213,6 +287,11 @@ export default function Dashboard() {
           </Paper>
         </Grid>
       </Grid>
+
+      {/* Brain Dashboard - AI Learning Stats */}
+      <Box sx={{ mb: 4 }}>
+        <BrainDashboard showChart={true} />
+      </Box>
 
       {/* Recent Reports */}
       <Paper sx={{ p: 3 }}>

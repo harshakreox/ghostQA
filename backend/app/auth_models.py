@@ -19,6 +19,7 @@ class User(BaseModel):
     email: str
     password_hash: str  # Stored as bcrypt hash
     role: UserRole = UserRole.USER
+    organization_id: Optional[str] = None  # Link to organization
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
     is_active: bool = True
@@ -30,6 +31,7 @@ class UserCreate(BaseModel):
     email: str
     password: str
     role: UserRole = UserRole.USER
+    org_role: Optional[str] = "member"  # Organization role: org_admin, manager, member
 
 
 class UserLogin(BaseModel):

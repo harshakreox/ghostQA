@@ -1,0 +1,11 @@
+{
+  "id": "340de3e9-e071-4c3b-aefa-eb9f2ff3c853",
+  "name": "Default Organization",
+  "slug": "default",
+  "description": "Auto-generated default organization during migration",
+  "created_at": "2025-12-26T14:50:23.221477",
+  "updated_at": "2025-12-26T14:50:23.221477",
+  "is_active": true,
+  "max_users": null,
+  "max_projects": null
+}

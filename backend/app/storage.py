@@ -5,7 +5,6 @@ from datetime import datetime
 from models import Project, TestCase, TestReport
 import uuid
 
-
 class Storage:
     """File-based storage for projects, test cases, and reports"""
     
@@ -196,3 +195,15 @@ class Storage:
     def get_projects(self) -> List[Project]:
         """Alias for get_all_projects (used by orchestrator)"""
         return self.get_all_projects()
+
+
+# Singleton instance
+_storage = None
+
+
+def get_storage() -> Storage:
+    """Get the storage singleton"""
+    global _storage
+    if _storage is None:
+        _storage = Storage()
+    return _storage

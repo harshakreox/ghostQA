@@ -144,7 +144,7 @@ class ProjectAutonomousAgent:
         project_id: str,
         broadcast_callback: Optional[Callable[[str], Any]] = None,
         headless: bool = True,
-        execution_mode: str = "autonomous",
+        execution_mode: str = "guided",  # Smart mode - brain optimizes AI usage
     ):
         self.project_id = project_id
         self.broadcast = broadcast_callback or self._default_broadcast

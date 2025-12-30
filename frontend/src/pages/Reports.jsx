@@ -15,6 +15,8 @@ import {
   ListItemText,
   Snackbar,
   Alert,
+  Paper,
+  Skeleton,
 } from '@mui/material';
 import {
   Refresh,
@@ -26,6 +28,8 @@ import {
   Assessment,
   Schedule,
   FolderOpen,
+  TrendingUp,
+  Timer,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 
@@ -101,6 +105,15 @@ export default function Reports() {
     report.project_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     report.test_case_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  // Calculate summary stats
+  const totalTests = reports.reduce((sum, r) => sum + (r.total_tests || 0), 0);
+  const totalPassed = reports.reduce((sum, r) => sum + (r.passed || 0), 0);
+  const totalFailed = reports.reduce((sum, r) => sum + (r.failed || 0), 0);
+  const overallPassRate = totalTests > 0 ? Math.round((totalPassed / totalTests) * 100) : 0;
+  const avgDuration = reports.length > 0 
+    ? (reports.reduce((sum, r) => sum + (r.duration || 0), 0) / reports.length).toFixed(1)
+    : 0;
+
 
   return (
     <Box>

@@ -276,6 +276,15 @@ class LearningEngine:
             element_attributes: Element attributes for future reference
             ai_assisted: Whether AI was used
         """
+        print(f"\n[KB-SAVE] === RECORDING ELEMENT MAPPING ===", flush=True)
+        print(f"  Domain: {domain}", flush=True)
+        print(f"  Page: {page}", flush=True)
+        print(f"  Element Key: {element_key}", flush=True)
+        print(f"  AI Assisted: {ai_assisted}", flush=True)
+        for sel_info in selectors:
+            print(f"  -> Selector: {sel_info.get('selector', 'N/A')} (confidence: {sel_info.get('confidence', 0)})", flush=True)
+        print(f"[KB-SAVE] ===================================\n", flush=True)
+
         for sel_info in selectors:
             event = LearningEvent(
                 type=LearningType.ELEMENT_MAPPING,

@@ -68,6 +68,7 @@ class Project(BaseModel):
     name: str
     description: str
     base_url: Optional[str] = None
+    organization_id: Optional[str] = None  # Organization this project belongs to
     test_cases: List[TestCase] = []
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)

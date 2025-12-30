@@ -14,11 +14,21 @@ from auth_models import (
     UserRole, ChangePasswordRequest, UpdateUserRequest, ForceChangePasswordRequest
 )
 from auth_storage import get_auth_storage, AuthStorage
+from org_storage import get_org_storage
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
 # JWT Configuration
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "ghostqa-secret-key-change-in-production-2024")
+# SECURITY: JWT_SECRET_KEY must be set in environment
+# Generate with: python -c "import secrets; print(secrets.token_hex(32))"
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+if not SECRET_KEY:
+    import secrets
+    SECRET_KEY = secrets.token_hex(32)
+    print("[SECURITY WARNING] JWT_SECRET_KEY not set! Using auto-generated key.")
+    print("[SECURITY WARNING] Sessions will be invalidated on server restart.")
+    print("[SECURITY WARNING] Set JWT_SECRET_KEY in .env for production!")
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30 minute session expiry
 
@@ -166,6 +176,100 @@ async def register(request: UserCreate):
     return create_access_token(user)
 
 
+
+
+@router.post("/register-with-invite", response_model=Token)
+async def register_with_invite(request_data: dict):
+    """Register a new user using an invite token"""
+    from org_storage import get_org_storage
+    from org_models import OrganizationMember, OrgRole
+    from datetime import datetime
+    
+    token = request_data.get('token')
+    username = request_data.get('username')
+    email = request_data.get('email')
+    password = request_data.get('password')
+    
+    if not all([token, username, email, password]):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing required fields: token, username, email, password"
+        )
+    
+    auth_storage = get_auth_storage()
+    org_storage = get_org_storage()
+    
+    # Validate invite
+    invite = org_storage.get_invite_by_token(token)
+    if not invite:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid invite token"
+        )
+    
+    # Check if expired
+    if datetime.now() > invite.expires_at:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This invite has expired"
+        )
+    
+    # Check if max uses reached
+    if invite.use_count >= invite.max_uses:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This invite has already been used"
+        )
+    
+    # Check if invite requires specific email
+    if invite.email and invite.email.lower() != email.lower():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"This invite is for {invite.email} only"
+        )
+    
+    # Check if username exists
+    if auth_storage.get_user_by_username(username):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already exists"
+        )
+    
+    # Check if email exists
+    if auth_storage.get_user_by_email(email):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
+    # Create user with organization
+    user = User(
+        username=username,
+        email=email,
+        password_hash=auth_storage.hash_password(password),
+        role=UserRole.USER,
+        organization_id=invite.organization_id
+    )
+    auth_storage.save_user(user)
+    
+    # Create org membership
+    org_role = invite.org_role
+    if isinstance(org_role, str):
+        org_role = OrgRole(org_role)
+    
+    org_member = OrganizationMember(
+        organization_id=invite.organization_id,
+        user_id=user.id,
+        org_role=org_role,
+        invited_by=invite.created_by
+    )
+    org_storage.add_org_member(org_member)
+    
+    # Increment invite usage
+    org_storage.increment_invite_use(invite.id)
+    
+    return create_access_token(user)
+
 @router.post("/refresh", response_model=Token)
 async def refresh_token(current_user: TokenData = Depends(get_current_user)):
     """Refresh access token (extends session by 30 minutes)"""
@@ -277,15 +381,42 @@ async def create_user(
             detail="Email already registered"
         )
 
+    # Get admin's organization to add new user to it
+    from org_storage import get_org_storage
+    from org_models import OrganizationMember, OrgRole
+    org_storage = get_org_storage()
+    admin_membership = org_storage.get_user_org_membership(current_admin.user_id)
+    
+    organization_id = None
+    if admin_membership:
+        organization_id = admin_membership.organization_id
+
     # Create new user with specified role
     user = User(
         username=request.username,
         email=request.email,
         password_hash=auth_storage.hash_password(request.password),
-        role=request.role
+        role=request.role,
+        organization_id=organization_id
     )
 
     auth_storage.save_user(user)
+
+    # Add user to organization if admin has one
+    if organization_id:
+        org_role_str = request.org_role if request.org_role else "member"
+        try:
+            org_role = OrgRole(org_role_str)
+        except ValueError:
+            org_role = OrgRole.MEMBER
+        
+        org_member = OrganizationMember(
+            organization_id=organization_id,
+            user_id=user.id,
+            org_role=org_role,
+            invited_by=current_admin.user_id
+        )
+        org_storage.add_org_member(org_member)
 
     return UserResponse(
         id=user.id,
@@ -385,8 +516,13 @@ async def reset_user_password(
             detail="User not found"
         )
 
-    # Reset to default password and require change on next login
-    new_password = "password123"
+    # Generate secure random temporary password
+    import secrets
+    import string
+    # Generate 12-char password with letters, digits, and symbols
+    alphabet = string.ascii_letters + string.digits + "!@#$%"
+    new_password = ''.join(secrets.choice(alphabet) for _ in range(12))
+
     user.password_hash = auth_storage.hash_password(new_password)
     user.must_change_password = True
     auth_storage.save_user(user)

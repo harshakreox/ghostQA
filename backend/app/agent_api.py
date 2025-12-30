@@ -613,6 +613,128 @@ def _get_ai_reduction_recommendation(stats: Dict) -> str:
         return "Outstanding! AI dependency is minimal"
 
 
+# ==================== Brain Stats Endpoints ====================
+
+@router.get("/brain/stats")
+async def get_brain_stats():
+    """
+    Get comprehensive brain statistics for the dashboard.
+
+    Returns all brain metrics including:
+    - Knowledge index stats
+    - Memory stats (page, error, workflow)
+    - Decision engine stats
+    - AI gateway stats (token usage)
+    - Learning progress
+    """
+    executor = get_executor()
+
+    # Get basic learning stats
+    learning_stats = executor.get_learning_stats()
+
+    # Try to get brain-specific stats if brain is initialized
+    brain_stats = {}
+    try:
+        if hasattr(executor, 'agent') and executor.agent and hasattr(executor.agent, 'brain'):
+            brain = executor.agent.brain
+            brain_stats = brain.get_stats()
+    except Exception as e:
+        logger.warning(f"Could not get brain stats: {e}")
+
+    # Calculate health score (0-100)
+    ai_dependency = learning_stats.get("ai_discovered_percentage", 100)
+    elements_known = learning_stats.get("total_elements_known", 0)
+    avg_confidence = learning_stats.get("average_confidence", 0)
+
+    # Health score formula: lower AI dependency + more elements + higher confidence
+    health_score = min(100, max(0,
+        (100 - ai_dependency) * 0.4 +  # 40% weight on low AI dependency
+        min(elements_known / 5, 30) +   # 30% weight on elements (cap at 150 elements)
+        avg_confidence * 30              # 30% weight on confidence
+    ))
+
+    # Determine status
+    if health_score >= 80:
+        status = "excellent"
+        status_message = "Brain is highly trained and efficient"
+    elif health_score >= 60:
+        status = "good"
+        status_message = "Brain is learning well, continue testing"
+    elif health_score >= 40:
+        status = "learning"
+        status_message = "Brain is actively learning from tests"
+    else:
+        status = "training"
+        status_message = "Brain needs more training data"
+
+    return {
+        "health": {
+            "score": round(health_score, 1),
+            "status": status,
+            "message": status_message
+        },
+        "knowledge": {
+            "total_elements": elements_known,
+            "patterns_learned": learning_stats.get("patterns_learned", 0),
+            "average_confidence": round(avg_confidence * 100, 1),
+            "ai_dependency_percent": round(ai_dependency, 1)
+        },
+        "memory": {
+            "page_memories": brain_stats.get("page_memory", {}).get("total_pages", 0),
+            "error_patterns": brain_stats.get("error_memory", {}).get("total_errors", 0),
+            "workflow_patterns": brain_stats.get("workflow_memory", {}).get("total_workflows", 0),
+            "action_patterns": brain_stats.get("action_memory", {}).get("total_actions", 0)
+        },
+        "decisions": {
+            "total_decisions": brain_stats.get("decision_engine", {}).get("total_decisions", 0),
+            "knowledge_based": brain_stats.get("decision_engine", {}).get("knowledge_decisions", 0),
+            "heuristic_based": brain_stats.get("decision_engine", {}).get("heuristic_decisions", 0),
+            "ai_fallback": brain_stats.get("decision_engine", {}).get("ai_decisions", 0)
+        },
+        "tokens": {
+            "total_used": brain_stats.get("ai_gateway", {}).get("total_tokens_used", 0),
+            "daily_remaining": brain_stats.get("ai_gateway", {}).get("daily_remaining", 50000),
+            "saved_by_cache": brain_stats.get("ai_gateway", {}).get("tokens_saved_by_cache", 0)
+        },
+        "recommendation": _get_ai_reduction_recommendation(learning_stats)
+    }
+
+
+@router.get("/brain/history")
+async def get_brain_history():
+    """
+    Get brain learning history over time.
+
+    Returns historical data for charting learning progress.
+    """
+    # For now, return mock historical data
+    # In a full implementation, this would read from stored history
+    executor = get_executor()
+    current_stats = executor.get_learning_stats()
+
+    # Generate trend data based on current stats
+    elements = current_stats.get("total_elements_known", 0)
+    ai_dep = current_stats.get("ai_discovered_percentage", 100)
+
+    # Simulate historical progression
+    history = []
+    for i in range(7):  # Last 7 data points
+        day_offset = 6 - i
+        # Simulate learning curve
+        factor = (i + 1) / 7
+        history.append({
+            "label": f"Day -{day_offset}" if day_offset > 0 else "Today",
+            "elements_known": int(elements * factor),
+            "ai_dependency": round(100 - (100 - ai_dep) * factor, 1),
+            "patterns_learned": int(current_stats.get("patterns_learned", 0) * factor)
+        })
+
+    return {
+        "history": history,
+        "trend": "improving" if ai_dep < 50 else "learning"
+    }
+
+
 # ==================== WebSocket for Real-time Logs ====================
 
 @router.websocket("/ws/logs")
@@ -758,7 +880,7 @@ class AutonomousRunRequest(BaseModel):
     """Request to start autonomous agent for a project"""
     project_id: str
     headless: bool = True
-    execution_mode: str = "autonomous"  # autonomous, guided, strict
+    execution_mode: str = "guided"  # Smart mode - brain optimizes AI usage
 
 
 class AutonomousSessionResponse(BaseModel):
@@ -775,7 +897,7 @@ async def start_autonomous_run(
     project_id: str,
     background_tasks: BackgroundTasks,
     headless: bool = True,
-    execution_mode: str = "autonomous"
+    execution_mode: str = "guided"  # Smart mode - brain optimizes AI usage
 ):
     """
     Start the autonomous agent for a project.

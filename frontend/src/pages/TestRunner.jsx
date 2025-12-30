@@ -110,14 +110,19 @@ export default function TestRunner() {
 
   const handleRunAiTest = async (feature) => {
     if (!selectedProjectId) return;
-    setAiRunning(true); setAiError(null); setAiLogs([]); setAiStatusMessage('Starting AI...'); setAiLogsExpanded(true);
+    setAiRunning(true); setAiError(null); setAiLogs([]); setAiStatusMessage('Starting unified executor...'); setAiLogsExpanded(true);
     try {
       addAiLog(`Feature: ${feature.name}`);
+      addAiLog('Using unified executor with learning...');
       const response = await axios.post('/api/gherkin/run-autonomous', { feature_id: feature.id, project_id: selectedProjectId, headless: aiHeadless });
-      addAiLog(`Passed: ${response.data.result.passed}, Failed: ${response.data.result.failed}`);
-      setAiStatusMessage('Done!'); showNotification(`AI: ${response.data.result.passed} passed`, 'success');
+      const result = response.data.result || response.data;
+      const aiDependency = response.data.ai_dependency_percent ?? 100;
+      const newLearned = response.data.new_selectors_learned ?? 0;
+      addAiLog(`Passed: ${result.passed}, Failed: ${result.failed}`);
+      addAiLog(`AI Dependency: ${aiDependency.toFixed(1)}% | Learned: ${newLearned}`);
+      setAiStatusMessage('Done!'); showNotification(`Tests: ${result.passed} passed, ${result.failed} failed`, 'success');
     } catch (error) {
-      const errorMsg = error.response?.data?.detail || 'AI failed';
+      const errorMsg = error.response?.data?.detail || 'Execution failed';
       addAiLog('ERROR: ' + errorMsg); setAiError(errorMsg); setAiStatusMessage('Failed');
     } finally { setAiRunning(false); }
   };

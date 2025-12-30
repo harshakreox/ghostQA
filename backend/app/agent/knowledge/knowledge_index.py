@@ -78,13 +78,45 @@ class LRUCache:
                     self.cache.popitem(last=False)
             self.cache[key] = value
 
-    def __contains__(self, key: str) -> bool:
-        return key in self.cache
-
     def invalidate(self, key: str):
+        """Remove a key from the cache"""
         with self._lock:
             if key in self.cache:
                 del self.cache[key]
+
+    def clear(self):
+        """Clear all entries from the cache"""
+        with self._lock:
+            self.cache.clear()
+
+
+@dataclass
+class ScenarioKnowledge:
+    """Pre-cached knowledge for a specific scenario"""
+    scenario_id: str
+    scenario_name: str
+    domain: str
+    selectors: Dict[str, ElementKnowledge] = field(default_factory=dict)  # element_key -> knowledge
+    last_run: str = ""
+    success_rate: float = 0.0
+    run_count: int = 0
+
+    def get_selector(self, element_key: str) -> Optional[ElementKnowledge]:
+        """Get selector for an element key"""
+        # Try exact match
+        if element_key in self.selectors:
+            return self.selectors[element_key]
+        # Try variations
+        variations = [
+            element_key,
+            f"{element_key}_field",
+            f"form_field_{element_key}",
+            element_key.replace(" ", "_"),
+        ]
+        for var in variations:
+            if var in self.selectors:
+                return self.selectors[var]
+        return None
 
 
 class BloomFilter:
@@ -740,3 +772,149 @@ class KnowledgeIndex:
         for domain in self._loaded_domains:
             self._save_domain(domain)
         print("[KB] Knowledge base saved to disk")
+
+    # ==================== Scenario-Level Caching ====================
+
+    def get_scenario_cache(self, scenario_id: str, scenario_name: str, domain: str) -> Optional[ScenarioKnowledge]:
+        """
+        Load cached knowledge for a specific scenario.
+        Returns all known selectors for this scenario in one O(1) lookup.
+        """
+        cache_file = self.knowledge_dir / "scenario_cache" / f"{self._safe_filename(scenario_id)}.json"
+
+        if not cache_file.exists():
+            print(f"[KB-SCENARIO] No cache found for scenario: {scenario_name}", flush=True)
+            return None
+
+        try:
+            with open(cache_file, 'r') as f:
+                data = json.load(f)
+
+            # Convert to ScenarioKnowledge
+            selectors = {}
+            for key, sel_data in data.get("selectors", {}).items():
+                selector_infos = [
+                    SelectorInfo(
+                        value=s.get("value", ""),
+                        selector_type=s.get("selector_type", "css"),
+                        confidence=s.get("confidence", 0.5),
+                        successes=s.get("successes", 0),
+                        failures=s.get("failures", 0),
+                        last_used=s.get("last_used"),
+                        learned_from=s.get("learned_from", "scenario_cache")
+                    )
+                    for s in sel_data.get("selectors", [])
+                ]
+                selectors[key] = ElementKnowledge(
+                    selectors=selector_infos,
+                    best_selector=sel_data.get("best_selector"),
+                    element_type=sel_data.get("element_type", "unknown")
+                )
+
+            scenario_kb = ScenarioKnowledge(
+                scenario_id=scenario_id,
+                scenario_name=scenario_name,
+                domain=domain,
+                selectors=selectors,
+                last_run=data.get("last_run", ""),
+                success_rate=data.get("success_rate", 0.0),
+                run_count=data.get("run_count", 0)
+            )
+
+            print(f"[KB-SCENARIO] Loaded cache for '{scenario_name}': {len(selectors)} selectors", flush=True)
+            return scenario_kb
+
+        except Exception as e:
+            print(f"[KB-SCENARIO] Error loading scenario cache: {e}", flush=True)
+            return None
+
+    def save_scenario_cache(
+        self,
+        scenario_id: str,
+        scenario_name: str,
+        domain: str,
+        used_selectors: Dict[str, Dict[str, Any]],
+        success: bool
+    ):
+        """
+        Save learned selectors for a scenario to cache.
+        Next time this scenario runs, we'll load these directly.
+        """
+        cache_dir = self.knowledge_dir / "scenario_cache"
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        cache_file = cache_dir / f"{self._safe_filename(scenario_id)}.json"
+
+        # Load existing or create new
+        existing = {}
+        if cache_file.exists():
+            try:
+                with open(cache_file, 'r') as f:
+                    existing = json.load(f)
+            except:
+                existing = {}
+
+        # Merge new selectors with existing
+        existing_selectors = existing.get("selectors", {})
+        for key, sel_info in used_selectors.items():
+            if key not in existing_selectors:
+                existing_selectors[key] = {
+                    "selectors": [],
+                    "best_selector": sel_info.get("selector"),
+                    "element_type": sel_info.get("element_type", "unknown")
+                }
+
+            # Add or update selector
+            selector_value = sel_info.get("selector")
+            found = False
+            for s in existing_selectors[key].get("selectors", []):
+                if s.get("value") == selector_value:
+                    s["successes"] = s.get("successes", 0) + (1 if success else 0)
+                    s["failures"] = s.get("failures", 0) + (0 if success else 1)
+                    s["last_used"] = datetime.now().isoformat()
+                    # Recalculate confidence
+                    total = s["successes"] + s["failures"]
+                    s["confidence"] = s["successes"] / total if total > 0 else 0.5
+                    found = True
+                    break
+
+            if not found:
+                existing_selectors[key]["selectors"].append({
+                    "value": selector_value,
+                    "selector_type": sel_info.get("selector_type", "css"),
+                    "confidence": 0.8 if success else 0.2,
+                    "successes": 1 if success else 0,
+                    "failures": 0 if success else 1,
+                    "last_used": datetime.now().isoformat(),
+                    "learned_from": "scenario_execution"
+                })
+
+            # Update best selector
+            if existing_selectors[key]["selectors"]:
+                best = max(existing_selectors[key]["selectors"], key=lambda x: x.get("confidence", 0))
+                existing_selectors[key]["best_selector"] = best.get("value")
+
+        # Update metadata
+        run_count = existing.get("run_count", 0) + 1
+        old_success_rate = existing.get("success_rate", 0.0)
+        new_success_rate = ((old_success_rate * (run_count - 1)) + (1.0 if success else 0.0)) / run_count
+
+        cache_data = {
+            "scenario_id": scenario_id,
+            "scenario_name": scenario_name,
+            "domain": domain,
+            "selectors": existing_selectors,
+            "last_run": datetime.now().isoformat(),
+            "success_rate": new_success_rate,
+            "run_count": run_count
+        }
+
+        with open(cache_file, 'w') as f:
+            json.dump(cache_data, f, indent=2)
+
+        print(f"[KB-SCENARIO] Saved cache for '{scenario_name}': {len(existing_selectors)} selectors, run #{run_count}", flush=True)
+
+    def _safe_filename(self, name: str) -> str:
+        """Convert a name to a safe filename"""
+        import re
+        safe = re.sub(r'[^\w\-]', '_', name)
+        return safe[:100]  # Limit length

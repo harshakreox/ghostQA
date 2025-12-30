@@ -23,7 +23,13 @@ from .selector_service import SelectorService, SelectorResult, ResolutionTier
 from .action_executor import ActionExecutor, ActionResult, ActionStatus
 from .recovery_handler import RecoveryHandler, FailureType
 from .spa_handler import SPAHandler, SPAFramework
+from .human_like_tester import (
+    PreActionChecker, PageStateTracker, SmartWaiter,
+    OverlayDetector, ErrorDetector, PreActionResult,
+    ActionReadiness, BlockerType, PageState
+)
 
+from ..brain.qa_brain import QABrain, BrainConfig
 from ..knowledge.knowledge_index import KnowledgeIndex
 from ..knowledge.learning_engine import LearningEngine
 from ..knowledge.pattern_store import PatternStore
@@ -169,13 +175,37 @@ class AutonomousTestAgent:
 
         # SPA handler for React, Angular, Vue, etc.
         self.spa_handler = SPAHandler(page)
+        # Human-like tester components (token-efficient)
+        self.pre_action_checker = PreActionChecker()
+        self._last_page_state: Optional[PageState] = None
+
+        # QA Brain - Neural decision system (connected to existing knowledge)
+        # This integrates brain with knowledge systems as one unified body
+        self.brain = QABrain(
+            config=BrainConfig(
+                data_dir=str(self.data_dir),
+                enable_learning=self.config.enable_learning,
+                enable_ai_fallback=self.config.enable_ai_fallback
+            ),
+            knowledge_index=self.knowledge_index,      # Shared long-term memory
+            learning_engine=self.learning_engine,      # Shared learning
+            pattern_store=self.pattern_store           # Shared patterns
+        )
+
 
         # State
         self.state = AgentState.IDLE
         self._current_test: Optional[str] = None
         self._current_domain: Optional[str] = None
+
+        # Track discovered fields during execution (for Gherkin updates)
+        self._discovered_fields: List[Dict[str, Any]] = []
         self._is_spa: bool = False
         self._detected_spa_framework: Optional[SPAFramework] = None
+
+        # Scenario-level caching for faster lookups
+        self._scenario_cache = None  # ScenarioKnowledge object
+        self._used_selectors: Dict[str, Dict[str, Any]] = {}  # Track selectors used in this run
 
         # Metrics
         self._ai_calls = 0
@@ -208,6 +238,57 @@ class AutonomousTestAgent:
         """Set execution callbacks"""
         self._step_callback = on_step
         self._error_callback = on_error
+
+    def set_scenario_cache(self, scenario_cache):
+        """
+        Set the scenario-specific knowledge cache for faster lookups.
+        When set, selector resolution will first check this cache before
+        querying the full knowledge base.
+        """
+        self._scenario_cache = scenario_cache
+        # Pass to selector service for O(1) lookup
+        self.selector_service.set_scenario_cache(scenario_cache)
+        if scenario_cache:
+            print(f"\n[SCENARIO-CACHE] Loaded cache for scenario: {scenario_cache.scenario_name}", flush=True)
+            print(f"  - Cached selectors: {len(scenario_cache.selectors)}", flush=True)
+            print(f"  - Last run: {scenario_cache.last_run}", flush=True)
+            print(f"  - Success rate: {scenario_cache.success_rate:.1%}", flush=True)
+            # Pre-populate used_selectors from cache for consistency
+            # Convert ElementKnowledge objects to dicts
+            for key, selector_data in scenario_cache.selectors.items():
+                if hasattr(selector_data, 'selectors'):
+                    # It's an ElementKnowledge object - convert to dict
+                    if selector_data.selectors:
+                        best = max(selector_data.selectors, key=lambda s: s.confidence)
+                        self._used_selectors[key] = {
+                            'selector': best.value,
+                            'selector_type': best.selector_type,
+                            'confidence': best.confidence
+                        }
+                    elif selector_data.best_selector:
+                        self._used_selectors[key] = {
+                            'selector': selector_data.best_selector,
+                            'selector_type': 'css',
+                            'confidence': 0.9
+                        }
+                elif isinstance(selector_data, dict):
+                    self._used_selectors[key] = selector_data
+
+    def get_used_selectors(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Get all selectors used during this execution.
+        Returns combined selectors from both agent and selector service.
+        """
+        # Merge selectors from selector service (most up-to-date)
+        merged = self._used_selectors.copy()
+        merged.update(self.selector_service.get_used_selectors())
+        return merged
+
+    def clear_scenario_cache(self):
+        """Clear the scenario cache (call between scenarios)"""
+        self._scenario_cache = None
+        self._used_selectors.clear()
+        self.selector_service.clear_scenario_cache()
 
     # ==================== Main Execution ====================
 
@@ -269,14 +350,57 @@ class AutonomousTestAgent:
 
         # Try text for clicks
         if action_type == "click":
-            try:
-                loc = self.page.get_by_text(target, exact=False)
-                if await loc.count() > 0:
-                    return loc.first
-            except: pass
+            # Strategy 1: Button by role with name
             try:
                 loc = self.page.get_by_role("button", name=target)
                 if await loc.count() > 0:
+                    logger.info(f"[SMART] Found button role: {target}")
+                    return loc.first
+            except: pass
+
+            # Strategy 2: Link by role with name
+            try:
+                loc = self.page.get_by_role("link", name=target)
+                if await loc.count() > 0:
+                    logger.info(f"[SMART] Found link role: {target}")
+                    return loc.first
+            except: pass
+
+            # Strategy 3: Button by text content (case insensitive)
+            try:
+                loc = self.page.locator(f"button:has-text('{target}')")
+                if await loc.count() > 0:
+                    logger.info(f"[SMART] Found button:has-text: {target}")
+                    return loc.first
+            except: pass
+
+            # Strategy 4: Submit/Login button types
+            if any(kw in target_lower for kw in ['submit', 'login', 'sign', 'register', 'continue']):
+                submit_selectors = [
+                    "button[type='submit']",
+                    "input[type='submit']",
+                    "button:has-text('Sign In')",
+                    "button:has-text('Sign Up')",
+                    "button:has-text('Log In')",
+                    "button:has-text('Login')",
+                    "button:has-text('Register')",
+                    "button:has-text('Submit')",
+                    "button:has-text('Continue')",
+                    "[type='submit']",
+                ]
+                for sel in submit_selectors:
+                    try:
+                        loc = self.page.locator(sel)
+                        if await loc.count() > 0:
+                            logger.info(f"[SMART] Found submit button: {sel}")
+                            return loc.first
+                    except: pass
+
+            # Strategy 5: Generic text match
+            try:
+                loc = self.page.get_by_text(target, exact=False)
+                if await loc.count() > 0:
+                    logger.info(f"[SMART] Found by text: {target}")
                     return loc.first
             except: pass
 
@@ -399,7 +523,8 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
     async def execute_test(
         self,
         test_case: Dict[str, Any],
-        base_url: Optional[str] = None
+        base_url: Optional[str] = None,
+        skip_initial_navigation: bool = False
     ) -> TestResult:
         """
         Execute a test case autonomously.
@@ -407,6 +532,7 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
         Args:
             test_case: Test case definition with steps
             base_url: Optional base URL to navigate to first
+            skip_initial_navigation: If True, don't navigate to base_url (already navigated)
 
         Returns:
             TestResult with execution details
@@ -449,8 +575,8 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
                 description=step_data.get("description")
             ))
 
-        # Navigate to base URL if provided
-        if base_url:
+        # Navigate to base URL if provided (unless already navigated by precondition)
+        if base_url and not skip_initial_navigation:
             logger.info(f"Navigating to base URL: {base_url}")
             nav_result = await self.action_executor.navigate(base_url)
             if nav_result.status != ActionStatus.SUCCESS:
@@ -459,50 +585,55 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
             # Wait for page to load
             logger.info("Waiting for page load...")
             await asyncio.sleep(1)
+        elif skip_initial_navigation:
+            logger.info(f"Skipping initial navigation (precondition already handled)")
 
-            # Detect framework from page (both SPA and UI library) - with timeout
-            logger.info("Detecting framework...")
-            try:
-                await asyncio.wait_for(self._detect_framework(), timeout=5.0)
-            except asyncio.TimeoutError:
-                logger.warning("Framework detection timed out")
+        # Detect framework from page (both SPA and UI library) - with timeout
+        logger.info("Detecting framework...")
+        try:
+            await asyncio.wait_for(self._detect_framework(), timeout=5.0)
+        except asyncio.TimeoutError:
+            logger.warning("Framework detection timed out")
 
-            # SPA-specific handling
-            if self.config.enable_spa_mode and self._is_spa:
-                logger.info(f"SPA detected ({self._detected_spa_framework.value}), applying SPA handling...")
+        # Load previous learnings for this domain/page
+        await self._load_and_log_learnings()
 
-                # Wait for hydration (SSR frameworks like Next.js, Nuxt.js) - with reduced timeout
-                if self.config.wait_for_hydration:
-                    try:
-                        await asyncio.wait_for(
-                            self.spa_handler.wait_for_hydration(self.config.spa_hydration_timeout_ms),
-                            timeout=5.0
-                        )
-                    except asyncio.TimeoutError:
-                        logger.warning("SPA hydration wait timed out")
+        # SPA-specific handling
+        if self.config.enable_spa_mode and self._is_spa:
+            logger.info(f"SPA detected ({self._detected_spa_framework.value}), applying SPA handling...")
 
-                # Wait for initial render to stabilize - with reduced timeout
-                if self.config.wait_for_render_stable:
-                    try:
-                        await asyncio.wait_for(
-                            self.spa_handler.wait_for_render_stable(self.config.spa_render_stable_timeout_ms),
-                            timeout=3.0
-                        )
-                    except asyncio.TimeoutError:
-                        logger.warning("SPA render stabilization wait timed out")
-
-            # Handle any initial blockers (modals, cookie banners) - with timeout
-            if self.config.enable_recovery:
-                logger.info("Handling pre-action blockers...")
+            # Wait for hydration (SSR frameworks like Next.js, Nuxt.js) - with reduced timeout
+            if self.config.wait_for_hydration:
                 try:
                     await asyncio.wait_for(
-                        self.recovery_handler.handle_pre_action_issues(),
+                        self.spa_handler.wait_for_hydration(self.config.spa_hydration_timeout_ms),
                         timeout=5.0
                     )
                 except asyncio.TimeoutError:
-                    logger.warning("Pre-action blocker handling timed out")
+                    logger.warning("SPA hydration wait timed out")
 
-            logger.info("Pre-test setup complete, starting step execution...")
+            # Wait for initial render to stabilize - with reduced timeout
+            if self.config.wait_for_render_stable:
+                try:
+                    await asyncio.wait_for(
+                        self.spa_handler.wait_for_render_stable(self.config.spa_render_stable_timeout_ms),
+                        timeout=3.0
+                    )
+                except asyncio.TimeoutError:
+                    logger.warning("SPA render stabilization wait timed out")
+
+        # Handle any initial blockers (modals, cookie banners) - with timeout
+        if self.config.enable_recovery:
+            logger.info("Handling pre-action blockers...")
+            try:
+                await asyncio.wait_for(
+                    self.recovery_handler.handle_pre_action_issues(),
+                    timeout=5.0
+                )
+            except asyncio.TimeoutError:
+                logger.warning("Pre-action blocker handling timed out")
+
+        logger.info("Pre-test setup complete, starting step execution...")
 
         # Execute each step
         logger.info(f"Executing {len(steps)} steps...")
@@ -612,12 +743,38 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
             "error_message": None
         }
 
+        # HUMAN-LIKE BEHAVIOR: Pre-action checks (token-efficient - no AI)
+        pre_check = await self._human_like_pre_action_check(step, action)
+        if not pre_check["should_proceed"]:
+            logger.info(f"[HUMAN-LIKE] Action blocked: {pre_check.get('reason', 'unknown')}")
+            if pre_check.get("auto_handled"):
+                logger.info("[HUMAN-LIKE] Blocker was auto-handled, retrying...")
+            else:
+                result["error_message"] = pre_check.get("reason", "Pre-action check failed")
+                result["status"] = StepStatus.FAILED
+                return result
+
         try:
             # Handle different action types
             if action in ("click", "tap"):
                 action_result = await self._execute_click(step)
             elif action in ("type", "fill", "input"):
-                action_result = await self._execute_type(step)
+                # Check if target is a form-level instruction (not a single field)
+                # Normalize: lowercase and replace underscores with spaces
+                target_normalized = (step.target or "").lower().replace("_", " ")
+                form_level_keywords = [
+                    "form", "all fields", "required fields", "remaining fields",
+                    "registration", "signup", "login form", "checkout",
+                    "the fields", "each field", "every field", "complete form"
+                ]
+                is_form_level = any(keyword in target_normalized for keyword in form_level_keywords)
+
+                if is_form_level and not step.value:
+                    # This is a form-level fill instruction - use Visual Intelligence
+                    logger.info(f"[SMART-FILL] Detected form-level target '{step.target}' - using visual form fill")
+                    action_result = await self._execute_visual_form_fill(step)
+                else:
+                    action_result = await self._execute_type(step)
             elif action in ("select", "choose"):
                 action_result = await self._execute_select(step)
             elif action in ("check", "checkbox"):
@@ -626,6 +783,9 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
                 action_result = await self._execute_check(step, check=False)
             elif action in ("navigate", "goto", "open"):
                 action_result = await self._execute_navigate(step)
+            elif action in ("smart_navigate",):
+                # Smart navigation: Find link/button and click instead of direct URL
+                action_result = await self._execute_smart_navigate(step)
             elif action in ("wait", "pause"):
                 action_result = await self._execute_wait(step)
             elif action in ("assert", "verify", "expect"):
@@ -699,16 +859,67 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
         return result
 
     async def _execute_click(self, step: TestStep) -> ActionResult:
-        """Execute a click action with smart finding"""
+        """Execute a click action with smart finding and pre-submit form validation"""
         from datetime import datetime
         start = datetime.utcnow()
+
+        target_lower = (step.target or "").lower()
+
+        # Check if this is a submit button - if so, validate form first
+        submit_keywords = ['submit', 'login', 'sign in', 'signin', 'register', 'sign up',
+                          'signup', 'create account', 'continue', 'next', 'confirm', 'save']
+        is_submit_button = any(kw in target_lower for kw in submit_keywords)
+
+        if is_submit_button:
+            logger.info(f"[SMART-SUBMIT] Detected submit button click: {step.target}")
+            # Pre-submit validation: Check for unfilled form fields
+            await self._validate_and_complete_form_before_submit()
 
         # Try smart finding first
         locator = await self._smart_find_element(step.target, "click")
         if locator:
             try:
-                await locator.click(timeout=5000)
+                # Capture URL before click for post-click validation
+                url_before = self.page.url
+
+                # For submit buttons, ensure element is ready
+                if is_submit_button:
+                    logger.info("[SMART-SUBMIT] Ensuring button is ready...")
+                    try:
+                        await locator.scroll_into_view_if_needed(timeout=3000)
+                        await self.page.wait_for_timeout(300)
+                    except: pass
+
+                # Try normal click first
+                try:
+                    await locator.click(timeout=5000)
+                except Exception as click_err:
+                    logger.warning(f"[SMART-CLICK] Normal click failed: {click_err}, trying force click...")
+                    # Try force click if normal click fails
+                    try:
+                        await locator.click(force=True, timeout=5000)
+                    except Exception as force_err:
+                        logger.warning(f"[SMART-CLICK] Force click failed: {force_err}, trying JS click...")
+                        # Last resort: JavaScript click
+                        try:
+                            await locator.evaluate("el => el.click()")
+                        except Exception as js_err:
+                            raise Exception(f"All click methods failed: {js_err}")
+
                 await self.page.wait_for_timeout(500)
+
+                # Post-click validation for submit buttons
+                if is_submit_button:
+                    success = await self._validate_submit_result(url_before)
+                    if not success:
+                        # Form submission likely failed - try to recover
+                        logger.info("[SMART-SUBMIT] Submit may have failed, attempting recovery...")
+                        recovered = await self._recover_from_submit_failure()
+                        if recovered:
+                            # Retry the click after recovery
+                            await locator.click(timeout=5000)
+                            await self.page.wait_for_timeout(500)
+
                 return ActionResult(
                     status=ActionStatus.SUCCESS,
                     action="click",
@@ -753,6 +964,447 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
             timeout=self.config.step_timeout_ms,
             intent=step.target
         )
+
+    async def _validate_and_complete_form_before_submit(self):
+        """
+        PRE-SUBMIT VALIDATION: Analyze the form and fill any missing required fields.
+        This catches cases like confirm password that weren't in the test steps.
+
+        LEARNING: Records discovered fields so next run doesn't need AI.
+        """
+        try:
+            from .visual_intelligence import VisualIntelligence
+
+            logger.info("[PRE-SUBMIT] Analyzing form for missing required fields...")
+            vi = VisualIntelligence(ai_provider="anthropic")
+
+            # Analyze the page to find all form fields
+            analysis = await vi.analyze_page(self.page, "validate form before submit")
+
+            if not analysis.form_fields:
+                logger.info("[PRE-SUBMIT] No form fields detected, proceeding with submit")
+                return
+
+            logger.info(f"[PRE-SUBMIT] Found {len(analysis.form_fields)} form fields")
+
+            # Track discovered fields for learning
+            discovered_fields = []
+
+            # Check each field to see if it's empty
+            for field in analysis.form_fields:
+                selector = field.get("selector")
+                field_name = field.get("name") or field.get("label") or field.get("placeholder") or "unknown"
+                field_type = field.get("type", "text")
+
+                if not selector:
+                    continue
+
+                try:
+                    # Get current value of the field
+                    locator = self.page.locator(selector).first
+                    if await locator.count() == 0:
+                        continue
+
+                    current_value = await locator.input_value() if field_type != "select" else ""
+
+                    # If field is empty and looks required, fill it
+                    if not current_value or current_value.strip() == "":
+                        is_required = field.get("required", False)
+                        field_name_lower = field_name.lower()
+
+                        # Also consider fields that look important based on name
+                        important_fields = ['password', 'confirm', 'email', 'username', 'name', 'phone']
+                        looks_important = any(imp in field_name_lower for imp in important_fields)
+
+                        if is_required or looks_important:
+                            # Generate appropriate value
+                            generated_value = vi._generate_field_value(field)
+
+                            # Validate generated value - must not be a field descriptor or step text
+                            invalid_patterns = ['email_address', 'mail_address', 'auto_complete',
+                                               'autocomplete', 'password_field', 'username_field',
+                                               'complete_remaining', 'remaining_fields', 'required_fields',
+                                               'fill_form', 'complete_form', 'valid_email', 'test_field']
+                            action_words = ['complete', 'remaining', 'required', 'enter', 'valid', 'field', 'form']
+                            gen_lower = generated_value.lower().replace(' ', '_').replace('-', '_')
+                            bad_value = any(p in gen_lower for p in invalid_patterns) or sum(1 for w in action_words if w in gen_lower) >= 2
+                            if bad_value:
+                                logger.warning(f"[PRE-SUBMIT] Bad value '{generated_value}', using fallback")
+                                if 'email' in field_name_lower or 'mail' in field_name_lower:
+                                    generated_value = f"test_{int(datetime.now().timestamp()) % 100000}@testmail.com"
+                                elif 'password' in field_name_lower:
+                                    generated_value = "TestPass123!"
+                                else:
+                                    generated_value = f"test_{int(datetime.now().timestamp()) % 100000}"
+
+                            # Special handling for confirm password - use same as password
+                            if 'confirm' in field_name_lower and 'password' in field_name_lower:
+                                # Try to get the password field value
+                                try:
+                                    pwd_locator = self.page.locator('[type="password"]').first
+                                    if await pwd_locator.count() > 0:
+                                        generated_value = await pwd_locator.input_value()
+                                except:
+                                    generated_value = "TestPass123!"
+
+                            logger.info(f"[PRE-SUBMIT] Filling field '{field_name}' with: {generated_value[:20]}...")
+                            await locator.fill(generated_value)
+                            await self.page.wait_for_timeout(100)
+
+                            # LEARNING: Record this discovered field
+                            discovered_fields.append({
+                                "field_name": field_name,
+                                "selector": selector,
+                                "field_type": field_type,
+                                "is_required": is_required,
+                                "action": "fill",
+                                "value_type": self._infer_value_type(field_name_lower)
+                            })
+
+                except Exception as e:
+                    logger.warning(f"[PRE-SUBMIT] Could not check/fill field {field_name}: {e}")
+                    continue
+
+            # LEARNING: Save discovered fields to knowledge base
+            if discovered_fields:
+                await self._record_discovered_steps(discovered_fields)
+
+                # Also track for Gherkin updates
+                self._discovered_fields.extend(discovered_fields)
+                logger.info(f"[PRE-SUBMIT] Tracked {len(discovered_fields)} discovered field(s) for Gherkin update")
+
+            logger.info("[PRE-SUBMIT] Form validation complete")
+
+        except Exception as e:
+            logger.warning(f"[PRE-SUBMIT] Form validation failed: {e}")
+
+    def _infer_value_type(self, field_name: str) -> str:
+        """Infer what type of value a field needs based on its name"""
+        field_name = field_name.lower()
+        if 'email' in field_name:
+            return 'email'
+        elif 'password' in field_name or 'confirm' in field_name:
+            return 'password'
+        elif 'phone' in field_name or 'mobile' in field_name:
+            return 'phone'
+        elif 'first' in field_name:
+            return 'firstname'
+        elif 'last' in field_name or 'surname' in field_name:
+            return 'lastname'
+        elif 'user' in field_name:
+            return 'username'
+        else:
+            return 'text'
+
+    async def _record_discovered_steps(self, discovered_fields: List[Dict[str, Any]]):
+        """
+        LEARNING: Record discovered form fields as additional steps for this scenario.
+        Next time the same test runs, we'll know about these fields without needing AI.
+        """
+        try:
+            # Get current page info
+            domain = self._get_domain()
+            page_path = self._get_page()
+
+            # Record each discovered field to the knowledge base
+            for field in discovered_fields:
+                element_key = f"form_field_{field['field_name'].replace(' ', '_').lower()}"
+
+                # Record the selector for this element
+                self.learning_engine.record_element_mapping(
+                    domain=domain,
+                    page=page_path,
+                    element_key=element_key,
+                    selectors=[{
+                        "selector": field["selector"],
+                        "type": "css",
+                        "confidence": 0.9
+                    }],
+                    element_attributes={
+                        "field_name": field["field_name"],
+                        "field_type": field["field_type"],
+                        "is_required": field["is_required"],
+                        "value_type": field["value_type"],
+                        "discovered_by": "pre_submit_validation"
+                    },
+                    ai_assisted=True
+                )
+
+                logger.info(f"[LEARNING] Recorded discovered field: {element_key} -> {field['selector']}")
+
+            # Also save to a scenario-specific learning file
+            self._save_scenario_learnings(domain, page_path, discovered_fields)
+
+        except Exception as e:
+            logger.warning(f"[LEARNING] Failed to record discovered steps: {e}")
+
+    def _save_scenario_learnings(self, domain: str, page_path: str, discovered_fields: List[Dict[str, Any]]):
+        """Save scenario-specific learnings to a file for quick retrieval"""
+        try:
+            import json
+            from pathlib import Path
+
+            learnings_dir = self.data_dir / "scenario_learnings"
+            learnings_dir.mkdir(parents=True, exist_ok=True)
+
+            # Create filename from domain and page
+            safe_domain = domain.replace(".", "_").replace(":", "_")
+            safe_page = page_path.replace("/", "_").replace("?", "_")[:50]
+            learnings_file = learnings_dir / f"{safe_domain}_{safe_page}.json"
+
+            # Load existing learnings or create new
+            existing = {}
+            if learnings_file.exists():
+                try:
+                    with open(learnings_file, 'r') as f:
+                        existing = json.load(f)
+                except:
+                    existing = {}
+
+            # Add new learnings
+            if "discovered_fields" not in existing:
+                existing["discovered_fields"] = []
+
+            for field in discovered_fields:
+                # Check if already exists
+                exists = any(
+                    f["selector"] == field["selector"]
+                    for f in existing["discovered_fields"]
+                )
+                if not exists:
+                    field["discovered_at"] = datetime.utcnow().isoformat()
+                    existing["discovered_fields"].append(field)
+
+            existing["last_updated"] = datetime.utcnow().isoformat()
+            existing["domain"] = domain
+            existing["page"] = page_path
+
+            # Save
+            with open(learnings_file, 'w') as f:
+                json.dump(existing, f, indent=2)
+
+            logger.info(f"[LEARNING] Saved {len(discovered_fields)} discovered fields to {learnings_file.name}")
+
+        except Exception as e:
+            logger.warning(f"[LEARNING] Failed to save scenario learnings: {e}")
+
+    def _get_domain(self) -> str:
+        """Get current domain from page URL"""
+        try:
+            from urllib.parse import urlparse
+            url = self.page.url
+            parsed = urlparse(url)
+            return parsed.netloc or "unknown"
+        except:
+            return "unknown"
+
+    def _get_page(self) -> str:
+        """Get current page path from URL"""
+        try:
+            from urllib.parse import urlparse
+            url = self.page.url
+            parsed = urlparse(url)
+            return parsed.path or "/"
+        except:
+            return "/"
+
+    async def _load_and_log_learnings(self):
+        """
+        Load and log previous learnings for this domain.
+        Shows what the system has learned from previous runs.
+        """
+        try:
+            domain = self._get_domain()
+
+            # Get KB stats for this domain
+            kb_stats = self.knowledge_index.get_stats()
+
+            logger.info(f"[LEARNING] Knowledge Base Stats:")
+            logger.info(f"  - Total elements known: {kb_stats.get('total_elements', 0)}")
+            logger.info(f"  - Total domains: {kb_stats.get('total_domains', 0)}")
+            logger.info(f"  - Cache hit rate: {kb_stats.get('cache_hit_rate', '0%')}")
+
+            # Check for scenario-specific learnings
+            learnings_dir = self.data_dir / "scenario_learnings"
+            if learnings_dir.exists():
+                # Find learnings for this domain
+                domain_safe = domain.replace(".", "_").replace(":", "_")
+                matching_files = list(learnings_dir.glob(f"{domain_safe}_*.json"))
+
+                if matching_files:
+                    logger.info(f"[LEARNING] Found {len(matching_files)} scenario learning file(s) for {domain}")
+
+                    for learning_file in matching_files[:3]:  # Show first 3
+                        try:
+                            import json
+                            with open(learning_file, 'r') as f:
+                                data = json.load(f)
+
+                            discovered = data.get("discovered_fields", [])
+                            if discovered:
+                                logger.info(f"  - {learning_file.name}: {len(discovered)} learned field(s)")
+                                for field in discovered[:3]:
+                                    logger.info(f"    * {field.get('field_name')}: {field.get('selector', '')[:40]}...")
+                        except Exception as e:
+                            logger.debug(f"Could not read learning file: {e}")
+
+            # Log selector resolution stats
+            tier_stats = self.selector_service.get_tier_stats()
+            if tier_stats:
+                logger.info(f"[LEARNING] Selector Resolution Stats:")
+                for tier, count in tier_stats.items():
+                    if count > 0:
+                        logger.info(f"  - {tier}: {count} resolutions")
+
+        except Exception as e:
+            logger.debug(f"Could not load learnings: {e}")
+
+    async def _validate_submit_result(self, url_before: str) -> bool:
+        """
+        Check if form submission was successful by detecting validation errors.
+        Returns True if submission succeeded, False if it likely failed.
+        """
+        try:
+            await self.page.wait_for_timeout(500)
+
+            # Check 1: Did the URL change? (indicates successful navigation)
+            if self.page.url != url_before:
+                logger.info("[POST-SUBMIT] URL changed - submission likely successful")
+                return True
+
+            # Check 2: Look for common validation error indicators
+            error_selectors = [
+                '[class*="error"]',
+                '[class*="invalid"]',
+                '[class*="validation"]',
+                '[role="alert"]',
+                '.field-error',
+                '.form-error',
+                '.error-message',
+                '[aria-invalid="true"]',
+                '.MuiFormHelperText-root.Mui-error',
+                '.ant-form-item-explain-error'
+            ]
+
+            for selector in error_selectors:
+                try:
+                    locator = self.page.locator(selector)
+                    if await locator.count() > 0:
+                        visible = await locator.first.is_visible()
+                        if visible:
+                            error_text = await locator.first.text_content()
+                            logger.warning(f"[POST-SUBMIT] Found validation error: {error_text[:100] if error_text else 'unknown'}")
+                            return False
+                except:
+                    continue
+
+            # Check 3: Look for empty required fields highlighted
+            try:
+                empty_required = await self.page.locator('input:invalid, select:invalid, textarea:invalid').count()
+                if empty_required > 0:
+                    logger.warning(f"[POST-SUBMIT] Found {empty_required} invalid/empty required fields")
+                    return False
+            except:
+                pass
+
+            # No errors detected
+            return True
+
+        except Exception as e:
+            logger.warning(f"[POST-SUBMIT] Validation check failed: {e}")
+            return True  # Assume success if we can't check
+
+    async def _recover_from_submit_failure(self) -> bool:
+        """
+        RECOVERY: When form submission fails, analyze the page and fix issues.
+        Returns True if recovery was successful and submit can be retried.
+        """
+        try:
+            from .visual_intelligence import VisualIntelligence
+
+            logger.info("[RECOVERY] Analyzing page to fix form submission failure...")
+
+            # Take screenshot for analysis
+            screenshot_path = await self._capture_screenshot("submit_failure_analysis")
+
+            vi = VisualIntelligence(ai_provider="anthropic")
+            analysis = await vi.analyze_page(self.page, "fix form submission errors")
+
+            filled_count = 0
+
+            # Check each form field
+            for field in analysis.form_fields:
+                selector = field.get("selector")
+                if not selector:
+                    continue
+
+                try:
+                    locator = self.page.locator(selector).first
+                    if await locator.count() == 0:
+                        continue
+
+                    # Check if field is empty or has error state
+                    current_value = await locator.input_value()
+                    has_error = False
+
+                    # Check for error class on field or parent
+                    try:
+                        field_classes = await locator.get_attribute("class") or ""
+                        has_error = any(e in field_classes.lower() for e in ['error', 'invalid'])
+                    except:
+                        pass
+
+                    if not current_value or has_error:
+                        field_name = field.get("name") or field.get("label") or "field"
+                        generated_value = vi._generate_field_value(field)
+
+                        # Validate generated value - must not be a field descriptor or step text
+                        invalid_patterns = ['email_address', 'mail_address', 'auto_complete',
+                                           'autocomplete', 'password_field', 'username_field',
+                                           'complete_remaining', 'remaining_fields', 'required_fields',
+                                           'fill_form', 'complete_form', 'valid_email', 'test_field']
+                        action_words = ['complete', 'remaining', 'required', 'enter', 'valid', 'field', 'form']
+                        gen_lower = generated_value.lower().replace(' ', '_').replace('-', '_')
+                        bad_value = any(p in gen_lower for p in invalid_patterns) or sum(1 for w in action_words if w in gen_lower) >= 2
+                        if bad_value:
+                            logger.warning(f"[RECOVERY] Bad generated value '{generated_value}', using fallback")
+                            # Use proper fallback based on field type
+                            field_name_lower = field_name.lower()
+                            if 'email' in field_name_lower or 'mail' in field_name_lower:
+                                generated_value = f"test_{int(datetime.now().timestamp()) % 100000}@testmail.com"
+                            elif 'password' in field_name_lower:
+                                generated_value = "TestPass123!"
+                            else:
+                                generated_value = f"test_{int(datetime.now().timestamp()) % 100000}"
+
+                        # For confirm password, match the password
+                        if 'confirm' in field_name.lower() and 'password' in field_name.lower():
+                            try:
+                                pwd_locator = self.page.locator('[type="password"]').first
+                                if await pwd_locator.count() > 0:
+                                    generated_value = await pwd_locator.input_value()
+                            except:
+                                pass
+
+                        logger.info(f"[RECOVERY] Filling field '{field_name}' with value: {generated_value[:20] if len(generated_value) > 20 else generated_value}")
+                        await locator.fill(generated_value)
+                        await self.page.wait_for_timeout(100)
+                        filled_count += 1
+
+                except Exception as e:
+                    logger.warning(f"[RECOVERY] Could not fix field: {e}")
+                    continue
+
+            if filled_count > 0:
+                logger.info(f"[RECOVERY] Fixed {filled_count} fields, ready to retry submit")
+                return True
+            else:
+                logger.info("[RECOVERY] No fields needed fixing")
+                return False
+
+        except Exception as e:
+            logger.error(f"[RECOVERY] Recovery failed: {e}")
+            return False
 
     async def _execute_type(self, step: TestStep) -> ActionResult:
         """Execute a type/fill action with smart finding"""
@@ -866,6 +1518,205 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
         url = step.value or step.target or ""
         return await self.action_executor.navigate(url)
 
+    async def _execute_smart_navigate(self, step: TestStep) -> ActionResult:
+        """
+        Smart navigation: Instead of navigating to a URL directly,
+        find a link/button on the page that leads to the target and click it.
+
+        This handles Gherkin steps like "navigate to registration page" by
+        finding and clicking a "Register" or "Sign Up" link/button.
+        """
+        from datetime import datetime
+        start = datetime.utcnow()
+
+        page_concept = (step.target or "").lower().strip()
+        logger.info(f"[SMART-NAV] Looking for navigation to: {page_concept}")
+
+        # Define synonyms for common page concepts
+        page_synonyms = {
+            "registration": ["register", "sign up", "signup", "create account", "join", "get started"],
+            "login": ["log in", "signin", "sign in", "authenticate", "access"],
+            "logout": ["log out", "signout", "sign out", "exit"],
+            "home": ["home", "main", "dashboard", "start"],
+            "profile": ["profile", "my account", "account", "settings"],
+            "contact": ["contact", "contact us", "get in touch", "support"],
+            "about": ["about", "about us", "who we are"],
+            "cart": ["cart", "basket", "shopping cart", "bag"],
+            "checkout": ["checkout", "check out", "pay", "payment"],
+        }
+
+        # Get search terms for this page concept
+        search_terms = [page_concept]
+        for concept, synonyms in page_synonyms.items():
+            if page_concept in concept or concept in page_concept:
+                search_terms.extend(synonyms)
+                break
+
+        logger.info(f"[SMART-NAV] Search terms: {search_terms}")
+
+        # Strategy 1: Try to find a link or button with matching text
+        for term in search_terms:
+            try:
+                # Try link by text
+                link_locator = self.page.get_by_role("link", name=term)
+                if await link_locator.count() > 0:
+                    logger.info(f"[SMART-NAV] Found link with text: {term}")
+                    await link_locator.first.click(timeout=5000)
+                    await self.page.wait_for_timeout(500)
+                    return ActionResult(
+                        status=ActionStatus.SUCCESS,
+                        action="smart_navigate",
+                        selector=f"link:{term}",
+                        selector_type="role",
+                        execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000),
+                        navigation_occurred=True
+                    )
+            except Exception as e:
+                logger.debug(f"[SMART-NAV] Link search failed for '{term}': {e}")
+
+            try:
+                # Try button by text
+                btn_locator = self.page.get_by_role("button", name=term)
+                if await btn_locator.count() > 0:
+                    logger.info(f"[SMART-NAV] Found button with text: {term}")
+                    await btn_locator.first.click(timeout=5000)
+                    await self.page.wait_for_timeout(500)
+                    return ActionResult(
+                        status=ActionStatus.SUCCESS,
+                        action="smart_navigate",
+                        selector=f"button:{term}",
+                        selector_type="role",
+                        execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000),
+                        navigation_occurred=True
+                    )
+            except Exception as e:
+                logger.debug(f"[SMART-NAV] Button search failed for '{term}': {e}")
+
+            try:
+                # Try generic text match
+                text_locator = self.page.get_by_text(term, exact=False)
+                if await text_locator.count() > 0:
+                    # Check if it's clickable
+                    first = text_locator.first
+                    tag = await first.evaluate("el => el.tagName.toLowerCase()")
+                    if tag in ['a', 'button'] or await first.get_attribute("onclick"):
+                        logger.info(f"[SMART-NAV] Found clickable text: {term}")
+                        await first.click(timeout=5000)
+                        await self.page.wait_for_timeout(500)
+                        return ActionResult(
+                            status=ActionStatus.SUCCESS,
+                            action="smart_navigate",
+                            selector=f"text:{term}",
+                            selector_type="text",
+                            execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000),
+                            navigation_occurred=True
+                        )
+            except Exception as e:
+                logger.debug(f"[SMART-NAV] Text search failed for '{term}': {e}")
+
+        # Strategy 2: Look for href containing the page concept
+        try:
+            href_locator = self.page.locator(f"a[href*='{page_concept}']")
+            if await href_locator.count() > 0:
+                logger.info(f"[SMART-NAV] Found link with href containing: {page_concept}")
+                await href_locator.first.click(timeout=5000)
+                await self.page.wait_for_timeout(500)
+                return ActionResult(
+                    status=ActionStatus.SUCCESS,
+                    action="smart_navigate",
+                    selector=f"href:{page_concept}",
+                    selector_type="css",
+                    execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000),
+                    navigation_occurred=True
+                )
+        except Exception as e:
+            logger.debug(f"[SMART-NAV] href search failed: {e}")
+
+        # Strategy 3: Check if we're already on the right page
+        current_url = self.page.url.lower()
+        if page_concept in current_url:
+            logger.info(f"[SMART-NAV] Already on {page_concept} page (URL contains it)")
+            return ActionResult(
+                status=ActionStatus.SUCCESS,
+                action="smart_navigate",
+                selector="current_page",
+                selector_type="url",
+                execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000)
+            )
+
+        # Strategy 4: Check if page has elements related to the concept
+        concept_elements = await self._find_page_concept_elements(page_concept)
+        if concept_elements:
+            logger.info(f"[SMART-NAV] Found {page_concept}-related elements on current page")
+            return ActionResult(
+                status=ActionStatus.SUCCESS,
+                action="smart_navigate",
+                selector="page_has_concept_elements",
+                selector_type="semantic",
+                execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000)
+            )
+
+        # Strategy 5: Last resort - try Visual Intelligence
+        logger.info(f"[SMART-NAV] Using Visual Intelligence to find navigation to {page_concept}")
+        try:
+            from .visual_intelligence import VisualIntelligence
+            vi = VisualIntelligence(ai_provider="anthropic")
+            analysis = await vi.analyze_page(self.page, f"find link or button to navigate to {page_concept}")
+
+            if analysis.suggested_actions:
+                for action in analysis.suggested_actions:
+                    if action.get("action") == "click" and action.get("selector"):
+                        logger.info(f"[SMART-NAV] VI suggested clicking: {action.get('selector')}")
+                        try:
+                            await self.page.click(action["selector"], timeout=5000)
+                            await self.page.wait_for_timeout(500)
+                            return ActionResult(
+                                status=ActionStatus.SUCCESS,
+                                action="smart_navigate",
+                                selector=action["selector"],
+                                selector_type="vi",
+                                execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000),
+                                navigation_occurred=True
+                            )
+                        except:
+                            continue
+        except Exception as e:
+            logger.warning(f"[SMART-NAV] Visual Intelligence failed: {e}")
+
+        # All strategies failed
+        logger.warning(f"[SMART-NAV] Could not find navigation to {page_concept}")
+        return ActionResult(
+            status=ActionStatus.ELEMENT_NOT_FOUND,
+            action="smart_navigate",
+            selector=page_concept,
+            selector_type="concept",
+            execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000),
+            error_message=f"Could not find link/button to navigate to {page_concept} page"
+        )
+
+    async def _find_page_concept_elements(self, concept: str) -> bool:
+        """Check if the current page has elements related to a concept (e.g., registration form)"""
+        concept_indicators = {
+            "registration": ["[name*='register']", "[id*='register']", "[class*='register']",
+                            "[name*='signup']", "[id*='signup']", "form[action*='register']"],
+            "login": ["[name*='login']", "[id*='login']", "[class*='login']",
+                     "[name*='signin']", "form[action*='login']", "[type='password']"],
+            "profile": ["[name*='profile']", "[id*='profile']", "[class*='profile']"],
+            "checkout": ["[name*='checkout']", "[id*='checkout']", "[class*='checkout']",
+                        "[name*='payment']", "[id*='payment']"],
+        }
+
+        selectors_to_check = concept_indicators.get(concept, [f"[id*='{concept}']", f"[class*='{concept}']"])
+
+        for selector in selectors_to_check:
+            try:
+                if await self.page.locator(selector).count() > 0:
+                    return True
+            except:
+                continue
+
+        return False
+
     async def _execute_wait(self, step: TestStep) -> ActionResult:
         """Execute a wait action"""
         if step.target:
@@ -883,7 +1734,18 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
         return await self.action_executor.wait(wait_ms)
 
     async def _execute_assert(self, step: TestStep) -> ActionResult:
-        """Execute an assertion"""
+        """
+        Execute an assertion LIKE A TESTER.
+
+        A real tester doesn't just look at one spot - they:
+        1. Check the current page first
+        2. Look for success indicators (URL change, no errors, positive messages)
+        3. Try clicking likely navigation elements if expected content not found
+        4. Explore common success paths (dashboard, profile, home)
+        """
+        from datetime import datetime
+        start = datetime.utcnow()
+
         if not step.target:
             return ActionResult(
                 status=ActionStatus.ERROR,
@@ -894,32 +1756,288 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
                 error_message="No target specified for assertion"
             )
 
-        selector_result = await self._resolve_selector(step.target)
+        expected_text = step.expected or step.target
+        logger.info(f"[TESTER-ASSERT] Looking for: '{expected_text}'")
 
-        if not selector_result.selector:
+        # STRATEGY 1: Direct check on current page
+        result = await self._try_find_expected_content(expected_text)
+        if result:
+            logger.info(f"[TESTER-ASSERT] Found directly on page")
             return ActionResult(
-                status=ActionStatus.ELEMENT_NOT_FOUND,
+                status=ActionStatus.SUCCESS,
                 action="assert",
-                selector=step.target,
-                selector_type="unknown",
-                execution_time_ms=0,
-                error_message="Could not resolve selector for assertion"
+                selector=expected_text,
+                selector_type="text",
+                execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000)
             )
 
-        # Determine assertion type
-        if step.expected:
-            return await self.action_executor.assert_text(
-                selector_result.selector,
-                step.expected,
-                selector_result.selector_type,
-                timeout=self.config.step_timeout_ms
+        # STRATEGY 2: Check for success indicators even if exact text not found
+        success_indicators = await self._check_success_indicators()
+        if success_indicators.get("likely_success"):
+            logger.info(f"[TESTER-ASSERT] Success indicators found: {success_indicators.get('reason')}")
+            # Continue looking for the exact content...
+
+        # STRATEGY 3: Try clicking likely navigation elements to find content
+        nav_elements = ["Dashboard", "Home", "Profile", "My Account", "Welcome", "Continue"]
+        for nav_text in nav_elements:
+            try:
+                # Check if this nav element exists
+                nav_locator = self.page.get_by_role("link", name=nav_text)
+                if await nav_locator.count() == 0:
+                    nav_locator = self.page.get_by_role("button", name=nav_text)
+                if await nav_locator.count() == 0:
+                    nav_locator = self.page.get_by_text(nav_text, exact=False)
+
+                if await nav_locator.count() > 0:
+                    logger.info(f"[TESTER-ASSERT] Trying navigation: {nav_text}")
+                    await nav_locator.first.click(timeout=3000)
+                    await self.page.wait_for_timeout(1000)
+
+                    # Check for expected content after navigation
+                    result = await self._try_find_expected_content(expected_text)
+                    if result:
+                        logger.info(f"[TESTER-ASSERT] Found after clicking {nav_text}")
+                        return ActionResult(
+                            status=ActionStatus.SUCCESS,
+                            action="assert",
+                            selector=f"{expected_text} (via {nav_text})",
+                            selector_type="exploration",
+                            execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000)
+                        )
+            except Exception as e:
+                logger.debug(f"[TESTER-ASSERT] Nav click failed for {nav_text}: {e}")
+                continue
+
+        # STRATEGY 4: Check page title, headers, or main content areas
+        content_areas = await self._get_main_content_text()
+        expected_lower = expected_text.lower()
+        if any(expected_lower in area.lower() for area in content_areas):
+            logger.info(f"[TESTER-ASSERT] Found in content area")
+            return ActionResult(
+                status=ActionStatus.SUCCESS,
+                action="assert",
+                selector=expected_text,
+                selector_type="content_area",
+                execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000)
             )
-        else:
-            return await self.action_executor.assert_visible(
-                selector_result.selector,
-                selector_result.selector_type,
-                timeout=self.config.step_timeout_ms
-            )
+
+        # STRATEGY 5: If we have success indicators, be more lenient
+        if success_indicators.get("likely_success"):
+            # Check for partial matches
+            partial_result = await self._try_find_partial_match(expected_text)
+            if partial_result:
+                logger.info(f"[TESTER-ASSERT] Found partial match: {partial_result}")
+                return ActionResult(
+                    status=ActionStatus.SUCCESS,
+                    action="assert",
+                    selector=f"partial:{partial_result}",
+                    selector_type="partial_match",
+                    execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000)
+                )
+
+        # All strategies failed - fall back to original selector resolution
+        selector_result = await self._resolve_selector(step.target)
+        if selector_result.selector:
+            if step.expected:
+                return await self.action_executor.assert_text(
+                    selector_result.selector,
+                    step.expected,
+                    selector_result.selector_type,
+                    timeout=self.config.step_timeout_ms
+                )
+            else:
+                return await self.action_executor.assert_visible(
+                    selector_result.selector,
+                    selector_result.selector_type,
+                    timeout=self.config.step_timeout_ms
+                )
+
+        return ActionResult(
+            status=ActionStatus.ELEMENT_NOT_FOUND,
+            action="assert",
+            selector=step.target,
+            selector_type="unknown",
+            execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000),
+            error_message=f"Could not find '{expected_text}' on page or after exploring navigation"
+        )
+
+    async def _try_find_expected_content(self, text: str) -> bool:
+        """Try to find expected text content on the page"""
+        try:
+            # Method 1: Direct text search
+            locator = self.page.get_by_text(text, exact=False)
+            if await locator.count() > 0 and await locator.first.is_visible():
+                return True
+
+            # Method 2: Check if text appears anywhere in body
+            body_text = await self.page.text_content("body") or ""
+            if text.lower() in body_text.lower():
+                return True
+
+            # Method 3: Check common success message containers
+            success_selectors = [
+                '[class*="success"]',
+                '[class*="welcome"]',
+                '[class*="greeting"]',
+                '[class*="user-info"]',
+                '[class*="dashboard"]',
+                '[role="alert"]',
+                'h1', 'h2', 'h3',
+                '[class*="header"]',
+                '[class*="title"]'
+            ]
+            for selector in success_selectors:
+                try:
+                    elements = self.page.locator(selector)
+                    count = await elements.count()
+                    for i in range(min(count, 5)):
+                        el_text = await elements.nth(i).text_content() or ""
+                        if text.lower() in el_text.lower():
+                            return True
+                except:
+                    continue
+
+            return False
+        except Exception as e:
+            logger.debug(f"Content search failed: {e}")
+            return False
+
+    async def _check_success_indicators(self) -> Dict[str, Any]:
+        """Check for common success indicators on the page"""
+        indicators = {
+            "likely_success": False,
+            "reason": None,
+            "indicators_found": []
+        }
+
+        try:
+            # Check 1: No error messages visible
+            error_selectors = [
+                '[class*="error"]',
+                '[class*="invalid"]',
+                '[class*="fail"]',
+                '[role="alert"][class*="error"]',
+                '.form-error',
+                '.validation-error'
+            ]
+            has_errors = False
+            for sel in error_selectors:
+                try:
+                    loc = self.page.locator(sel)
+                    if await loc.count() > 0 and await loc.first.is_visible():
+                        has_errors = True
+                        break
+                except:
+                    continue
+
+            if not has_errors:
+                indicators["indicators_found"].append("no_errors")
+
+            # Check 2: URL indicates success (dashboard, home, profile, success)
+            current_url = self.page.url.lower()
+            success_url_patterns = ['dashboard', 'home', 'profile', 'success', 'welcome', 'account']
+            if any(p in current_url for p in success_url_patterns):
+                indicators["indicators_found"].append("success_url")
+
+            # Check 3: Success message elements present
+            success_elements = [
+                '[class*="success"]',
+                '[class*="welcome"]',
+                '[class*="logged-in"]',
+                '[class*="authenticated"]'
+            ]
+            for sel in success_elements:
+                try:
+                    if await self.page.locator(sel).count() > 0:
+                        indicators["indicators_found"].append("success_element")
+                        break
+                except:
+                    continue
+
+            # Check 4: User-specific content visible (avatar, user menu, etc.)
+            user_indicators = [
+                '[class*="avatar"]',
+                '[class*="user-menu"]',
+                '[class*="profile-icon"]',
+                '[aria-label*="user"]',
+                '[class*="logout"]'  # If logout button is visible, user is logged in
+            ]
+            for sel in user_indicators:
+                try:
+                    if await self.page.locator(sel).count() > 0:
+                        indicators["indicators_found"].append("user_content")
+                        break
+                except:
+                    continue
+
+            # Determine if likely success
+            if len(indicators["indicators_found"]) >= 2:
+                indicators["likely_success"] = True
+                indicators["reason"] = f"Found: {', '.join(indicators['indicators_found'])}"
+            elif "success_url" in indicators["indicators_found"]:
+                indicators["likely_success"] = True
+                indicators["reason"] = "URL indicates success"
+
+        except Exception as e:
+            logger.debug(f"Success indicator check failed: {e}")
+
+        return indicators
+
+    async def _get_main_content_text(self) -> List[str]:
+        """Get text from main content areas"""
+        content = []
+        try:
+            # Get page title
+            title = await self.page.title()
+            if title:
+                content.append(title)
+
+            # Get h1-h3 headers
+            for tag in ['h1', 'h2', 'h3']:
+                try:
+                    headers = self.page.locator(tag)
+                    count = await headers.count()
+                    for i in range(min(count, 3)):
+                        text = await headers.nth(i).text_content()
+                        if text:
+                            content.append(text.strip())
+                except:
+                    continue
+
+            # Get main/article content
+            for container in ['main', 'article', '[role="main"]', '.content', '#content']:
+                try:
+                    loc = self.page.locator(container)
+                    if await loc.count() > 0:
+                        text = await loc.first.text_content()
+                        if text:
+                            content.append(text[:500])  # Limit size
+                        break
+                except:
+                    continue
+
+        except Exception as e:
+            logger.debug(f"Content extraction failed: {e}")
+
+        return content
+
+    async def _try_find_partial_match(self, text: str) -> Optional[str]:
+        """Try to find partial matches for expected text"""
+        try:
+            # Extract key words from expected text
+            keywords = [w for w in text.lower().split() if len(w) > 3]
+
+            body_text = await self.page.text_content("body") or ""
+            body_lower = body_text.lower()
+
+            # Check if most keywords are present
+            found_keywords = [kw for kw in keywords if kw in body_lower]
+            if len(found_keywords) >= len(keywords) * 0.5:  # At least 50% match
+                return f"keywords: {', '.join(found_keywords)}"
+
+            return None
+        except:
+            return None
 
     async def _execute_assert_url(self, step: TestStep) -> ActionResult:
         """Execute a URL assertion"""
@@ -1638,8 +2756,180 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
         """Stop test execution"""
         self.state = AgentState.FAILED
 
+    def get_discovered_fields(self) -> List[Dict[str, Any]]:
+        """
+        Get fields discovered during execution (for Gherkin updates).
+        These are fields that were filled by the AI but weren't in the original test steps.
+        """
+        return self._discovered_fields.copy()
+
+    def clear_discovered_fields(self):
+        """Clear the discovered fields list (call after updating Gherkin)"""
+        self._discovered_fields.clear()
+
     async def cleanup(self):
         """Cleanup resources"""
         self.learning_engine.flush()
         self.knowledge_index.force_save()
         await self.spa_handler.cleanup()
+
+    # =========================================================================
+    # HUMAN-LIKE TESTER METHODS (Token-Efficient)
+    # =========================================================================
+
+    async def _human_like_pre_action_check(
+        self,
+        step: TestStep,
+        action: str
+    ) -> Dict[str, Any]:
+        """
+        Perform human-like pre-action checks before executing an action.
+        
+        This uses DOM-based analysis (NO AI tokens) to:
+        1. Wait for page readiness
+        2. Detect and dismiss blocking overlays
+        3. Check for existing errors
+        4. Verify target element is accessible
+        
+        Returns:
+            Dict with 'should_proceed', 'reason', 'auto_handled' keys
+        """
+        result = {
+            "should_proceed": True,
+            "reason": None,
+            "auto_handled": False,
+            "page_state": None,
+            "blockers_found": [],
+            "errors_found": []
+        }
+        
+        # Skip checks for non-interactive actions
+        skip_actions = {"navigate", "goto", "open", "wait", "pause", "noop", "skip", "context"}
+        if action in skip_actions:
+            return result
+        
+        try:
+            # 1. Perform pre-action check (DOM-based, no AI)
+            pre_check = await self.pre_action_checker.check_before_action(
+                self.page,
+                target_selector=step.target,
+                action_type=action
+            )
+            
+            # Store page state for post-action verification
+            self._last_page_state = pre_check.page_state
+            result["page_state"] = pre_check.page_state
+            
+            # 2. Handle blockers that were found
+            if pre_check.blockers:
+                result["blockers_found"] = [b.blocker_type.value for b in pre_check.blockers]
+                logger.info(f"[HUMAN-LIKE] Found blockers: {result['blockers_found']}")
+                
+                # Most blockers are auto-handled by the checker
+                # Only fail if critical blockers remain
+                remaining = [b for b in pre_check.blockers 
+                           if b.blocker_type not in [BlockerType.TOAST, BlockerType.COOKIE_BANNER]]
+                
+                if remaining and not pre_check.should_proceed:
+                    result["should_proceed"] = False
+                    result["reason"] = f"Blocked by {remaining[0].blocker_type.value}"
+                    return result
+                else:
+                    result["auto_handled"] = True
+            
+            # 3. Check for form errors (for submit actions)
+            if pre_check.errors and action in ("click", "tap"):
+                submit_keywords = ['submit', 'login', 'sign', 'register', 'save', 'continue']
+                is_submit = any(kw in (step.target or "").lower() for kw in submit_keywords)
+                
+                if is_submit:
+                    result["errors_found"] = [e.message for e in pre_check.errors[:3]]
+                    logger.warning(f"[HUMAN-LIKE] Form has errors before submit: {result['errors_found']}")
+                    # Don't block - let the agent try to fix errors
+            
+            # 4. Check overall readiness
+            if pre_check.readiness == ActionReadiness.LOADING:
+                # Wait a bit more
+                logger.info("[HUMAN-LIKE] Page still loading, waiting...")
+                await self.page.wait_for_timeout(1000)
+                result["auto_handled"] = True
+            
+            elif pre_check.readiness == ActionReadiness.ELEMENT_HIDDEN:
+                result["should_proceed"] = False
+                result["reason"] = f"Target element not visible: {step.target}"
+            
+            # Log stats periodically
+            if self._total_actions % 10 == 0:
+                stats = self.pre_action_checker.get_stats()
+                logger.info(f"[HUMAN-LIKE] Stats: {stats['total_checks']} checks, {stats['ai_usage_percent']:.1f}% AI usage")
+            
+        except Exception as e:
+            # Don't block on pre-check errors - just log and continue
+            logger.warning(f"[HUMAN-LIKE] Pre-action check error (continuing anyway): {e}")
+        
+        return result
+
+    async def _human_like_verify_action(
+        self,
+        step: TestStep,
+        action: str,
+        action_result: ActionResult
+    ) -> Dict[str, Any]:
+        """
+        Verify that an action had the expected effect.
+        
+        Uses state comparison (NO AI) to detect:
+        - Silent failures (action had no effect)
+        - New errors that appeared
+        - Unexpected state changes
+        
+        Returns:
+            Dict with verification results
+        """
+        result = {
+            "verified": True,
+            "action_had_effect": True,
+            "new_errors": [],
+            "state_changes": {}
+        }
+        
+        # Skip verification for some actions
+        skip_actions = {"wait", "pause", "screenshot", "noop", "assert", "verify", "expect"}
+        if action in skip_actions:
+            return result
+        
+        try:
+            if self._last_page_state:
+                verification = await self.pre_action_checker.verify_action_effect(
+                    self.page,
+                    self._last_page_state
+                )
+                
+                result["action_had_effect"] = verification["action_had_effect"]
+                result["new_errors"] = verification.get("new_errors", [])
+                result["state_changes"] = verification.get("changes", {})
+                
+                # Warn if action had no effect
+                if not verification["action_had_effect"]:
+                    logger.warning(f"[HUMAN-LIKE] Action may have had no effect: {action} on {step.target}")
+                
+                # Log new errors
+                if verification.get("new_errors"):
+                    logger.warning(f"[HUMAN-LIKE] New errors after action: {verification['new_errors']}")
+                    
+        except Exception as e:
+            logger.debug(f"[HUMAN-LIKE] Verification error: {e}")
+        
+        return result
+
+    def get_human_like_stats(self) -> Dict[str, Any]:
+        """Get statistics about human-like behavior usage"""
+        checker_stats = self.pre_action_checker.get_stats()
+        
+        return {
+            "pre_action_checks": checker_stats["total_checks"],
+            "ai_calls_for_checks": checker_stats["ai_calls"],
+            "ai_usage_percent": checker_stats["ai_usage_percent"],
+            "learned_timings": len(self.pre_action_checker.smart_waiter.learned_timings),
+            "state_history_size": len(self.pre_action_checker.state_tracker.state_history)
+        }

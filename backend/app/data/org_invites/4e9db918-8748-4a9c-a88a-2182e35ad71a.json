@@ -1,0 +1,13 @@
+{
+  "id": "4e9db918-8748-4a9c-a88a-2182e35ad71a",
+  "organization_id": "5c10f5e8-e5f4-418d-8b05-62516106d293",
+  "token": "hbP9TclZpd2610q7WlTpfEglC4bioOqJsf6AbRnY8so",
+  "email": null,
+  "org_role": "member",
+  "created_by": "bd7a75d1-fb8d-4654-8020-e4dbc2082c4d",
+  "created_at": "2025-12-26T16:06:02.944896",
+  "expires_at": "2025-12-28T16:06:02.944896",
+  "max_uses": 1,
+  "use_count": 1,
+  "is_active": false
+}

@@ -439,6 +439,23 @@ class ActionExecutor:
             except Exception:
                 pass
 
+            # Disable autocomplete on all form inputs to prevent browser from overwriting our values
+            try:
+                await self.page.evaluate("""() => {
+                    // Disable on all forms
+                    document.querySelectorAll('form').forEach(form => {
+                        form.setAttribute('autocomplete', 'off');
+                    });
+                    // Disable on all inputs
+                    document.querySelectorAll('input').forEach(input => {
+                        input.setAttribute('autocomplete', 'off');
+                        input.setAttribute('data-lpignore', 'true');
+                        input.setAttribute('data-form-type', 'other');
+                    });
+                }""")
+            except Exception:
+                pass  # Not critical
+
             return ActionResult(
                 status=ActionStatus.SUCCESS,
                 action="navigate",
@@ -1098,25 +1115,35 @@ class ActionExecutor:
         """Execute fill action with REAL user simulation for proper form validation"""
         # fill() alone doesn't trigger React/Vue/Angular events!
         # Simulate real user: click -> clear -> type char by char -> tab out
-        
+
         print(f"[FILL] Typing value: '{value}' (len={len(value) if value else 0})")
         logger.info(f"[FILL] About to type: {value}")
-        
+
+        # Step 0: Disable browser autocomplete to prevent it from overwriting our value
+        try:
+            await locator.evaluate("""el => {
+                el.setAttribute('autocomplete', 'off');
+                el.setAttribute('data-lpignore', 'true');  // LastPass
+                el.setAttribute('data-form-type', 'other');  // Dashlane
+            }""")
+        except Exception:
+            pass  # Not critical if this fails
+
         # Step 1: Click to focus
         await locator.click()
         await self.page.wait_for_timeout(200)  # Increased for debugging
-        
+
         # Step 2: Clear with keyboard
         if clear_first:
             await locator.press("Control+a")
             await self.page.wait_for_timeout(50)
-        
+
         # Step 3: Type character by character
         if value:
             await locator.press_sequentially(value, delay=30)
         else:
             await locator.press("Backspace")
-        
+
         # Step 4: Tab out to trigger blur/validation
         await self.page.wait_for_timeout(200)
         await locator.press("Tab")

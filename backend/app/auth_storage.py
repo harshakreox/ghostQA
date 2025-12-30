@@ -18,6 +18,7 @@ class AuthStorage:
         self.users_dir = os.path.join(data_dir, "users")
         self._ensure_directories()
         self._ensure_default_admin()
+        self._run_migration_if_needed()
 
     def _ensure_directories(self):
         """Ensure all necessary directories exist"""
@@ -27,15 +28,68 @@ class AuthStorage:
         """Create default admin user if no users exist"""
         users = self.get_all_users()
         if not users:
+            import secrets
+            import string
+
+            # Generate secure random password
+            alphabet = string.ascii_letters + string.digits + "!@#$%"
+            admin_password = ''.join(secrets.choice(alphabet) for _ in range(16))
+
             # Create default admin
             default_admin = User(
                 username="admin",
                 email="admin@ghostqa.local",
-                password_hash=self.hash_password("admin123"),
-                role=UserRole.ADMIN
+                password_hash=self.hash_password(admin_password),
+                role=UserRole.ADMIN,
+                must_change_password=True  # Force password change on first login
             )
             self.save_user(default_admin)
-            print("[AUTH] Created default admin user (admin/admin123)")
+
+            # Save credentials to a secure file (admin should delete after first login)
+            creds_file = os.path.join(self.data_dir, "ADMIN_CREDENTIALS.txt")
+            with open(creds_file, 'w') as f:
+                f.write("=== GhostQA Default Admin Credentials ===\n")
+                f.write(f"Username: admin\n")
+                f.write(f"Password: {admin_password}\n")
+                f.write("\nIMPORTANT: Delete this file after first login!\n")
+                f.write("You will be required to change this password on first login.\n")
+
+            print(f"[AUTH] Created default admin user")
+            print(f"[AUTH] Credentials saved to: {creds_file}")
+            print(f"[AUTH] DELETE THIS FILE AFTER FIRST LOGIN!")
+
+
+    def _run_migration_if_needed(self):
+        """Check if organization migration is needed and run it"""
+        migration_marker = os.path.join(self.data_dir, ".org_migration_complete")
+
+        if os.path.exists(migration_marker):
+            return  # Already migrated
+
+        # Check if we have any users but no organizations
+        users = self.get_all_users()
+        orgs_dir = os.path.join(self.data_dir, "organizations")
+        has_orgs = os.path.exists(orgs_dir) and any(
+            f.endswith('.json') for f in os.listdir(orgs_dir) if os.path.isfile(os.path.join(orgs_dir, f))
+        )
+
+        if users and not has_orgs:
+            print("[MIGRATION] Running organization migration...")
+            try:
+                from migrations.migrate_to_organizations import run_migration
+                run_migration(self.data_dir)
+
+                # Create marker file
+                with open(migration_marker, 'w') as f:
+                    f.write(datetime.now().isoformat())
+
+                print("[MIGRATION] Complete!")
+            except Exception as e:
+                print(f"[MIGRATION] Error: {e}")
+        elif not users:
+            # No users yet, create marker to skip migration
+            with open(migration_marker, 'w') as f:
+                f.write(datetime.now().isoformat())
 
     def _get_user_file(self, user_id: str) -> str:
         """Get user file path"""

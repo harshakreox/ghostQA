@@ -69,9 +69,11 @@ import {
   CreateNewFolder,
   Folder as FolderIcon,
   DriveFileMove,
+  Group,
 } from '@mui/icons-material';
 import axios from 'axios';
 import AutonomousRunDialog from '../components/AutonomousRunDialog';
+import ProjectMembers from '../components/ProjectMembers';
 
 // Import generic components and hooks
 import { StatsCard, EmptyState, ConfirmDialog, SearchBar, FolderNavigation, FolderDialog } from '../components';
@@ -126,6 +128,7 @@ export default function ProjectDetails() {
   
   // Autonomous Run dialog state
   const [autonomousRunOpen, setAutonomousRunOpen] = useState(false);
+  const [membersDialogOpen, setMembersDialogOpen] = useState(false);
 
   // Folder management state
   const [folders, setFolders] = useState([]);
@@ -617,6 +620,13 @@ export default function ProjectDetails() {
           </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<Group />}
+            onClick={() => setMembersDialogOpen(true)}
+          >
+            Team
+          </Button>
           <Button
             variant="outlined"
             startIcon={<Edit />}
@@ -1909,6 +1919,26 @@ export default function ProjectDetails() {
         project={project}
       />
 
+      {/* Project Members Dialog */}
+      <Dialog
+        open={membersDialogOpen}
+        onClose={() => setMembersDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Group color="primary" />
+            <Typography variant="h6">Team Members</Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <ProjectMembers projectId={id} organizationId={project?.organization_id} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setMembersDialogOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Folder Dialog */}
       <FolderDialog

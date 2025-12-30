@@ -1,7 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import theme from './theme/theme';
 import { AuthProvider } from './context/AuthContext';
+import { OrganizationProvider } from './context/OrganizationContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import ForceChangePasswordDialog from './components/ForceChangePasswordDialog';
@@ -21,10 +22,13 @@ import ReleaseEdit from './pages/ReleaseEdit';
 import AITestGenerator from './pages/AITestGenerator';
 import UnifiedTestRunner from './components/UnifiedTestRunner';
 import UserManagement from './pages/UserManagement';
-import OrchestratorControlPanel from './pages/OrchestratorControlPanel';
 import TestCategoryView from './pages/TestCategoryView';
 import Landing from './pages/Landing';
 import HowItWorks from './pages/HowItWorks';
+import TestLab from './pages/TestLab';
+import Settings from './pages/Settings';
+import Register from './pages/Register';
+import Organizations from './pages/Organizations';
 
 function App() {
   return (
@@ -38,12 +42,14 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
             {/* Protected routes - wrapped in Layout */}
             <Route
               path="/*"
               element={
                 <ProtectedRoute>
+                  <OrganizationProvider>
                   <Layout>
                     <Routes>
                       <Route path="/dashboard" element={<Dashboard />} />
@@ -96,14 +102,6 @@ function App() {
                         }
                       />
                       <Route
-                        path="/orchestrator"
-                        element={
-                          <ProtectedRoute adminOnly>
-                            <OrchestratorControlPanel />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
                         path="/users"
                         element={
                           <ProtectedRoute adminOnly>
@@ -130,10 +128,40 @@ function App() {
                         }
                       />
 
+                                            {/* Test Lab - available to both admin and user */}
+                      <Route path="/test-lab" element={<TestLab />} />
+                      
+                      {/* Settings - admin only */}
+                      <Route
+                        path="/settings"
+                        element={
+                          <ProtectedRoute adminOnly>
+                            <Settings />
+                          </ProtectedRoute>
+                        }
+                      />
+                      
+                      {/* Organization - redirects to Settings */}
+                      <Route
+                        path="/organization"
+                        element={<Navigate to="/settings" replace />}
+                      />
+                      
+                      {/* Organizations Management - Super Admin only */}
+                      <Route
+                        path="/organizations"
+                        element={
+                          <ProtectedRoute adminOnly>
+                            <Organizations />
+                          </ProtectedRoute>
+                        }
+                      />
+
                       {/* Available to both admin and user */}
                       <Route path="/generate" element={<AITestGenerator />} />
                     </Routes>
                   </Layout>
+                  </OrganizationProvider>
                 </ProtectedRoute>
               }
             />

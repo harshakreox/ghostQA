@@ -16,8 +16,6 @@ from datetime import datetime
 from ai_api import router as ai_router
 # Autonomous Agent API
 from agent_api import router as agent_router
-# Autonomous Orchestrator API
-from agent.orchestrator_api import router as orchestrator_router
 # Authentication
 from auth_api import router as auth_router, get_current_user, get_current_admin, get_optional_current_user
 from auth_models import TokenData, UserRole
@@ -30,7 +28,6 @@ from models_folder import (
     MoveFeatureToFolderRequest, BulkMoveFeaturesToFolderRequest
 )
 from gherkin_executor import GherkinExecutor
-from autonomous_gherkin_executor import AutonomousGherkinExecutor
 from models_gherkin import GherkinFeature
 from pydantic import BaseModel
 from fastapi.responses import Response, StreamingResponse
@@ -50,6 +47,8 @@ from release_models import (
 from release_api import router as releases_router
 # Folder Management
 from folder_api import router as folder_router
+# Organization Management
+from org_api import router as org_router
 
 # ===== WINDOWS FIX FOR PLAYWRIGHT =====
 # Fix for Windows: Playwright needs ProactorEventLoop on Windows
@@ -84,13 +83,27 @@ storage = Storage()
 gherkin_storage = get_gherkin_storage()
 folder_storage = get_folder_storage() 
 
-# Enable CORS
+# CORS Configuration
+# In production, set CORS_ORIGINS environment variable to comma-separated allowed origins
+# Example: CORS_ORIGINS=https://app.example.com,https://admin.example.com
+cors_origins_env = os.getenv("CORS_ORIGINS", "")
+if cors_origins_env:
+    allowed_origins = [origin.strip() for origin in cors_origins_env.split(",")]
+else:
+    # Development defaults - localhost only
+    allowed_origins = [
+        "http://localhost:5173",  # Vite dev server
+        "http://localhost:3000",  # React dev server
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept"],
 )
 
 class RunAutonomousTestRequest(BaseModel):
@@ -110,12 +123,11 @@ class MoveTraditionalSuiteToFolderRequest(BaseModel):
 
 # Include routers
 app.include_router(auth_router)  # Authentication
+app.include_router(org_router)  # Organizations
 app.include_router(releases_router)
 app.include_router(ai_router)
 # Include autonomous agent router
 app.include_router(agent_router)
-# Include autonomous orchestrator router
-app.include_router(orchestrator_router)
 # Include folder router
 app.include_router(folder_router)
 
@@ -565,9 +577,9 @@ async def run_tests(
 
     print(f"[OK] Selected {len(test_cases)} test cases to run", flush=True)
 
-    # Create report directory
+    # Create report directory (use data/reports for consistency with Storage)
     report_id = f"report_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-    report_dir = f"reports/{report_id}"
+    report_dir = f"data/reports/{report_id}"
     os.makedirs(report_dir, exist_ok=True)
     print(f"[OK] Report directory created: {report_dir}", flush=True)
 
@@ -790,7 +802,7 @@ async def get_html_report(report_id: str):
     if not HTML_REPORTS_ENABLED:
         raise HTTPException(status_code=501, detail="HTML reports are disabled. Install pandas to enable.")
     
-    html_path = f"reports/{report_id}/report.html"
+    html_path = f"data/reports/{report_id}/report.html"
     if not os.path.exists(html_path):
         raise HTTPException(status_code=404, detail="HTML report not found")
     return FileResponse(html_path)
@@ -804,8 +816,8 @@ async def get_screenshot(report_id: str, filename: str):
 
     # List of possible paths to check
     possible_paths = [
-        f"reports/{report_id}/{filename}",  # Traditional path
-        f"reports/{report_id}/{basename}",  # Traditional with basename
+        f"data/reports/{report_id}/{filename}",  # Traditional path
+        f"data/reports/{report_id}/{basename}",  # Traditional with basename
         filename,  # Full path stored in report
         f"data/agent_knowledge/screenshots/{basename}",  # Agent screenshots (from backend root)
         f"app/data/agent_knowledge/screenshots/{basename}",  # Agent screenshots (from backend/app)
@@ -833,7 +845,7 @@ async def delete_report(report_id: str):
     storage.delete_report(report_id)
 
     # Also delete report directory if it exists
-    report_dir = f"reports/{report_id}"
+    report_dir = f"data/reports/{report_id}"
     if os.path.exists(report_dir):
         import shutil
         shutil.rmtree(report_dir)
@@ -1006,9 +1018,9 @@ async def execute_gherkin_feature(request: ExecuteGherkinRequest):
         
         base_url = project.base_url if project else ""
         
-        # Create report directory
+        # Create report directory (use data/reports for consistency with Storage)
         report_id = f"gherkin_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        report_dir = f"reports/{report_id}"
+        report_dir = f"data/reports/{report_id}"
         os.makedirs(report_dir, exist_ok=True)
         
         # Log callback
@@ -2134,107 +2146,239 @@ async def health_check():
         "platform": sys.platform
     }
 
+# Global executor reference for stop functionality
+_current_executor = None
+
+@app.post("/api/execution/stop")
+async def stop_execution(
+    force: bool = False,
+    current_user: TokenData = Depends(get_current_admin)
+):
+    """Stop current test execution."""
+    global _current_executor
+
+    if _current_executor is None:
+        return {"status": "no_execution", "message": "No execution in progress"}
+
+    try:
+        if force:
+            await _current_executor.force_stop()
+            message = "Execution force stopped - browser closed"
+        else:
+            _current_executor.request_stop()
+            message = "Stop requested - will stop after current test"
+
+        await broadcast_log(f"[STOP] {message}")
+        return {"status": "stopped", "message": message}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 @app.post("/api/gherkin/run-autonomous")
 async def run_autonomous_gherkin_test(
     request: RunAutonomousTestRequest,
     current_user: TokenData = Depends(get_current_admin)  # Admin only
 ):
     """
-     AUTONOMOUS AI EXECUTION
-    Run Gherkin tests using AI to interpret steps (no step definitions needed)
-    Admin only
+    UNIFIED AUTONOMOUS EXECUTION
+    Run Gherkin tests using the unified executor with learning capabilities.
+    This endpoint now uses the same execution path as traditional tests,
+    enabling knowledge base learning and AI dependency reduction.
     """
+    from agent_api import get_executor, _log_connections
+
     try:
         print(f"\n{'='*80}")
-        print(f" AUTONOMOUS AI TEST EXECUTION")
+        print(f" UNIFIED AUTONOMOUS EXECUTION (with Learning)")
         print(f"{'='*80}")
         print(f"Feature ID: {request.feature_id}")
         print(f"Headless: {request.headless}")
         print(f"User: {current_user.username} (Admin)")
-        
+
         # Load the feature
-        feature = gherkin_storage.load_feature(request.feature_id)
-        if not feature:
+        feature_dict = gherkin_storage.load_feature_dict(request.feature_id)
+        if not feature_dict:
             raise HTTPException(status_code=404, detail="Feature not found")
-        
-        print(f"[OK] Loaded feature: {feature.name}")
-        print(f"   Scenarios: {len(feature.scenarios)}")
-        
-        # Get base URL and test credentials from project
+
+        feature_name = feature_dict.get('name', 'Unknown Feature')
+        scenarios = feature_dict.get('scenarios', [])
+        print(f"[OK] Loaded feature: {feature_name}")
+        print(f"   Scenarios: {len(scenarios)}")
+
+        # Get project details
         base_url = ""
-        test_credentials = {}
-        
+        project_name = "Unknown Project"
+        credentials = {}
+
         if request.project_id:
             project = storage.get_project(request.project_id)
             if project:
                 base_url = project.base_url
+                project_name = project.name
                 print(f"   Base URL: {base_url}")
-                
-                # Extract credentials from project
-                if project.test_username:
-                    test_credentials['username'] = project.test_username
-                    print(f"   [OK] Using project test username: {project.test_username}")
-                if project.test_password:
-                    test_credentials['password'] = project.test_password
-                    print(f"   [OK] Using project test password: [REDACTED]")
-                if project.test_admin_username:
-                    test_credentials['admin_username'] = project.test_admin_username
-                    print(f"   [OK] Using project admin username: {project.test_admin_username}")
-                if project.test_admin_password:
-                    test_credentials['admin_password'] = project.test_admin_password
-                    print(f"   [OK] Using project admin password: [REDACTED]")
-                
-                if not test_credentials:
-                    print(f"   [WARN] No credentials configured in project - will use env vars")
-        
-        # Create autonomous executor with credentials
-        executor = AutonomousGherkinExecutor(
-            base_url=base_url,
-            headless=request.headless,
-            test_credentials=test_credentials if test_credentials else None
-        )
-        
-        # Run in thread pool to avoid asyncio conflict
-        import asyncio
-        from concurrent.futures import ThreadPoolExecutor
-        
-        def run_sync_executor():
-            """Run the sync executor in a separate thread"""
+
+                # Extract credentials - check both new credentials list and legacy fields
+                # First try the new credentials list (multiple roles)
+                project_creds_list = getattr(project, 'credentials', [])
+                if project_creds_list and len(project_creds_list) > 0:
+                    # Use first credential set as default, or find admin/user role
+                    for cred in project_creds_list:
+                        role = (cred.role_name or '').lower()
+                        if role in ['admin', 'administrator']:
+                            credentials['admin_username'] = cred.username
+                            credentials['admin_password'] = cred.password
+                        elif role in ['user', 'standard', 'standard_user', 'test', 'default']:
+                            credentials['username'] = cred.username
+                            credentials['password'] = cred.password
+                        # If no specific role, use as default
+                        if not credentials.get('username') and cred.username:
+                            credentials['username'] = cred.username
+                            credentials['password'] = cred.password
+                    print(f"   [OK] Using credentials list ({len(project_creds_list)} role(s))")
+
+                # Fall back to legacy fields if no credentials from list
+                if not credentials.get('username') and project.test_username:
+                    credentials['username'] = project.test_username
+                if not credentials.get('password') and project.test_password:
+                    credentials['password'] = project.test_password
+                if not credentials.get('admin_username') and project.test_admin_username:
+                    credentials['admin_username'] = project.test_admin_username
+                if not credentials.get('admin_password') and project.test_admin_password:
+                    credentials['admin_password'] = project.test_admin_password
+
+                if credentials:
+                    uname = credentials.get('username') or credentials.get('admin_username', 'N/A')
+                    print(f"   [OK] Credentials ready: {uname[:3] if uname else 'N/A'}***")
+                else:
+                    print(f"   [WARN] No credentials configured")
+
+        # Get the unified executor (with knowledge base and learning)
+        global _current_executor
+        executor = get_executor()
+        _current_executor = executor  # Store for stop functionality
+
+        # Convert feature to unified test cases
+        test_cases = executor.convert_gherkin_feature(feature_dict)
+
+        # Apply scenario filter if provided
+        if request.scenario_filter:
+            test_cases = [tc for tc in test_cases if tc.scenario_name in request.scenario_filter]
+
+        print(f"   Test cases to execute: {len(test_cases)}")
+
+        # Set up log callback for WebSocket broadcasting
+        # Use sync callback that schedules async broadcast
+        def sync_log_callback(message: str):
+            # Print to console for debugging
+            print(f"[WS-LOG] {message}")
+            # Schedule WebSocket broadcast
+            async def send_to_clients():
+                for ws in active_connections[:]:  # Copy list to avoid modification during iteration
+                    try:
+                        await ws.send_text(message)
+                    except Exception:
+                        pass
             try:
-                executor.setup()
-                print(f"\n Starting autonomous execution...")
-                result = executor.execute_feature(
-                    feature=feature,
-                    scenario_filter=request.scenario_filter
-                )
-                return result
-            finally:
-                executor.teardown()
-        
-        # Execute in thread pool
-        loop = asyncio.get_event_loop()
-        with ThreadPoolExecutor() as pool:
-            result = await loop.run_in_executor(pool, run_sync_executor)
-        
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    asyncio.ensure_future(send_to_clients())
+            except Exception as e:
+                print(f"[WS-LOG-ERR] {e}")
+
+        executor.set_callbacks(log_callback=sync_log_callback)
+
+        # Create report ID and directory
+        report_id = f"autonomous_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        # Use same directory structure as Storage class for consistency
+        report_dir = f"data/reports/{report_id}"
+        os.makedirs(report_dir, exist_ok=True)
+        print(f"   [OK] Report directory: {report_dir}")
+
+        # Execute using the unified executor (with learning!)
+        from agent import ExecutionMode
+        report = await executor.execute(
+            test_cases=test_cases,
+            base_url=base_url,
+            project_id=request.project_id or "gherkin_run",
+            project_name=project_name,
+            headless=request.headless,
+            execution_mode=ExecutionMode.AUTONOMOUS,
+            credentials=credentials if credentials else None
+        )
+
         print(f"\n{'='*80}")
-        print(f" EXECUTION COMPLETE")
+        print(f" EXECUTION COMPLETE (Knowledge Updated)")
         print(f"{'='*80}")
-        print(f"Total: {result.total_scenarios}")
-        print(f"Passed: {result.passed} [OK]")
-        print(f"Failed: {result.failed} [ERR]")
-        print(f"Duration: {result.total_duration:.2f}s")
+        print(f"Total: {report.total_tests}")
+        print(f"Passed: {report.passed} [OK]")
+        print(f"Failed: {report.failed} [ERR]")
+        print(f"AI Dependency: {report.ai_dependency_percent:.1f}%")
+        print(f"New Selectors Learned: {report.new_selectors_learned}")
+        print(f"Duration: {report.duration_seconds:.2f}s")
         print(f"{'='*80}\n")
-        
+
+        # SAVE REPORT TO STORAGE
+        try:
+            # Convert UnifiedExecutionReport to TestReport format for storage
+            test_report = TestReport(
+                id=report_id,
+                project_id=request.project_id or "gherkin_run",
+                project_name=project_name,
+                executed_at=report.executed_at,
+                total_tests=report.total_tests,
+                passed=report.passed,
+                failed=report.failed,
+                duration=report.duration_seconds,
+                results=[
+                    TestResult(
+                        test_case_id=r.test_id,
+                        test_case_name=r.test_name,
+                        status=r.status,
+                        duration=r.duration_ms / 1000.0,  # Convert ms to seconds
+                        error_message=r.error_message,
+                        screenshot_path=r.screenshot_path,
+                        logs=r.logs or []
+                    )
+                    for r in report.results
+                ]
+            )
+            storage.save_report(test_report)
+            print(f"   [OK] Report saved to storage: {report_id}")
+        except Exception as save_err:
+            print(f"   [WARN] Could not save report: {save_err}")
+
+        # Return in the expected format for backward compatibility
         return {
             "success": True,
-            "feature_name": feature.name,
-            "result": result.to_dict()
+            "report_id": report_id,
+            "feature_name": feature_name,
+            "total_scenarios": report.total_tests,
+            "passed": report.passed,
+            "failed": report.failed,
+            "total_duration": report.duration_seconds,
+            "ai_dependency_percent": report.ai_dependency_percent,
+            "new_selectors_learned": report.new_selectors_learned,
+            "scenario_results": [
+                {
+                    "scenario_name": r.test_name,
+                    "status": r.status,
+                    "duration": r.duration_ms / 1000,
+                    "error_message": r.error_message,
+                    "ai_decisions": []
+                }
+                for r in report.results
+            ],
+            "result": {
+                "total_scenarios": report.total_tests,
+                "passed": report.passed,
+                "failed": report.failed,
+                "total_duration": report.duration_seconds
+            }
         }
-    
+
     except Exception as e:
         import traceback
         error_detail = traceback.format_exc()
-        print(f"[ERR] Autonomous execution error:")
+        print(f"[ERR] Unified autonomous execution error:")
         print(error_detail)
         raise HTTPException(
             status_code=500,
@@ -2245,36 +2389,3 @@ async def run_autonomous_gherkin_test(
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-# ============ AUTONOMOUS ORCHESTRATOR LIFECYCLE ============
-# Auto-start orchestrator when AUTONOMOUS_MODE=true env var is set
-
-@app.on_event("startup")
-async def startup_orchestrator():
-    """Start the autonomous orchestrator on application startup if enabled"""
-    import os
-    auto_start = os.getenv("AUTONOMOUS_MODE", "false").lower() == "true"
-    
-    if auto_start:
-        print("[STARTUP] AUTONOMOUS_MODE=true - Starting autonomous orchestrator...")
-        try:
-            from agent.autonomous_orchestrator import start_autonomous_mode
-            orchestrator = start_autonomous_mode()
-            print("[STARTUP] Autonomous orchestrator started successfully")
-            print("[STARTUP] Agent will now continuously discover and execute tests")
-        except Exception as e:
-            print(f"[STARTUP ERROR] Failed to start orchestrator: {e}")
-    else:
-        print("[STARTUP] Autonomous mode disabled. Set AUTONOMOUS_MODE=true to enable.")
-        print("[STARTUP] Or call POST /api/orchestrator/start to start manually.")
-
-
-@app.on_event("shutdown")
-async def shutdown_orchestrator():
-    """Stop the autonomous orchestrator on application shutdown"""
-    try:
-        from agent.autonomous_orchestrator import stop_autonomous_mode
-        stop_autonomous_mode()
-        print("[SHUTDOWN] Autonomous orchestrator stopped")
-    except Exception as e:
-        print(f"[SHUTDOWN] Orchestrator shutdown error: {e}")
