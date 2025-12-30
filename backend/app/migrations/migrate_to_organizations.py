@@ -63,12 +63,53 @@ def run_migration(data_dir: str = "data"):
     print("=" * 60)
 
 
+def detect_existing_org_id(data_dir: str) -> str:
+    """
+    Detect if users/projects already have an organization_id set.
+    This handles the case where data was synced from another system.
+    Returns the most common org_id found, or None if no org_id exists.
+    """
+    org_ids = {}
+
+    # Check users for existing organization_id
+    users_dir = os.path.join(data_dir, "users")
+    if os.path.exists(users_dir):
+        for filename in os.listdir(users_dir):
+            if not filename.endswith('.json'):
+                continue
+            file_path = os.path.join(users_dir, filename)
+            with open(file_path, 'r') as f:
+                user = json.load(f)
+                org_id = user.get('organization_id')
+                if org_id:
+                    org_ids[org_id] = org_ids.get(org_id, 0) + 1
+
+    # Check projects for existing organization_id
+    projects_dir = os.path.join(data_dir, "projects")
+    if os.path.exists(projects_dir):
+        for filename in os.listdir(projects_dir):
+            if not filename.endswith('.json'):
+                continue
+            file_path = os.path.join(projects_dir, filename)
+            with open(file_path, 'r') as f:
+                project = json.load(f)
+                org_id = project.get('organization_id')
+                if org_id:
+                    org_ids[org_id] = org_ids.get(org_id, 0) + 1
+
+    if not org_ids:
+        return None
+
+    # Return the most common org_id (in case there are multiple)
+    return max(org_ids, key=org_ids.get)
+
+
 def create_default_organization(data_dir: str) -> dict:
-    """Create the default organization"""
+    """Create the default organization, reusing existing org_id from synced data if present"""
     orgs_dir = os.path.join(data_dir, "organizations")
     os.makedirs(orgs_dir, exist_ok=True)
 
-    # Check if default org already exists
+    # Check if default org already exists by slug
     for filename in os.listdir(orgs_dir) if os.path.exists(orgs_dir) else []:
         if filename.endswith('.json'):
             with open(os.path.join(orgs_dir, filename), 'r') as f:
@@ -77,8 +118,26 @@ def create_default_organization(data_dir: str) -> dict:
                     print("  [INFO] Default organization already exists")
                     return org
 
-    # Create default organization
-    org_id = str(uuid.uuid4())
+    # Check if users/projects already have an organization_id from synced data
+    existing_org_id = detect_existing_org_id(data_dir)
+
+    if existing_org_id:
+        # Check if org with this ID exists
+        org_file = os.path.join(orgs_dir, f"{existing_org_id}.json")
+        if os.path.exists(org_file):
+            with open(org_file, 'r') as f:
+                org = json.load(f)
+                print(f"  [INFO] Found existing organization referenced by data: {org.get('name')}")
+                return org
+
+        # Org doesn't exist but users reference it - create with THAT ID
+        print(f"  [INFO] Detected org_id from synced data: {existing_org_id[:8]}...")
+        print("  [INFO] Creating default organization with existing ID to maintain consistency")
+        org_id = existing_org_id
+    else:
+        # No existing org_id found, generate new one
+        org_id = str(uuid.uuid4())
+
     org = {
         "id": org_id,
         "name": "Default Organization",
@@ -140,14 +199,17 @@ def create_org_memberships(data_dir: str, org_id: str) -> int:
     if not os.path.exists(users_dir):
         return 0
 
-    # Get existing memberships to avoid duplicates
-    existing_user_ids = set()
+    # Get ALL existing memberships to avoid duplicates (check by user_id, not just org_id)
+    existing_memberships = {}  # user_id -> set of org_ids they're members of
     for filename in os.listdir(members_dir) if os.path.exists(members_dir) else []:
         if filename.endswith('.json'):
             with open(os.path.join(members_dir, filename), 'r') as f:
                 m = json.load(f)
-                if m.get('organization_id') == org_id:
-                    existing_user_ids.add(m.get('user_id'))
+                user_id = m.get('user_id')
+                member_org_id = m.get('organization_id')
+                if user_id not in existing_memberships:
+                    existing_memberships[user_id] = set()
+                existing_memberships[user_id].add(member_org_id)
 
     for filename in os.listdir(users_dir):
         if not filename.endswith('.json'):
@@ -159,8 +221,11 @@ def create_org_memberships(data_dir: str, org_id: str) -> int:
 
         user_id = user['id']
 
-        # Skip if membership already exists
-        if user_id in existing_user_ids:
+        # Use user's existing organization_id if set, otherwise use the default org_id
+        user_org_id = user.get('organization_id') or org_id
+
+        # Skip if membership already exists for this user in their org
+        if user_id in existing_memberships and user_org_id in existing_memberships[user_id]:
             continue
 
         # Determine org role based on existing system role
@@ -170,7 +235,7 @@ def create_org_memberships(data_dir: str, org_id: str) -> int:
         membership_id = str(uuid.uuid4())
         membership = {
             "id": membership_id,
-            "organization_id": org_id,
+            "organization_id": user_org_id,
             "user_id": user_id,
             "org_role": org_role,
             "joined_at": datetime.now().isoformat(),
