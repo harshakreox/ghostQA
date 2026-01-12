@@ -14,7 +14,6 @@ from auth_models import (
     UserRole, ChangePasswordRequest, UpdateUserRequest, ForceChangePasswordRequest
 )
 from auth_storage import get_auth_storage, AuthStorage
-from org_storage import get_org_storage
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
@@ -181,7 +180,6 @@ async def register(request: UserCreate):
 @router.post("/register-with-invite", response_model=Token)
 async def register_with_invite(request_data: dict):
     """Register a new user using an invite token"""
-    from org_storage import get_org_storage
     from org_models import OrganizationMember, OrgRole
     from datetime import datetime
     
@@ -381,42 +379,15 @@ async def create_user(
             detail="Email already registered"
         )
 
-    # Get admin's organization to add new user to it
-    from org_storage import get_org_storage
-    from org_models import OrganizationMember, OrgRole
-    org_storage = get_org_storage()
-    admin_membership = org_storage.get_user_org_membership(current_admin.user_id)
-    
-    organization_id = None
-    if admin_membership:
-        organization_id = admin_membership.organization_id
-
     # Create new user with specified role
     user = User(
         username=request.username,
         email=request.email,
         password_hash=auth_storage.hash_password(request.password),
-        role=request.role,
-        organization_id=organization_id
+        role=request.role
     )
 
     auth_storage.save_user(user)
-
-    # Add user to organization if admin has one
-    if organization_id:
-        org_role_str = request.org_role if request.org_role else "member"
-        try:
-            org_role = OrgRole(org_role_str)
-        except ValueError:
-            org_role = OrgRole.MEMBER
-        
-        org_member = OrganizationMember(
-            organization_id=organization_id,
-            user_id=user.id,
-            org_role=org_role,
-            invited_by=current_admin.user_id
-        )
-        org_storage.add_org_member(org_member)
 
     return UserResponse(
         id=user.id,

@@ -959,29 +959,38 @@ class PreActionChecker:
     async def _check_element_ready(self, page, selector: str) -> bool:
         """Check if target element is visible and enabled"""
         try:
-            # Skip check if selector is not a valid CSS selector (it's an intent name)
-            # Valid CSS selectors start with: #, ., [, or contain : or >
+            # Skip check if selector is not a valid CSS selector (it's an intent name/text)
             if not selector:
                 return True
 
+            # Check if this looks like a CSS/XPath selector vs plain text
+            # CSS selectors typically start with specific characters or contain combinators
             is_css_selector = (
-                selector.startswith('#') or
-                selector.startswith('.') or
-                selector.startswith('[') or
-                selector.startswith('//') or  # XPath
-                ':' in selector or
-                '>' in selector or
-                ' ' in selector or
+                selector.startswith('#') or           # ID selector
+                selector.startswith('.') or           # Class selector
+                selector.startswith('[') or           # Attribute selector
+                selector.startswith('//') or          # XPath
                 selector.startswith('input') or
                 selector.startswith('button') or
-                selector.startswith('a') or
-                selector.startswith('div') or
-                selector.startswith('span')
+                selector.startswith('a[') or          # Link with attribute
+                selector.startswith('div[') or
+                selector.startswith('span[') or
+                '::' in selector or                   # Pseudo-elements
+                ' > ' in selector or                  # Direct child combinator
+                ' + ' in selector or                  # Adjacent sibling
+                ' ~ ' in selector or                  # General sibling
+                selector.startswith('*') or           # Universal selector
+                ':nth-' in selector or                # nth-child etc
+                ':has(' in selector or                # has() pseudo-class
+                ':not(' in selector or                # not() pseudo-class
+                '=' in selector                       # Attribute value selector
             )
 
+            # Plain text with spaces (like "List Export", "Add to Cart") is NOT a CSS selector
+            # Only consider it CSS if it has actual CSS syntax markers
             if not is_css_selector:
-                # It's an intent name like "firstName", not a CSS selector
-                # Skip visibility check - selector resolution happens later
+                # It's plain text or an intent name - skip visibility check
+                # The actual element finding happens later via smart_find_element
                 return True
 
             element = await page.query_selector(selector)

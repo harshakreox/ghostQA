@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import theme from './theme/theme';
 import { AuthProvider } from './context/AuthContext';
-import { OrganizationProvider } from './context/OrganizationContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import ForceChangePasswordDialog from './components/ForceChangePasswordDialog';
@@ -28,15 +27,14 @@ import HowItWorks from './pages/HowItWorks';
 import TestLab from './pages/TestLab';
 import Settings from './pages/Settings';
 import Register from './pages/Register';
-import Organizations from './pages/Organizations';
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        <ForceChangePasswordDialog />
         <BrowserRouter>
+          <ForceChangePasswordDialog />
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Landing />} />
@@ -49,7 +47,6 @@ function App() {
               path="/*"
               element={
                 <ProtectedRoute>
-                  <OrganizationProvider>
                   <Layout>
                     <Routes>
                       <Route path="/dashboard" element={<Dashboard />} />
@@ -147,21 +144,10 @@ function App() {
                         element={<Navigate to="/settings" replace />}
                       />
                       
-                      {/* Organizations Management - Super Admin only */}
-                      <Route
-                        path="/organizations"
-                        element={
-                          <ProtectedRoute adminOnly>
-                            <Organizations />
-                          </ProtectedRoute>
-                        }
-                      />
-
                       {/* Available to both admin and user */}
                       <Route path="/generate" element={<AITestGenerator />} />
                     </Routes>
                   </Layout>
-                  </OrganizationProvider>
                 </ProtectedRoute>
               }
             />

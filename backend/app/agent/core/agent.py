@@ -300,6 +300,77 @@ class AutonomousTestAgent:
 
         target_lower = target.lower().strip()
 
+        # ============================================================
+        # PRIORITY 1: Exact text match (for quoted text from Gherkin)
+        # If target looks like it came from quotes, search by exact text first
+        # ============================================================
+        if action_type == "click":
+            found_element = None
+
+            # Try get_by_text for exact match (handles menus, links, buttons, any clickable)
+            try:
+                loc = self.page.get_by_text(target, exact=True)
+                if await loc.count() > 0:
+                    first = loc.first
+                    if await first.is_visible():
+                        logger.info(f"[SMART] Found exact text: '{target}'")
+                        found_element = first
+            except: pass
+
+            # Try partial text match
+            if not found_element:
+                try:
+                    loc = self.page.get_by_text(target, exact=False)
+                    if await loc.count() > 0:
+                        first = loc.first
+                        if await first.is_visible():
+                            logger.info(f"[SMART] Found partial text: '{target}'")
+                            found_element = first
+                except: pass
+
+            # Try :has-text on any clickable element
+            if not found_element:
+                for tag in ['a', 'button', 'div', 'span', 'li', '[role="menuitem"]', '[role="button"]', '[role="link"]']:
+                    try:
+                        loc = self.page.locator(f"{tag}:has-text('{target}')")
+                        if await loc.count() > 0:
+                            first = loc.first
+                            if await first.is_visible():
+                                logger.info(f"[SMART] Found {tag}:has-text('{target}')")
+                                found_element = first
+                                break
+                    except: pass
+
+            # If element found, try to make it clickable (for menus, submenus)
+            if found_element:
+                try:
+                    # Scroll into view
+                    await found_element.scroll_into_view_if_needed(timeout=2000)
+                    await self.page.wait_for_timeout(200)
+
+                    # Check if element might be in a dropdown/submenu that needs parent hover
+                    # Try to hover on parent first
+                    try:
+                        parent = found_element.locator('..')
+                        grandparent = parent.locator('..')
+                        # Hover on ancestors to potentially open menus
+                        await grandparent.hover(timeout=500)
+                        await self.page.wait_for_timeout(300)
+                        await parent.hover(timeout=500)
+                        await self.page.wait_for_timeout(300)
+                    except:
+                        pass
+
+                    # Hover on the element itself
+                    await found_element.hover(timeout=1000)
+                    await self.page.wait_for_timeout(200)
+
+                    logger.info(f"[SMART] Element ready for click: '{target}'")
+                except Exception as e:
+                    logger.warning(f"[SMART] Could not prepare element: {e}")
+
+                return found_element
+
         # Common field IDs
         field_ids = {
             'username': ['username', 'user', 'email', 'login', 'userId'],
@@ -890,21 +961,63 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
                         await self.page.wait_for_timeout(300)
                     except: pass
 
-                # Try normal click first
+                # Try multiple click strategies
+                click_success = False
+
+                # Strategy 1: Normal click
                 try:
-                    await locator.click(timeout=5000)
+                    await locator.click(timeout=3000)
+                    click_success = True
+                    logger.info(f"[CLICK] Normal click succeeded")
                 except Exception as click_err:
-                    logger.warning(f"[SMART-CLICK] Normal click failed: {click_err}, trying force click...")
-                    # Try force click if normal click fails
+                    logger.warning(f"[CLICK] Normal click failed: {click_err}")
+
+                # Strategy 2: Hover then click (for menus)
+                if not click_success:
                     try:
-                        await locator.click(force=True, timeout=5000)
+                        await locator.hover(timeout=1000)
+                        await self.page.wait_for_timeout(300)
+                        await locator.click(timeout=3000)
+                        click_success = True
+                        logger.info(f"[CLICK] Hover+click succeeded")
+                    except Exception as e:
+                        logger.warning(f"[CLICK] Hover+click failed: {e}")
+
+                # Strategy 3: Force click (ignores overlay)
+                if not click_success:
+                    try:
+                        await locator.click(force=True, timeout=3000)
+                        click_success = True
+                        logger.info(f"[CLICK] Force click succeeded")
                     except Exception as force_err:
-                        logger.warning(f"[SMART-CLICK] Force click failed: {force_err}, trying JS click...")
-                        # Last resort: JavaScript click
-                        try:
-                            await locator.evaluate("el => el.click()")
-                        except Exception as js_err:
-                            raise Exception(f"All click methods failed: {js_err}")
+                        logger.warning(f"[CLICK] Force click failed: {force_err}")
+
+                # Strategy 4: Double click (some elements need this)
+                if not click_success:
+                    try:
+                        await locator.dblclick(timeout=3000)
+                        click_success = True
+                        logger.info(f"[CLICK] Double click succeeded")
+                    except Exception as e:
+                        logger.warning(f"[CLICK] Double click failed: {e}")
+
+                # Strategy 5: JavaScript click (last resort)
+                if not click_success:
+                    try:
+                        await locator.evaluate("el => el.click()")
+                        click_success = True
+                        logger.info(f"[CLICK] JavaScript click succeeded")
+                    except Exception as js_err:
+                        logger.warning(f"[CLICK] JS click failed: {js_err}")
+
+                # Strategy 6: Dispatch click event
+                if not click_success:
+                    try:
+                        await locator.dispatch_event('click')
+                        click_success = True
+                        logger.info(f"[CLICK] Dispatch event succeeded")
+                    except Exception as e:
+                        raise Exception(f"All click methods failed for: {step.target}")
 
                 await self.page.wait_for_timeout(500)
 
@@ -1759,6 +1872,18 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
         expected_text = step.expected or step.target
         logger.info(f"[TESTER-ASSERT] Looking for: '{expected_text}'")
 
+        # STRATEGY 0: Smart count assertion (e.g., "six tabs", "7 items", "three buttons")
+        count_result = await self._try_count_assertion(expected_text)
+        if count_result:
+            return ActionResult(
+                status=count_result["status"],
+                action="assert",
+                selector=expected_text,
+                selector_type="count_assertion",
+                execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000),
+                error_message=count_result.get("error_message")
+            )
+
         # STRATEGY 1: Direct check on current page
         result = await self._try_find_expected_content(expected_text)
         if result:
@@ -1777,35 +1902,35 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
             logger.info(f"[TESTER-ASSERT] Success indicators found: {success_indicators.get('reason')}")
             # Continue looking for the exact content...
 
-        # STRATEGY 3: Try clicking likely navigation elements to find content
-        nav_elements = ["Dashboard", "Home", "Profile", "My Account", "Welcome", "Continue"]
-        for nav_text in nav_elements:
+        # STRATEGY 3: Try expanding accordions/tabs ON THE CURRENT PAGE ONLY
+        # DO NOT navigate away - only click elements that reveal hidden content on same page
+        expand_elements = ["Show More", "View All", "Expand", "See Details", "More"]
+        for expand_text in expand_elements:
             try:
-                # Check if this nav element exists
-                nav_locator = self.page.get_by_role("link", name=nav_text)
-                if await nav_locator.count() == 0:
-                    nav_locator = self.page.get_by_role("button", name=nav_text)
-                if await nav_locator.count() == 0:
-                    nav_locator = self.page.get_by_text(nav_text, exact=False)
+                # Only look for expand/toggle buttons, NOT navigation links
+                expand_locator = self.page.get_by_role("button", name=expand_text)
+                if await expand_locator.count() == 0:
+                    # Try aria-expanded elements
+                    expand_locator = self.page.locator(f'[aria-expanded="false"]:has-text("{expand_text}")')
 
-                if await nav_locator.count() > 0:
-                    logger.info(f"[TESTER-ASSERT] Trying navigation: {nav_text}")
-                    await nav_locator.first.click(timeout=3000)
-                    await self.page.wait_for_timeout(1000)
+                if await expand_locator.count() > 0:
+                    logger.info(f"[TESTER-ASSERT] Trying to expand: {expand_text}")
+                    await expand_locator.first.click(timeout=2000)
+                    await self.page.wait_for_timeout(500)
 
-                    # Check for expected content after navigation
+                    # Check for expected content after expanding
                     result = await self._try_find_expected_content(expected_text)
                     if result:
-                        logger.info(f"[TESTER-ASSERT] Found after clicking {nav_text}")
+                        logger.info(f"[TESTER-ASSERT] Found after expanding {expand_text}")
                         return ActionResult(
                             status=ActionStatus.SUCCESS,
                             action="assert",
-                            selector=f"{expected_text} (via {nav_text})",
-                            selector_type="exploration",
+                            selector=f"{expected_text} (via {expand_text})",
+                            selector_type="expansion",
                             execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000)
                         )
             except Exception as e:
-                logger.debug(f"[TESTER-ASSERT] Nav click failed for {nav_text}: {e}")
+                logger.debug(f"[TESTER-ASSERT] Expand click failed for {expand_text}: {e}")
                 continue
 
         # STRATEGY 4: Check page title, headers, or main content areas
@@ -1835,31 +1960,170 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
                     execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000)
                 )
 
-        # All strategies failed - fall back to original selector resolution
-        selector_result = await self._resolve_selector(step.target)
-        if selector_result.selector:
-            if step.expected:
-                return await self.action_executor.assert_text(
-                    selector_result.selector,
-                    step.expected,
-                    selector_result.selector_type,
-                    timeout=self.config.step_timeout_ms
-                )
-            else:
-                return await self.action_executor.assert_visible(
-                    selector_result.selector,
-                    selector_result.selector_type,
-                    timeout=self.config.step_timeout_ms
-                )
+        # Only use selector resolution for SHORT targets that look like field names
+        # Long descriptive text like "six report type tabs available" should NOT go through
+        # the selector service - it will incorrectly match keywords like "type" to input fields
+        word_count = len(expected_text.split())
+        is_descriptive_text = word_count >= 3  # 3+ words = descriptive assertion
 
+        if not is_descriptive_text:
+            # Short target - might be a field name, try selector resolution
+            selector_result = await self._resolve_selector(step.target)
+            if selector_result.selector and selector_result.confidence >= 0.7:
+                if step.expected:
+                    return await self.action_executor.assert_text(
+                        selector_result.selector,
+                        step.expected,
+                        selector_result.selector_type,
+                        timeout=self.config.step_timeout_ms
+                    )
+                else:
+                    return await self.action_executor.assert_visible(
+                        selector_result.selector,
+                        selector_result.selector_type,
+                        timeout=self.config.step_timeout_ms
+                    )
+
+        # For descriptive text assertions, report as assertion failure
+        # The text strategies above already searched thoroughly
         return ActionResult(
-            status=ActionStatus.ELEMENT_NOT_FOUND,
+            status=ActionStatus.ASSERTION_FAILED,
             action="assert",
             selector=step.target,
-            selector_type="unknown",
+            selector_type="text_assertion",
             execution_time_ms=int((datetime.utcnow() - start).total_seconds() * 1000),
-            error_message=f"Could not find '{expected_text}' on page or after exploring navigation"
+            error_message=f"Assertion failed: Expected text '{expected_text}' was not found on the page"
         )
+
+    async def _try_count_assertion(self, assertion_text: str) -> Optional[Dict[str, Any]]:
+        """
+        Try to interpret assertion as a count verification.
+
+        Handles natural language like:
+        - "six report type tabs available"
+        - "7 items in the list"
+        - "three buttons visible"
+        - "5 rows in the table"
+
+        Returns None if not a count assertion, or dict with status and details.
+        """
+        import re
+
+        # Number words to digits mapping
+        number_words = {
+            'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
+            'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9,
+            'ten': 10, 'eleven': 11, 'twelve': 12
+        }
+
+        # Element types that can be counted
+        countable_elements = {
+            'tab': ['[role="tab"]', '.tab', '[data-tab]', 'button[role="tab"]', 'a[role="tab"]', 'li[role="tab"]'],
+            'tabs': ['[role="tab"]', '.tab', '[data-tab]', 'button[role="tab"]', 'a[role="tab"]', 'li[role="tab"]'],
+            'button': ['button', '[role="button"]', 'input[type="button"]', 'input[type="submit"]'],
+            'buttons': ['button', '[role="button"]', 'input[type="button"]', 'input[type="submit"]'],
+            'item': ['li', '[role="listitem"]', '.item', '.list-item'],
+            'items': ['li', '[role="listitem"]', '.item', '.list-item'],
+            'row': ['tr', '[role="row"]', '.row'],
+            'rows': ['tr', '[role="row"]', '.row'],
+            'card': ['.card', '[class*="card"]', '[data-card]'],
+            'cards': ['.card', '[class*="card"]', '[data-card]'],
+            'option': ['option', '[role="option"]', '.option'],
+            'options': ['option', '[role="option"]', '.option'],
+            'link': ['a[href]', '[role="link"]'],
+            'links': ['a[href]', '[role="link"]'],
+            'column': ['th', 'td', '[role="columnheader"]'],
+            'columns': ['th', 'td', '[role="columnheader"]'],
+            'field': ['input', 'textarea', 'select', '[role="textbox"]'],
+            'fields': ['input', 'textarea', 'select', '[role="textbox"]'],
+            'error': ['.error', '[class*="error"]', '[role="alert"]', '.invalid-feedback'],
+            'errors': ['.error', '[class*="error"]', '[role="alert"]', '.invalid-feedback'],
+            'menu': ['[role="menuitem"]', '.menu-item', 'li.nav-item'],
+            'menus': ['[role="menuitem"]', '.menu-item', 'li.nav-item'],
+        }
+
+        text_lower = assertion_text.lower()
+
+        # Try to extract expected count
+        expected_count = None
+
+        # Check for number words
+        for word, num in number_words.items():
+            if word in text_lower:
+                expected_count = num
+                break
+
+        # Check for digits
+        if expected_count is None:
+            digit_match = re.search(r'\b(\d+)\b', text_lower)
+            if digit_match:
+                expected_count = int(digit_match.group(1))
+
+        if expected_count is None:
+            return None  # Not a count assertion
+
+        # Try to find what element type to count
+        element_type = None
+        selectors_to_try = []
+
+        for elem_type, selectors in countable_elements.items():
+            if elem_type in text_lower:
+                element_type = elem_type
+                selectors_to_try = selectors
+                break
+
+        if not element_type:
+            return None  # Couldn't determine what to count
+
+        logger.info(f"[COUNT-ASSERT] Detected count assertion: expecting {expected_count} {element_type}")
+
+        # Count elements on the page
+        actual_count = 0
+        found_selector = None
+
+        for selector in selectors_to_try:
+            try:
+                locator = self.page.locator(selector)
+                count = await locator.count()
+
+                # Only count visible elements
+                visible_count = 0
+                for i in range(count):
+                    try:
+                        if await locator.nth(i).is_visible():
+                            visible_count += 1
+                    except:
+                        continue
+
+                if visible_count > 0:
+                    actual_count = visible_count
+                    found_selector = selector
+                    logger.info(f"[COUNT-ASSERT] Found {visible_count} visible '{selector}' elements")
+                    break
+            except Exception as e:
+                logger.debug(f"[COUNT-ASSERT] Selector {selector} failed: {e}")
+                continue
+
+        # Compare counts
+        if actual_count == expected_count:
+            logger.info(f"[COUNT-ASSERT] SUCCESS: Found exactly {actual_count} {element_type}")
+            return {
+                "status": ActionStatus.SUCCESS,
+                "actual_count": actual_count,
+                "expected_count": expected_count,
+                "element_type": element_type,
+                "selector_used": found_selector
+            }
+        else:
+            logger.info(f"[COUNT-ASSERT] FAILED: Expected {expected_count} {element_type}, found {actual_count}")
+            return {
+                "status": ActionStatus.ASSERTION_FAILED,
+                "actual_count": actual_count,
+                "expected_count": expected_count,
+                "element_type": element_type,
+                "selector_used": found_selector,
+                "error_message": f"Assertion failed: Expected {expected_count} {element_type}, but found {actual_count}"
+            }
 
     async def _try_find_expected_content(self, text: str) -> bool:
         """Try to find expected text content on the page"""
@@ -2091,12 +2355,12 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
 
         if not selector_result.selector:
             return ActionResult(
-                status=ActionStatus.ELEMENT_NOT_FOUND,
+                status=ActionStatus.ASSERTION_FAILED,
                 action="assert_visible",
                 selector=step.target,
                 selector_type="unknown",
                 execution_time_ms=0,
-                error_message="Could not resolve selector for visibility assertion"
+                error_message=f"Assertion failed: Element '{step.target}' is not visible on the page"
             )
 
         logger.info(f"Asserting visible: '{selector_result.selector}'")
@@ -2170,12 +2434,12 @@ Return ONLY JSON: {{"selector": "#id or [name='x'] or button text"}}"""
 
         if not selector_result.selector:
             return ActionResult(
-                status=ActionStatus.ELEMENT_NOT_FOUND,
+                status=ActionStatus.ASSERTION_FAILED,
                 action="assert_text",
                 selector=step.target,
                 selector_type="unknown",
                 execution_time_ms=0,
-                error_message="Could not resolve selector for text assertion"
+                error_message=f"Assertion failed: Could not find element '{step.target}' to verify text"
             )
 
         expected_text = step.value or step.expected or ""

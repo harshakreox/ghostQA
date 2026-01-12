@@ -39,13 +39,21 @@ dist-ssr/
 .env.local
 .env.*.local
 
-# Data - Ignore all runtime data (each system has its own)
+# Sensitive credentials files
+**/ADMIN_CREDENTIALS.txt
+**/*_CREDENTIALS.txt
+
+# Data - Ignore all runtime data (each server has its own)
 backend/app/data/projects/*.json
 backend/app/data/features/*.json
 backend/app/data/traditional/*.json
 backend/app/data/folders/*.json
-backend/app/data/reports/*.json
+backend/app/data/reports/*
 backend/app/data/users/*.json
+backend/app/data/organizations/*.json
+backend/app/data/org_members/*.json
+backend/app/data/org_invites/*.json
+backend/app/data/project_members/*.json
 backend/app/data/releases.json
 backend/app/data/test_data_knowledge.json
 
@@ -55,7 +63,7 @@ backend/app/data/results/*
 backend/app/data/agent_knowledge/*
 !backend/app/data/agent_knowledge/.gitkeep
 
-# Keep directory structure
+# Keep directory structure (empty folders need .gitkeep)
 !backend/app/data/.gitkeep
 !backend/app/data/projects/.gitkeep
 !backend/app/data/features/.gitkeep
@@ -63,6 +71,10 @@ backend/app/data/agent_knowledge/*
 !backend/app/data/folders/.gitkeep
 !backend/app/data/reports/.gitkeep
 !backend/app/data/users/.gitkeep
+!backend/app/data/organizations/.gitkeep
+!backend/app/data/org_members/.gitkeep
+!backend/app/data/org_invites/.gitkeep
+!backend/app/data/project_members/.gitkeep
 
 # Logs
 *.log
@@ -77,3 +89,4 @@ Thumbs.db
 test-results/
 playwright-report/
 screenshots/
+.claude/

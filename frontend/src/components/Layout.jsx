@@ -38,7 +38,6 @@ import {
   AdminPanelSettings as AdminIcon,
   PlayArrow as PlayIcon,
   Business as BusinessIcon,
-  CorporateFare as OrganizationsIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useOrganization } from '../context/OrganizationContext';
@@ -53,7 +52,6 @@ const allMenuItems = [
   { text: 'Test Lab', icon: <ScienceIcon />, path: '/test-lab', roles: ['admin'], description: 'Run & execute tests' },
   { text: 'AI Generator', icon: <CodeIcon />, path: '/generate', roles: ['admin', 'user'], description: 'Generate test cases' },
   { text: 'Reports', icon: <ReportsIcon />, path: '/reports', roles: ['admin'], description: 'Test results & analytics' },
-  { text: 'Organizations', icon: <OrganizationsIcon />, path: '/organizations', roles: ['admin'], description: 'Manage all organizations (Super Admin)' },
   { text: 'Settings', icon: <SettingsIcon />, path: '/settings', roles: ['admin'], description: 'Users & configuration' },
 ];
 

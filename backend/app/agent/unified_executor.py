@@ -15,11 +15,25 @@ This ensures:
 import asyncio
 import json
 import logging
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Union, Callable
 from dataclasses import dataclass, field, asdict
 from enum import Enum
+
+# Ensure .env is loaded for API keys
+try:
+    from dotenv import load_dotenv
+    env_path = Path(__file__).parent.parent / ".env"
+    load_dotenv(env_path)
+    # Also check if key exists
+    if os.getenv("ANTHROPIC_API_KEY"):
+        print(f"[EXECUTOR] API key loaded from {env_path}")
+    else:
+        print(f"[EXECUTOR] WARNING: ANTHROPIC_API_KEY not found in {env_path}")
+except ImportError:
+    print("[EXECUTOR] WARNING: python-dotenv not installed")
 
 from .core.agent import AutonomousTestAgent, AgentConfig, TestResult, TestStep, StepStatus
 from .core.selector_service import SelectorService, ResolutionTier
@@ -33,6 +47,163 @@ from .context.navigation_intelligence import NavigationIntelligence, NavigationR
 
 # Configure logging
 logger = logging.getLogger(__name__)
+
+
+# ============================================================
+# NAVIGATION KNOWLEDGE BASE
+# Stores learned navigation paths and form selectors
+# First run: AI figures it out
+# Future runs: Use stored knowledge, AI fallback only if needed
+# ============================================================
+
+class NavigationKnowledgeBase:
+    """
+    Stores and retrieves learned navigation knowledge.
+
+    Structure:
+    {
+        "domain.com": {
+            "navigation_paths": {
+                "home_to_admin": {
+                    "actions": [...],
+                    "success_count": 5,
+                    "last_success": "2024-01-15T10:30:00Z"
+                }
+            },
+            "login_selectors": {
+                "username": ["#email", "input[name='email']"],
+                "password": ["#password"],
+                "submit": ["button[type='submit']"]
+            },
+            "page_elements": {
+                "admin": ["a:has-text('Admin')", ".admin-link"],
+                "dashboard": ["a:has-text('Dashboard')"]
+            }
+        }
+    }
+    """
+
+    def __init__(self, data_dir: str = "data/agent_knowledge"):
+        self.data_dir = Path(data_dir)
+        self.kb_file = self.data_dir / "navigation_kb.json"
+        self.data: Dict[str, Any] = {}
+        self._load()
+
+    def _load(self):
+        """Load knowledge base from disk"""
+        try:
+            if self.kb_file.exists():
+                with open(self.kb_file, 'r') as f:
+                    self.data = json.load(f)
+                logger.info(f"[NAV-KB] Loaded navigation knowledge for {len(self.data)} domains")
+        except Exception as e:
+            logger.warning(f"[NAV-KB] Could not load: {e}")
+            self.data = {}
+
+    def _save(self):
+        """Persist knowledge base to disk"""
+        try:
+            self.data_dir.mkdir(parents=True, exist_ok=True)
+            with open(self.kb_file, 'w') as f:
+                json.dump(self.data, f, indent=2)
+        except Exception as e:
+            logger.warning(f"[NAV-KB] Could not save: {e}")
+
+    def _get_domain_data(self, domain: str) -> Dict:
+        """Get or create domain-specific data"""
+        if domain not in self.data:
+            self.data[domain] = {
+                "navigation_paths": {},
+                "login_selectors": {},
+                "page_elements": {}
+            }
+        return self.data[domain]
+
+    def get_navigation_path(self, domain: str, from_page: str, to_page: str) -> Optional[List[Dict]]:
+        """Get stored navigation path between pages"""
+        domain_data = self._get_domain_data(domain)
+        path_key = f"{from_page}_to_{to_page}"
+        path_data = domain_data["navigation_paths"].get(path_key)
+
+        if path_data:
+            logger.info(f"[NAV-KB] Found stored path: {path_key} (used {path_data.get('success_count', 0)} times)")
+            return path_data.get("actions", [])
+        return None
+
+    def store_navigation_path(self, domain: str, from_page: str, to_page: str, actions: List[Dict]):
+        """Store successful navigation path"""
+        domain_data = self._get_domain_data(domain)
+        path_key = f"{from_page}_to_{to_page}"
+
+        existing = domain_data["navigation_paths"].get(path_key, {})
+        domain_data["navigation_paths"][path_key] = {
+            "actions": actions,
+            "success_count": existing.get("success_count", 0) + 1,
+            "last_success": datetime.utcnow().isoformat()
+        }
+
+        logger.info(f"[NAV-KB] Stored path: {path_key} ({len(actions)} actions)")
+        self._save()
+
+    def get_page_selectors(self, domain: str, page_name: str) -> List[str]:
+        """Get known selectors for navigating to a page"""
+        domain_data = self._get_domain_data(domain)
+        return domain_data["page_elements"].get(page_name, [])
+
+    def store_page_selector(self, domain: str, page_name: str, selector: str):
+        """Store a working selector for a page"""
+        domain_data = self._get_domain_data(domain)
+
+        if page_name not in domain_data["page_elements"]:
+            domain_data["page_elements"][page_name] = []
+
+        # Add to front (most recent = most likely to work)
+        if selector not in domain_data["page_elements"][page_name]:
+            domain_data["page_elements"][page_name].insert(0, selector)
+            # Keep top 5 selectors
+            domain_data["page_elements"][page_name] = domain_data["page_elements"][page_name][:5]
+            self._save()
+
+    def get_login_selectors(self, domain: str) -> Dict[str, List[str]]:
+        """Get known login form selectors"""
+        domain_data = self._get_domain_data(domain)
+        return domain_data.get("login_selectors", {})
+
+    def store_login_selectors(self, domain: str, field: str, selector: str):
+        """Store a working login form selector"""
+        domain_data = self._get_domain_data(domain)
+
+        if "login_selectors" not in domain_data:
+            domain_data["login_selectors"] = {}
+
+        if field not in domain_data["login_selectors"]:
+            domain_data["login_selectors"][field] = []
+
+        if selector not in domain_data["login_selectors"][field]:
+            domain_data["login_selectors"][field].insert(0, selector)
+            domain_data["login_selectors"][field] = domain_data["login_selectors"][field][:5]
+            self._save()
+
+    def invalidate_selector(self, domain: str, page_name: str, selector: str):
+        """Remove a selector that no longer works"""
+        domain_data = self._get_domain_data(domain)
+
+        if page_name in domain_data["page_elements"]:
+            if selector in domain_data["page_elements"][page_name]:
+                domain_data["page_elements"][page_name].remove(selector)
+                logger.info(f"[NAV-KB] Invalidated selector for {page_name}: {selector}")
+                self._save()
+
+
+# Global navigation knowledge base instance
+_nav_kb: Optional[NavigationKnowledgeBase] = None
+
+def get_navigation_kb(data_dir: str = "data/agent_knowledge") -> NavigationKnowledgeBase:
+    """Get or create the navigation knowledge base singleton"""
+    global _nav_kb
+    if _nav_kb is None:
+        _nav_kb = NavigationKnowledgeBase(data_dir)
+    return _nav_kb
 
 
 class TestFormat(Enum):
@@ -192,6 +363,10 @@ class UnifiedTestExecutor:
         self._project_context: Optional[ProjectContext] = None
         self._nav_intelligence: Optional[NavigationIntelligence] = None
 
+        # Navigation knowledge base - learns and reuses navigation paths
+        self._nav_kb = get_navigation_kb(str(self.data_dir))
+        self._current_domain: str = ""  # Set during execution
+
         # Agent will be initialized per execution
         self._agent: Optional[AutonomousTestAgent] = None
         self._page = None
@@ -284,6 +459,437 @@ class UnifiedTestExecutor:
         logger.info(message)
         if self._log_callback:
             self._log_callback(log_entry)
+
+    async def _click_navigation_to_page(self, target_page: str) -> bool:
+        """
+        Find and click a navigation element to reach the target page.
+
+        LEARNING FLOW:
+        1. Check Knowledge Base for stored selectors (instant, no AI)
+        2. If KB miss, use AI to analyze page and find element
+        3. Store successful selector in KB for future use
+
+        Returns True if navigation was successful.
+        """
+        target_lower = target_page.lower()
+        self._log(f"[NAV] Navigating to '{target_page}'...")
+        print(f"\n[NAV] ========== NAVIGATION TO '{target_page}' ==========", flush=True)
+
+        # ============================================================
+        # STEP 1: Check Knowledge Base for stored selectors
+        # ============================================================
+        stored_selectors = self._nav_kb.get_page_selectors(self._current_domain, target_lower)
+
+        if stored_selectors:
+            self._log(f"[NAV-KB] Found {len(stored_selectors)} stored selector(s) - trying them first")
+            print(f"[NAV-KB] KB HIT! Trying stored selectors: {stored_selectors}", flush=True)
+
+            for selector in stored_selectors:
+                try:
+                    elem = await self._page.wait_for_selector(selector, timeout=2000)
+                    if elem and await elem.is_visible():
+                        self._log(f"[NAV-KB] SUCCESS using stored selector: {selector}")
+                        print(f"[NAV-KB] Clicking stored selector: {selector}", flush=True)
+                        await elem.click()
+                        await asyncio.sleep(0.5)
+                        return True
+                except Exception as e:
+                    self._log(f"[NAV-KB] Stored selector failed: {selector}")
+                    # Invalidate this selector
+                    self._nav_kb.invalidate_selector(self._current_domain, target_lower, selector)
+
+            self._log(f"[NAV-KB] All stored selectors failed - falling back to AI")
+
+        # ============================================================
+        # STEP 2: Use AI to analyze page and find navigation element
+        # ============================================================
+        print(f"[NAV-AI] No KB hit or stored selectors failed - using AI...", flush=True)
+        self._log(f"[NAV-AI] Analyzing page to find navigation to '{target_page}'...")
+
+        ai_result = await self._ai_find_navigation_element(target_page)
+
+        if ai_result and ai_result.get("selector"):
+            selector = ai_result["selector"]
+            self._log(f"[NAV-AI] AI found selector: {selector}")
+            print(f"[NAV-AI] AI suggests: {selector}", flush=True)
+
+            try:
+                elem = await self._page.wait_for_selector(selector, timeout=3000)
+                if elem and await elem.is_visible():
+                    await elem.click()
+                    await asyncio.sleep(0.5)
+
+                    # ============================================================
+                    # STEP 3: Store successful selector in KB for future use
+                    # ============================================================
+                    self._nav_kb.store_page_selector(self._current_domain, target_lower, selector)
+                    self._log(f"[NAV-KB] Stored new selector for '{target_page}': {selector}")
+                    print(f"[NAV-KB] LEARNED! Stored selector for future: {selector}", flush=True)
+                    return True
+            except Exception as e:
+                self._log(f"[NAV-AI] AI selector failed: {e}")
+
+        # ============================================================
+        # STEP 3: Fallback - pattern-based search (no AI)
+        # ============================================================
+        print(f"[NAV] Fallback: Pattern-based search...", flush=True)
+        result = await self._pattern_based_navigation(target_page)
+
+        if result:
+            return True
+
+        self._log(f"[NAV] Could not find navigation to '{target_page}'")
+        print(f"[NAV] WARNING: Navigation to '{target_page}' failed", flush=True)
+        return False
+
+    async def _ai_find_navigation_element(self, target_page: str) -> Optional[Dict]:
+        """
+        Use AI to analyze the current page and find the navigation element.
+        Returns {"selector": "...", "description": "..."} or None
+        """
+        import os
+
+        api_key = os.getenv("ANTHROPIC_API_KEY")
+        if not api_key:
+            self._log(f"[NAV-AI] No API key - skipping AI analysis")
+            return None
+
+        try:
+            # Get page content for AI analysis
+            page_html = await self._page.content()
+            # Truncate to avoid token limits
+            if len(page_html) > 15000:
+                page_html = page_html[:15000] + "... [truncated]"
+
+            # Get visible links and buttons
+            elements_info = await self._page.evaluate("""
+                () => {
+                    const elements = [];
+                    document.querySelectorAll('a, button, [role="link"], [role="button"], [onclick]').forEach((el, idx) => {
+                        if (idx > 50) return;  // Limit
+                        const rect = el.getBoundingClientRect();
+                        if (rect.width > 0 && rect.height > 0) {
+                            elements.push({
+                                tag: el.tagName,
+                                text: (el.textContent || '').trim().substring(0, 50),
+                                id: el.id,
+                                className: el.className,
+                                href: el.href || '',
+                                ariaLabel: el.getAttribute('aria-label') || ''
+                            });
+                        }
+                    });
+                    return elements;
+                }
+            """)
+
+            prompt = f"""Analyze this page and find the navigation element to reach "{target_page}".
+
+VISIBLE CLICKABLE ELEMENTS:
+{json.dumps(elements_info[:30], indent=2)}
+
+TASK: Find the element that navigates to "{target_page}" page.
+
+Return ONLY a JSON object:
+{{"selector": "CSS selector to click", "description": "what this element is"}}
+
+SELECTOR RULES:
+- Prefer ID selectors: #element-id
+- Then data attributes: [data-testid="..."]
+- Then specific classes: .specific-class
+- Then text: a:has-text("Admin")
+- Be specific, avoid generic selectors
+
+If no clear element found, return: {{"selector": null, "description": "not found"}}
+"""
+
+            import anthropic
+            client = anthropic.Anthropic(api_key=api_key)
+            msg = client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=300,
+                messages=[{"role": "user", "content": prompt}]
+            )
+
+            resp = msg.content[0].text.strip()
+            if "{" in resp:
+                resp = resp[resp.find("{"):resp.rfind("}")+1]
+            result = json.loads(resp)
+
+            if result.get("selector"):
+                self._log(f"[NAV-AI] AI found: {result['description']}")
+                return result
+
+        except Exception as e:
+            self._log(f"[NAV-AI] AI analysis error: {e}")
+
+        return None
+
+    async def _check_if_logged_in(self) -> bool:
+        """
+        Check if user is already logged in by looking for common indicators.
+        Returns True if logged in, False if not.
+        """
+        try:
+            # Look for logout/signout indicators (means user IS logged in)
+            logout_indicators = [
+                'text="Logout"', 'text="Log out"', 'text="Sign out"', 'text="Signout"',
+                '[data-testid="logout"]', '#logout', '.logout',
+                'text="My Account"', 'text="Profile"', 'text="Dashboard"',
+            ]
+
+            for indicator in logout_indicators:
+                try:
+                    elem = await self._page.wait_for_selector(indicator, timeout=500)
+                    if elem and await elem.is_visible():
+                        self._log(f"[LOGIN-CHECK] Found '{indicator}' - user is logged in")
+                        return True
+                except:
+                    continue
+
+            # Look for login/signin indicators (means user is NOT logged in)
+            login_indicators = [
+                'text="Login"', 'text="Log in"', 'text="Sign in"', 'text="Signin"',
+                'input[type="password"]',  # Login form visible
+            ]
+
+            for indicator in login_indicators:
+                try:
+                    elem = await self._page.wait_for_selector(indicator, timeout=500)
+                    if elem and await elem.is_visible():
+                        self._log(f"[LOGIN-CHECK] Found '{indicator}' - user is NOT logged in")
+                        return False
+                except:
+                    continue
+
+            # Can't determine - assume not logged in for safety
+            self._log(f"[LOGIN-CHECK] Could not determine login state - assuming not logged in")
+            return False
+
+        except Exception as e:
+            self._log(f"[LOGIN-CHECK] Error: {e}")
+            return False
+
+    async def _pattern_based_navigation(self, target_page: str) -> bool:
+        """Fallback pattern-based navigation without AI"""
+        target_lower = target_page.lower()
+
+        # Build text patterns
+        text_patterns = [target_page.capitalize(), target_page.upper(), target_page]
+
+        if target_lower == 'admin':
+            text_patterns.extend(['Admin', 'Administration', 'Admin Panel', 'Dashboard', 'Control Panel'])
+        elif target_lower == 'dashboard':
+            text_patterns.extend(['Dashboard', 'Home', 'Main', 'Overview'])
+        elif target_lower == 'login':
+            text_patterns.extend(['Login', 'Log in', 'Sign in', 'Signin'])
+        elif target_lower in ['register', 'registration']:
+            text_patterns.extend(['Register', 'Sign up', 'Signup', 'Create Account', 'Join'])
+        elif target_lower == 'profile':
+            text_patterns.extend(['Profile', 'My Profile', 'Account', 'My Account'])
+        elif target_lower == 'settings':
+            text_patterns.extend(['Settings', 'Preferences', 'Options', 'Configuration'])
+
+        for pattern in text_patterns:
+            selectors = [
+                f'a:has-text("{pattern}")',
+                f'button:has-text("{pattern}")',
+                f'nav >> text="{pattern}"',
+                f'[class*="nav"] >> text="{pattern}"',
+                f'[class*="menu"] >> text="{pattern}"',
+            ]
+
+            for selector in selectors:
+                try:
+                    elem = await self._page.wait_for_selector(selector, timeout=1000)
+                    if elem and await elem.is_visible():
+                        await elem.click()
+                        # Store for future
+                        self._nav_kb.store_page_selector(self._current_domain, target_lower, selector)
+                        self._log(f"[NAV] Pattern match success: {selector}")
+                        return True
+                except:
+                    continue
+
+        return False
+
+    async def _fill_login_form(self, username: str, password: str) -> bool:
+        """
+        Fill and submit a login form.
+
+        LEARNING FLOW:
+        1. Check KB for stored login selectors (instant)
+        2. If KB miss, try standard selectors and AI
+        3. Store working selectors for future use
+
+        Returns True if form was filled and submitted successfully.
+        """
+        self._log(f"[LOGIN] Filling login form with: {username[:3]}***")
+        print(f"\n[LOGIN] ========== LOGIN FORM ==========", flush=True)
+
+        try:
+            # ============================================================
+            # STEP 1: Check KB for stored login selectors
+            # ============================================================
+            stored_login = self._nav_kb.get_login_selectors(self._current_domain)
+            used_selectors = {}  # Track what works for storing
+
+            if stored_login:
+                self._log(f"[LOGIN-KB] Found stored login selectors")
+                print(f"[LOGIN-KB] KB HIT! Using stored selectors", flush=True)
+
+            # ============================================================
+            # Fill username/email field
+            # ============================================================
+            username_filled = False
+            username_selector_used = None
+
+            # Try KB selectors first
+            if stored_login.get("username"):
+                for selector in stored_login["username"]:
+                    try:
+                        elem = await self._page.wait_for_selector(selector, timeout=1500)
+                        if elem and await elem.is_visible():
+                            await elem.fill(username)
+                            self._log(f"[LOGIN-KB] Username entered using stored: {selector}")
+                            username_filled = True
+                            username_selector_used = selector
+                            break
+                    except:
+                        continue
+
+            # Fallback to standard selectors
+            if not username_filled:
+                username_selectors = [
+                    'input[name="username"]', 'input[name="email"]', 'input[name="login"]',
+                    'input[name="user"]', 'input[name="identifier"]',
+                    'input[type="email"]',
+                    '#username', '#email', '#login', '#user', '#identifier',
+                    '[data-testid="username"]', '[data-testid="email"]',
+                    '[autocomplete="username"]', '[autocomplete="email"]',
+                    'input[placeholder*="mail" i]', 'input[placeholder*="user" i]',
+                ]
+
+                for selector in username_selectors:
+                    try:
+                        elem = await self._page.wait_for_selector(selector, timeout=1000)
+                        if elem and await elem.is_visible():
+                            await elem.fill(username)
+                            self._log(f"[LOGIN] Username entered in: {selector}")
+                            username_filled = True
+                            username_selector_used = selector
+                            break
+                    except:
+                        continue
+
+            # ============================================================
+            # Fill password field
+            # ============================================================
+            password_filled = False
+            password_selector_used = None
+
+            # Try KB selectors first
+            if stored_login.get("password"):
+                for selector in stored_login["password"]:
+                    try:
+                        elem = await self._page.wait_for_selector(selector, timeout=1500)
+                        if elem and await elem.is_visible():
+                            await elem.fill(password)
+                            self._log(f"[LOGIN-KB] Password entered using stored selector")
+                            password_filled = True
+                            password_selector_used = selector
+                            break
+                    except:
+                        continue
+
+            # Fallback to standard selectors
+            if not password_filled:
+                password_selectors = [
+                    'input[name="password"]', 'input[type="password"]',
+                    '#password', '[data-testid="password"]',
+                    '[autocomplete="current-password"]',
+                ]
+
+                for selector in password_selectors:
+                    try:
+                        elem = await self._page.wait_for_selector(selector, timeout=1000)
+                        if elem and await elem.is_visible():
+                            await elem.fill(password)
+                            self._log(f"[LOGIN] Password entered")
+                            password_filled = True
+                            password_selector_used = selector
+                            break
+                    except:
+                        continue
+
+            if not username_filled or not password_filled:
+                self._log(f"[LOGIN] Could not fill form - username:{username_filled}, password:{password_filled}")
+                return False
+
+            # ============================================================
+            # Click submit button
+            # ============================================================
+            submit_selector_used = None
+
+            # Try KB selectors first
+            if stored_login.get("submit"):
+                for selector in stored_login["submit"]:
+                    try:
+                        elem = await self._page.wait_for_selector(selector, timeout=1500)
+                        if elem and await elem.is_visible():
+                            await elem.click()
+                            self._log(f"[LOGIN-KB] Clicked stored submit: {selector}")
+                            submit_selector_used = selector
+                            break
+                    except:
+                        continue
+
+            # Fallback to standard selectors
+            if not submit_selector_used:
+                submit_selectors = [
+                    'button[type="submit"]', 'input[type="submit"]',
+                    'button:has-text("Login")', 'button:has-text("Log in")',
+                    'button:has-text("Sign in")', 'button:has-text("Submit")',
+                    '[data-testid="login-button"]', '[data-testid="submit"]',
+                    '#login-button', '#submit', '#login',
+                    '.login-btn', '.submit-btn', '.btn-login',
+                ]
+
+                for selector in submit_selectors:
+                    try:
+                        elem = await self._page.wait_for_selector(selector, timeout=1000)
+                        if elem and await elem.is_visible():
+                            await elem.click()
+                            self._log(f"[LOGIN] Clicked submit: {selector}")
+                            submit_selector_used = selector
+                            break
+                    except:
+                        continue
+
+            if not submit_selector_used:
+                self._log(f"[LOGIN] No submit button found, pressing Enter")
+                await self._page.keyboard.press('Enter')
+
+            # ============================================================
+            # STEP 3: Store working selectors in KB for future use
+            # ============================================================
+            if username_selector_used:
+                self._nav_kb.store_login_selectors(self._current_domain, "username", username_selector_used)
+            if password_selector_used:
+                self._nav_kb.store_login_selectors(self._current_domain, "password", password_selector_used)
+            if submit_selector_used:
+                self._nav_kb.store_login_selectors(self._current_domain, "submit", submit_selector_used)
+
+            if username_selector_used or password_selector_used or submit_selector_used:
+                self._log(f"[LOGIN-KB] Stored login selectors for future use")
+                print(f"[LOGIN-KB] LEARNED! Stored login form selectors", flush=True)
+
+            return True
+
+        except Exception as e:
+            self._log(f"[LOGIN] Error: {e}")
+            print(f"[LOGIN] Error filling form: {e}", flush=True)
+            return False
 
     def _build_step_description(self, step) -> str:
         """Build a human-readable description for a step"""
@@ -495,22 +1101,70 @@ class UnifiedTestExecutor:
 
     # ==================== Gherkin Step Interpretation ====================
 
+    def _extract_quoted_text(self, text: str) -> Optional[str]:
+        """
+        Extract text from quotes (single or double).
+        Examples:
+            'click "Admin Panel"' -> "Admin Panel"
+            "click the 'Sign In' button" -> "Sign In"
+            'navigate to "List Exports" sub-menu' -> "List Exports"
+        """
+        import re
+        # Try double quotes first
+        match = re.search(r'"([^"]+)"', text)
+        if match:
+            return match.group(1)
+        # Try single quotes
+        match = re.search(r"'([^']+)'", text)
+        if match:
+            return match.group(1)
+        return None
+
     def _interpret_gherkin_step(self, step: Dict[str, Any]) -> Dict[str, Any]:
         """
         Interpret a Gherkin step into an executable action.
 
         Uses pattern matching first, then AI if needed.
+        SMART: If text in quotes, use that directly as the target!
         """
         keyword = step.get("keyword", "").lower()
         text = step.get("text", "")
         full_step = f"{keyword} {text}".lower()
 
+        # SMART: Extract quoted text - this is usually the exact element to interact with!
+        quoted_text = self._extract_quoted_text(text)
+
         print(f"\n[GHERKIN-INTERPRET] === STEP ===", flush=True)
         print(f"[GHERKIN-INTERPRET] Keyword: '{keyword}'", flush=True)
         print(f"[GHERKIN-INTERPRET] Text: '{text}'", flush=True)
+        print(f"[GHERKIN-INTERPRET] Quoted text: '{quoted_text}'", flush=True)
         print(f"[GHERKIN-INTERPRET] Full: '{full_step}'", flush=True)
 
-        # Navigation patterns
+        # ============================================================
+        # SMART QUOTED TEXT: If step has text in quotes, use it directly!
+        # "When I click 'Admin Panel'" -> click element with text "Admin Panel"
+        # "When I navigate to 'List Exports'" -> click element with text "List Exports"
+        # ============================================================
+        if quoted_text:
+            # Determine action based on keywords
+            if any(p in full_step for p in ["click", "press", "tap", "select"]):
+                print(f"[GHERKIN-INTERPRET] SMART: Click '{quoted_text}'", flush=True)
+                return {
+                    "action": "click",
+                    "target": quoted_text,
+                    "target_type": "text",  # Search by text content
+                    "description": f"Click element with text '{quoted_text}'"
+                }
+            elif any(p in full_step for p in ["navigate to", "go to", "open", "visit"]):
+                print(f"[GHERKIN-INTERPRET] SMART: Navigate to '{quoted_text}'", flush=True)
+                return {
+                    "action": "click",  # Navigate by clicking the link/button
+                    "target": quoted_text,
+                    "target_type": "text",
+                    "description": f"Click link/button '{quoted_text}' to navigate"
+                }
+
+        # Navigation patterns (fallback if no quoted text)
         if any(p in full_step for p in ["navigate to", "go to", "open", "visit"]):
             import re
             # Pattern 1: Explicit URL (http://, https://, or contains / or .)
@@ -535,7 +1189,18 @@ class UnifiedTestExecutor:
                     "description": f"Find and click link/button to {page_name} page"
                 }
 
-        # Click patterns
+            # Pattern 4: Extract the destination from "navigate to X sub-menu" etc
+            nav_match = re.search(r'(?:navigate|go)\s+to\s+(?:the\s+)?(.+?)(?:\s+(?:sub-?menu|page|section|tab|link|button))?$', text, re.I)
+            if nav_match:
+                target = nav_match.group(1).strip()
+                return {
+                    "action": "click",
+                    "target": target,
+                    "target_type": "text",
+                    "description": f"Click '{target}' to navigate"
+                }
+
+        # Click patterns (fallback if no quoted text)
         if any(p in full_step for p in ["click", "press", "tap", "select"]):
             import re
 
@@ -747,7 +1412,8 @@ IMPORTANT: Do NOT put actual data values - just identify the action and target f
         headless: bool = False,
         execution_mode: ExecutionMode = ExecutionMode.GUIDED,
         ai_callback: Optional[Callable] = None,
-        credentials: Optional[Dict[str, str]] = None
+        credentials: Optional[Dict[str, str]] = None,
+        ui_config: Optional[Dict[str, Any]] = None
     ) -> UnifiedExecutionReport:
         """
         Execute test cases using the autonomous agent.
@@ -761,11 +1427,15 @@ IMPORTANT: Do NOT put actual data values - just identify the action and target f
             execution_mode: How much AI to use
             ai_callback: AI decision callback for autonomous mode
             credentials: Optional login credentials
+            ui_config: UI framework config from project (frameworks, primary_framework)
 
         Returns:
             UnifiedExecutionReport with all results
         """
+        # Store UI config for agent initialization
+        self._ui_config = ui_config
         from playwright.async_api import async_playwright
+        from urllib.parse import urlparse
 
         report_id = f"report_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
         start_time = datetime.utcnow()
@@ -775,6 +1445,10 @@ IMPORTANT: Do NOT put actual data values - just identify the action and target f
         # Reset stop flag at start of execution
         self._should_stop = False
 
+        # Extract domain for knowledge base lookups
+        self._current_domain = urlparse(base_url).netloc
+        self._base_url = base_url  # Store for navigation methods
+
         # Metrics
         total_ai_calls = 0
         total_kb_hits = 0
@@ -783,11 +1457,18 @@ IMPORTANT: Do NOT put actual data values - just identify the action and target f
         print("")
         print("=" * 60)
         print(f"[GHOSTQA] Starting test execution: {project_name}")
+        print(f"[GHOSTQA] Domain for KB: {self._current_domain}")
         print(f"[GHOSTQA] Mode: {execution_mode.value}, Headless: {headless}")
         print(f"[GHOSTQA] Base URL: {base_url}")
+        print(f"[GHOSTQA] Credentials type: {type(credentials)}")
         if credentials:
-            uname = credentials.get('username') or credentials.get('admin_username', 'N/A')
-            print(f"[GHOSTQA] Credentials: {uname[:3] if uname else 'N/A'}*** / ****")
+            print(f"[GHOSTQA] Credentials keys: {list(credentials.keys()) if isinstance(credentials, dict) else 'not a dict'}")
+            if isinstance(credentials, dict):
+                uname = credentials.get('username') or credentials.get('admin_username') or credentials.get('email', 'N/A')
+                pwd = credentials.get('password') or credentials.get('admin_password', '')
+                print(f"[GHOSTQA] Username: {uname[:3] if uname else 'N/A'}*** / Password present: {bool(pwd)}")
+            else:
+                print(f"[GHOSTQA] Credentials (non-dict): {str(credentials)[:50]}...")
         else:
             print("[GHOSTQA] WARNING: No credentials provided!")
         print("=" * 60)
@@ -858,6 +1539,19 @@ IMPORTANT: Do NOT put actual data values - just identify the action and target f
                         data_dir=str(self.data_dir),
                         config=self.config
                     )
+
+                    # Pre-set framework from project config (skip runtime detection if known)
+                    if self._ui_config:
+                        primary_fw = self._ui_config.get('primary_framework')
+                        if primary_fw:
+                            print(f"[FRAMEWORK] Using project config: {primary_fw}", flush=True)
+                            self._agent.selector_service.set_framework(primary_fw)
+                        else:
+                            frameworks = self._ui_config.get('frameworks', [])
+                            if frameworks:
+                                print(f"[FRAMEWORK] Using first from list: {frameworks[0]}", flush=True)
+                                self._agent.selector_service.set_framework(frameworks[0])
+
                     print(f"[ISOLATION] Fresh agent created", flush=True)
 
                     # Initialize project context and navigation intelligence
@@ -1098,8 +1792,26 @@ IMPORTANT: Do NOT put actual data values - just identify the action and target f
         all_steps = []
 
         # Add background steps for Gherkin
+        print(f"\n[BACKGROUND] ========== BACKGROUND CHECK ==========", flush=True)
+        print(f"[BACKGROUND] Test format: {test_case.format}", flush=True)
+        print(f"[BACKGROUND] Has background_steps attr: {hasattr(test_case, 'background_steps')}", flush=True)
+        print(f"[BACKGROUND] background_steps value: {test_case.background_steps}", flush=True)
+        print(f"[BACKGROUND] background_steps length: {len(test_case.background_steps) if test_case.background_steps else 0}", flush=True)
+
         if test_case.format == TestFormat.GHERKIN and test_case.background_steps:
+            self._log(f"[BACKGROUND] Adding {len(test_case.background_steps)} background steps BEFORE scenario steps")
+            for i, bg_step in enumerate(test_case.background_steps):
+                print(f"[BACKGROUND] Step {i+1}: {bg_step}", flush=True)
+                self._log(f"  BG Step {i+1}: {bg_step.get('keyword', '')} {bg_step.get('text', '')}")
             all_steps.extend(test_case.background_steps)
+        else:
+            print(f"[BACKGROUND] No background steps to add", flush=True)
+            if test_case.format != TestFormat.GHERKIN:
+                print(f"[BACKGROUND] Reason: Not GHERKIN format", flush=True)
+            elif not test_case.background_steps:
+                print(f"[BACKGROUND] Reason: background_steps is empty/None", flush=True)
+
+        print(f"[BACKGROUND] =====================================", flush=True)
 
         all_steps.extend(test_case.steps)
 
@@ -1147,19 +1859,46 @@ IMPORTANT: Do NOT put actual data values - just identify the action and target f
 
             if needs_auto_nav:
                 # Detect what page we need based on scenario name
+                # THINK LIKE A TESTER: What page does this scenario need?
                 auto_nav_target = None
+
+                # Public pages - direct navigation
                 if any(kw in test_name_lower for kw in ['register', 'registration', 'signup', 'sign up', 'sign-up', 'create account']):
                     auto_nav_target = 'registration'
                 elif any(kw in test_name_lower for kw in ['login', 'log in', 'signin', 'sign in', 'sign-in', 'authenticate']):
                     auto_nav_target = 'login'
-                elif any(kw in test_name_lower for kw in ['profile', 'account settings', 'my account']):
+
+                # Protected pages - will require LOGIN FIRST
+                elif any(kw in test_name_lower for kw in ['admin', 'administration', 'admin panel', 'admin list', 'admin export']):
+                    auto_nav_target = 'admin'
+                elif any(kw in test_name_lower for kw in ['profile', 'account settings', 'my account', 'user profile']):
                     auto_nav_target = 'profile'
-                elif any(kw in test_name_lower for kw in ['dashboard', 'home page', 'main page']):
+                elif any(kw in test_name_lower for kw in ['dashboard', 'home page', 'main page', 'main dashboard']):
                     auto_nav_target = 'dashboard'
+                elif any(kw in test_name_lower for kw in ['settings', 'preferences', 'configuration']):
+                    auto_nav_target = 'settings'
+                elif any(kw in test_name_lower for kw in ['orders', 'my orders', 'order history', 'order list']):
+                    auto_nav_target = 'orders'
+                elif any(kw in test_name_lower for kw in ['cart', 'shopping cart', 'basket']):
+                    auto_nav_target = 'cart'
+                elif any(kw in test_name_lower for kw in ['checkout', 'payment', 'billing']):
+                    auto_nav_target = 'checkout'
+                elif any(kw in test_name_lower for kw in ['export', 'exports', 'download', 'report', 'reports']):
+                    # Export/report features typically require admin or dashboard
+                    auto_nav_target = 'admin'
+                elif any(kw in test_name_lower for kw in ['list users', 'user list', 'manage users', 'user management']):
+                    auto_nav_target = 'admin'
 
                 if auto_nav_target:
-                    print(f"\n[AUTO-NAV] Scenario '{test_case.name}' needs {auto_nav_target} page", flush=True)
-                    print(f"[AUTO-NAV] First step is '{first_step_action}' - adding navigation step", flush=True)
+                    print(f"\n[AUTO-NAV] ====== AUTO-NAVIGATION TRIGGERED ======", flush=True)
+                    print(f"[AUTO-NAV] Scenario: '{test_case.name}'", flush=True)
+                    print(f"[AUTO-NAV] Detected target page: '{auto_nav_target}'", flush=True)
+                    print(f"[AUTO-NAV] First step action was: '{first_step_action}'", flush=True)
+                    print(f"[AUTO-NAV] This is a {'PROTECTED' if auto_nav_target in ['admin', 'dashboard', 'profile', 'settings', 'orders', 'cart', 'checkout'] else 'PUBLIC'} page", flush=True)
+                    print(f"[AUTO-NAV] Credentials available: {bool(credentials)}", flush=True)
+                    if credentials:
+                        uname = credentials.get('username') or credentials.get('admin_username', '')
+                        print(f"[AUTO-NAV] Will login with: {uname[:3] if uname else 'NO USERNAME'}***", flush=True)
 
                     # Insert navigation step at the beginning
                     nav_step = {
@@ -1169,10 +1908,13 @@ IMPORTANT: Do NOT put actual data values - just identify the action and target f
                         'description': f'Navigate to {auto_nav_target} page (auto-detected from scenario name)'
                     }
                     all_steps.insert(0, nav_step)
-                    print(f"[AUTO-NAV] Inserted step: {nav_step}", flush=True)
-                    self._log(f"[AUTO-NAV] Added navigation to {auto_nav_target} page")
+                    print(f"[AUTO-NAV] Inserted precondition step: {nav_step}", flush=True)
+                    print(f"[AUTO-NAV] =========================================", flush=True)
+                    self._log(f"[AUTO-NAV] Added navigation to {auto_nav_target} page (will LOGIN first if protected)")
                 else:
-                    print(f"[DEBUG] No auto_nav_target detected for: '{test_name_lower}'", flush=True)
+                    print(f"[AUTO-NAV] No auto_nav_target detected for: '{test_name_lower}'", flush=True)
+                    print(f"[AUTO-NAV] Keywords checked but not matched:", flush=True)
+                    print(f"[AUTO-NAV]   - admin/export/reports keywords", flush=True)
         else:
             print(f"[DEBUG] Test format is NOT GHERKIN: {test_case.format}", flush=True)
 
@@ -1404,10 +2146,17 @@ IMPORTANT: Do NOT put actual data values - just identify the action and target f
 
         print(f"\n{'='*60}", flush=True)
         print(f"[TESTER-BRAIN] ===== PRECONDITION RESOLUTION =====", flush=True)
+        print(f"[TESTER-BRAIN] Test name: '{test_case.name}'", flush=True)
+        print(f"[TESTER-BRAIN] Total steps: {len(all_steps)}", flush=True)
         print(f"[TESTER-BRAIN] Credentials available: {bool(credentials)}", flush=True)
         if credentials:
             uname = credentials.get('username') or credentials.get('admin_username', 'N/A')
+            pwd = credentials.get('password') or credentials.get('admin_password', '')
             print(f"[TESTER-BRAIN] Username: {uname[:3] if uname else 'N/A'}***", flush=True)
+            print(f"[TESTER-BRAIN] Password present: {bool(pwd)}", flush=True)
+        print(f"[TESTER-BRAIN] First 3 steps:", flush=True)
+        for j, s in enumerate(all_steps[:3]):
+            print(f"[TESTER-BRAIN]   Step {j+1}: action='{s.get('action')}' target='{s.get('target')}'", flush=True)
 
         for i, step in enumerate(all_steps):
             action = step.get('action', '').lower()
@@ -1427,131 +2176,109 @@ IMPORTANT: Do NOT put actual data values - just identify the action and target f
 
                 try:
                     # ============================================================
-                    # PROTECTED PAGE: Login first, then navigate
+                    # UI-BASED NAVIGATION: Like a real tester - NO URL manipulation!
                     # ============================================================
-                    if is_protected and credentials:
+                    # Step 1: Look at current page
+                    # Step 2: Find navigation element (link, button, menu item)
+                    # Step 3: Click it
+                    # Step 4: If redirected to login, handle it
+                    # Step 5: Retry navigation after login
+                    # ============================================================
+
+                    self._log(f"[TESTER] UI-based navigation to '{target_page}'")
+                    print(f"[TESTER-BRAIN] === UI-BASED NAVIGATION (NO URL MANIPULATION) ===", flush=True)
+                    print(f"[TESTER-BRAIN] Target: {target_page}", flush=True)
+                    print(f"[TESTER-BRAIN] Current URL: {self._page.url}", flush=True)
+
+                    # Get credentials ready for potential login
+                    if 'admin' in target_page and credentials:
+                        username = credentials.get('admin_username') or credentials.get('username', '')
+                        password = credentials.get('admin_password') or credentials.get('password', '')
+                    elif credentials:
                         username = credentials.get('username') or credentials.get('admin_username', '')
                         password = credentials.get('password') or credentials.get('admin_password', '')
-
-                        if username and password:
-                            self._log(f"[TESTER] Protected page detected! Logging in first...")
-                            print(f"[TESTER-BRAIN] === PERFORMING LOGIN FIRST ===", flush=True)
-
-                            # Step 1: Navigate to login page
-                            login_url = f"{base_url.rstrip('/')}/login"
-                            self._log(f"[TESTER] Step 1: Navigate to login page: {login_url}")
-                            try:
-                                await self._page.goto(login_url, wait_until='domcontentloaded', timeout=15000)
-                                await asyncio.sleep(1)
-                            except Exception as nav_err:
-                                for alt in ['/signin', '/auth/login', '/account/login', '/user/login']:
-                                    try:
-                                        alt_url = f"{base_url.rstrip('/')}{alt}"
-                                        await self._page.goto(alt_url, wait_until='domcontentloaded', timeout=10000)
-                                        self._log(f"[TESTER] Found login at: {alt_url}")
-                                        break
-                                    except:
-                                        continue
-
-                            # Step 2: Fill username/email field
-                            self._log(f"[TESTER] Step 2: Enter username: {username[:3]}***")
-                            username_selectors = [
-                                'input[name="username"]', 'input[name="email"]', 'input[name="login"]',
-                                'input[type="email"]', 'input[type="text"]',
-                                '#username', '#email', '#login', '#user',
-                                '[data-testid="username"]', '[data-testid="email"]',
-                                'input[placeholder*="mail" i]', 'input[placeholder*="user" i]'
-                            ]
-                            for selector in username_selectors:
-                                try:
-                                    elem = await self._page.wait_for_selector(selector, timeout=2000)
-                                    if elem:
-                                        await elem.fill(username)
-                                        self._log(f"[TESTER] Username entered in: {selector}")
-                                        break
-                                except:
-                                    continue
-
-                            # Step 3: Fill password field
-                            self._log(f"[TESTER] Step 3: Enter password: ****")
-                            password_selectors = [
-                                'input[name="password"]', 'input[type="password"]',
-                                '#password', '[data-testid="password"]'
-                            ]
-                            for selector in password_selectors:
-                                try:
-                                    elem = await self._page.wait_for_selector(selector, timeout=2000)
-                                    if elem:
-                                        await elem.fill(password)
-                                        self._log(f"[TESTER] Password entered in: {selector}")
-                                        break
-                                except:
-                                    continue
-
-                            # Step 4: Click login button
-                            self._log(f"[TESTER] Step 4: Click login button")
-                            login_btn_selectors = [
-                                'button[type="submit"]', 'input[type="submit"]',
-                                'button:has-text("Login")', 'button:has-text("Sign in")',
-                                'button:has-text("Log in")', 'button:has-text("Submit")',
-                                '[data-testid="login-button"]', '[data-testid="submit"]',
-                                '#login-button', '#submit', '.login-btn', '.submit-btn'
-                            ]
-                            for selector in login_btn_selectors:
-                                try:
-                                    elem = await self._page.wait_for_selector(selector, timeout=2000)
-                                    if elem:
-                                        await elem.click()
-                                        self._log(f"[TESTER] Clicked login button: {selector}")
-                                        break
-                                except:
-                                    continue
-
-                            # Step 5: Wait for login to complete
-                            self._log(f"[TESTER] Step 5: Waiting for login to complete...")
-                            await asyncio.sleep(2)
-
-                            current_url = self._page.url
-                            self._log(f"[TESTER] Current URL after login: {current_url}")
-
-                            # Step 6: Navigate to target page
-                            target_url = f"{base_url.rstrip('/')}/{target_page}"
-                            self._log(f"[TESTER] Step 6: Navigate to target: {target_url}")
-                            try:
-                                await self._page.goto(target_url, wait_until='domcontentloaded', timeout=15000)
-                                await asyncio.sleep(1)
-                                self._log(f"[TESTER] SUCCESS - Logged in and navigated to {target_page}")
-                                step['action'] = 'noop'
-                                step['description'] = f"Logged in and navigated to {target_page} page"
-                                precondition_navigation_done = True
-                            except Exception as e:
-                                self._log(f"[TESTER] Navigation to {target_page} failed: {e}")
-                        else:
-                            self._log(f"[TESTER] WARNING: Protected page but no credentials!")
+                    else:
+                        username = ''
+                        password = ''
 
                     # ============================================================
-                    # PUBLIC PAGE: Just navigate directly
+                    # STEP 1: FOR PROTECTED PAGES - LOGIN FIRST!
+                    # The Admin link won't be visible until user is logged in.
                     # ============================================================
-                    elif is_public or not is_protected:
-                        self._log(f"[TESTER] Public page - navigating directly")
-                        target_url = f"{base_url.rstrip('/')}/{target_page}"
-                        try:
-                            await self._page.goto(target_url, wait_until='domcontentloaded', timeout=15000)
+                    if is_protected and username and password:
+                        self._log(f"[TESTER] PROTECTED page '{target_page}' - checking if logged in...")
+                        print(f"[TESTER-BRAIN] Protected page detected - will login first!", flush=True)
+
+                        # Check if already logged in by looking for logout/signout links
+                        is_logged_in = await self._check_if_logged_in()
+                        print(f"[TESTER-BRAIN] Already logged in: {is_logged_in}", flush=True)
+
+                        if not is_logged_in:
+                            self._log(f"[TESTER] Not logged in - finding and clicking login...")
+
+                            # Find and click login link/button
+                            login_clicked = await self._click_navigation_to_page("login")
+
+                            if not login_clicked:
+                                # Maybe we're already on login page, or login is in a different location
+                                # Check if there's a login form on current page
+                                has_login_form = await self._page.query_selector('input[type="password"]')
+                                if not has_login_form:
+                                    self._log(f"[TESTER] No login link found, trying common login URLs...")
+                                    # Try clicking "Sign In" or similar
+                                    for login_text in ['Sign In', 'Log In', 'Login', 'Sign in', 'Log in']:
+                                        try:
+                                            btn = await self._page.wait_for_selector(f'text="{login_text}"', timeout=1000)
+                                            if btn and await btn.is_visible():
+                                                await btn.click()
+                                                await asyncio.sleep(1)
+                                                break
+                                        except:
+                                            continue
+
                             await asyncio.sleep(1)
-                            self._log(f"[TESTER] SUCCESS - navigated to {target_page}")
-                            step['action'] = 'noop'
-                            step['description'] = f"Navigated to {target_page} page"
-                            precondition_navigation_done = True
-                        except Exception as e:
-                            self._log(f"[TESTER] Direct navigation failed: {e}")
-                            if self._nav_intelligence:
-                                nav_result = await self._nav_intelligence.navigate_to(target_page)
-                                if nav_result.success:
-                                    step['action'] = 'noop'
-                                    precondition_navigation_done = True
+
+                            # Now fill the login form
+                            self._log(f"[TESTER] Filling login form...")
+                            login_success = await self._fill_login_form(username, password)
+
+                            if login_success:
+                                await asyncio.sleep(2)  # Wait for login to complete
+                                self._log(f"[TESTER] Login submitted, current URL: {self._page.url}")
+                                print(f"[TESTER-BRAIN] Login complete, now at: {self._page.url}", flush=True)
+
+                    # ============================================================
+                    # STEP 2: Now try to navigate to target page
+                    # ============================================================
+                    current_url = self._page.url.lower()
+                    if target_page not in current_url:
+                        self._log(f"[TESTER] Looking for navigation to '{target_page}'...")
+                        nav_success = await self._click_navigation_to_page(target_page)
+                        await asyncio.sleep(1)
+                    else:
+                        nav_success = True
+                        self._log(f"[TESTER] Already on {target_page} page!")
+
+                    # ============================================================
+                    # STEP 3: Verify we reached the target page
+                    # ============================================================
+                    current_url = self._page.url.lower()
+                    reached_target = target_page in current_url or nav_success
+
+                    if reached_target:
+                        self._log(f"[TESTER] SUCCESS - Now on {target_page} page")
+                        print(f"[TESTER-BRAIN] SUCCESS - Current URL: {self._page.url}", flush=True)
+                        step['action'] = 'noop'
+                        step['description'] = f"Navigated to {target_page} page via UI"
+                        precondition_navigation_done = True
+                    else:
+                        self._log(f"[TESTER] WARNING: Could not reach {target_page} via UI")
+                        print(f"[TESTER-BRAIN] WARNING: Navigation may have failed", flush=True)
+                        # Don't mark as done - let the scenario steps try to navigate
 
                 except Exception as e:
                     self._log(f"[TESTER] Precondition error: {e}")
+                    print(f"[TESTER-BRAIN] Error: {e}", flush=True)
                     step['action'] = 'noop'
                     step['error_message'] = str(e)
 

@@ -47,8 +47,7 @@ from release_models import (
 from release_api import router as releases_router
 # Folder Management
 from folder_api import router as folder_router
-# Organization Management
-from org_api import router as org_router
+# Organization Management - REMOVED (simplified to just users/projects)
 
 # ===== WINDOWS FIX FOR PLAYWRIGHT =====
 # Fix for Windows: Playwright needs ProactorEventLoop on Windows
@@ -86,24 +85,13 @@ folder_storage = get_folder_storage()
 # CORS Configuration
 # In production, set CORS_ORIGINS environment variable to comma-separated allowed origins
 # Example: CORS_ORIGINS=https://app.example.com,https://admin.example.com
-cors_origins_env = os.getenv("CORS_ORIGINS", "")
-if cors_origins_env:
-    allowed_origins = [origin.strip() for origin in cors_origins_env.split(",")]
-else:
-    # Development defaults - localhost only
-    allowed_origins = [
-        "http://localhost:5173",  # Vite dev server
-        "http://localhost:3000",  # React dev server
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:3000",
-    ]
-
+# Allow all origins for IP address access
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type", "Accept"],
+    allow_headers=["*"],
 )
 
 class RunAutonomousTestRequest(BaseModel):
@@ -123,7 +111,6 @@ class MoveTraditionalSuiteToFolderRequest(BaseModel):
 
 # Include routers
 app.include_router(auth_router)  # Authentication
-app.include_router(org_router)  # Organizations
 app.include_router(releases_router)
 app.include_router(ai_router)
 # Include autonomous agent router
@@ -197,15 +184,8 @@ async def create_project(
 
 @app.get("/api/projects", response_model=List[Project])
 async def get_projects(current_user: TokenData = Depends(get_current_user)):
-    """Get projects - Admin sees all, User sees only their own"""
-    all_projects = storage.get_all_projects()
-
-    # Admin sees all projects
-    if current_user.role == UserRole.ADMIN:
-        return all_projects
-
-    # User sees only their own projects
-    return [p for p in all_projects if p.owner_id == current_user.user_id]
+    """Get all projects - all authenticated users can see all projects"""
+    return storage.get_all_projects()
 
 
 @app.get("/api/projects/{project_id}", response_model=Project)
@@ -213,15 +193,10 @@ async def get_project(
     project_id: str,
     current_user: TokenData = Depends(get_current_user)
 ):
-    """Get a specific project - Admin can see all, User can only see their own"""
+    """Get a specific project - all authenticated users can view any project"""
     project = storage.get_project(project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
-
-    # Check access permission
-    if current_user.role != UserRole.ADMIN and project.owner_id != current_user.user_id:
-        raise HTTPException(status_code=403, detail="Access denied")
-
     return project
 
 
@@ -2295,6 +2270,17 @@ async def run_autonomous_gherkin_test(
 
         # Execute using the unified executor (with learning!)
         from agent import ExecutionMode
+
+        # Extract UI config from project for framework-aware selector resolution
+        ui_config = None
+        if project and hasattr(project, 'ui_config') and project.ui_config:
+            ui_config = {
+                'frameworks': project.ui_config.frameworks if hasattr(project.ui_config, 'frameworks') else [],
+                'primary_framework': project.ui_config.primary_framework if hasattr(project.ui_config, 'primary_framework') else None
+            }
+            if ui_config.get('primary_framework'):
+                print(f"   [OK] UI Framework: {ui_config['primary_framework']}")
+
         report = await executor.execute(
             test_cases=test_cases,
             base_url=base_url,
@@ -2302,7 +2288,8 @@ async def run_autonomous_gherkin_test(
             project_name=project_name,
             headless=request.headless,
             execution_mode=ExecutionMode.AUTONOMOUS,
-            credentials=credentials if credentials else None
+            credentials=credentials if credentials else None,
+            ui_config=ui_config
         )
 
         print(f"\n{'='*80}")

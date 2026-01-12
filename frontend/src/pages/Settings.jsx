@@ -3,19 +3,10 @@ import {
   Box,
   Typography,
   Paper,
-  Tabs,
-  Tab,
-  Grid,
-  Card,
-  CardContent,
   Button,
   TextField,
   Switch,
   FormControlLabel,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Divider,
   List,
   ListItem,
@@ -34,21 +25,16 @@ import {
   CircularProgress,
 } from '@mui/material';
 import {
-  Person,
-  Group,
-  Security,
-  Business,
+  Lock,
   Add,
   Edit,
   Delete,
   AdminPanelSettings,
-  SupervisorAccount,
   PersonOutline,
   Refresh,
 } from '@mui/icons-material';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { useOrganization } from '../context/OrganizationContext';
 
 // Helper to get auth headers
 const getAuthHeaders = () => {
@@ -56,71 +42,51 @@ const getAuthHeaders = () => {
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-const orgRoleLabels = {
-  org_admin: 'Org Admin',
-  manager: 'Manager',
-  member: 'Member',
-};
-
-const orgRoleColors = {
-  org_admin: 'error',
-  manager: 'warning',
-  member: 'primary',
-};
-
-const orgRoleDescriptions = {
-  org_admin: 'Full organization control, can manage all users and projects',
-  manager: 'Can create projects and assign users to projects',
-  member: 'Can only access assigned projects',
-};
-
-function TabPanel({ children, value, index }) {
-  return (
-    <Box hidden={value !== index} sx={{ py: 3 }}>
-      {value === index && children}
-    </Box>
-  );
-}
-
 export default function Settings() {
   const { user, isAdmin } = useAuth();
-  const { organization, orgRole, isOrgAdmin, refresh: refreshOrg } = useOrganization();
-  const [tabValue, setTabValue] = useState(0);
 
-  // Organization members state
-  const [orgMembers, setOrgMembers] = useState([]);
-  const [loadingMembers, setLoadingMembers] = useState(true);
-
-  // User management state (for system admins)
+  // User management state
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
 
   // Dialog states
   const [userDialog, setUserDialog] = useState({ open: false, user: null });
   const [deleteDialog, setDeleteDialog] = useState({ open: false, user: null });
-  const [roleDialog, setRoleDialog] = useState({ open: false, member: null });
-  const [selectedOrgRole, setSelectedOrgRole] = useState('member');
+  const [resetDialog, setResetDialog] = useState({ open: false, user: null });
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  // New user form
-  const [newUser, setNewUser] = useState({
+  // Form data for add/edit user
+  const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
     role: 'user',
-    org_role: 'member',
   });
+
+  // Determine if we are editing
+  const isEditing = userDialog.open && userDialog.user !== null;
 
   useEffect(() => {
     if (isAdmin) {
       loadUsers();
     }
-    if (organization?.id) {
-      loadOrgMembers();
+  }, [isAdmin]);
+
+  // Populate form when editing a user
+  useEffect(() => {
+    if (userDialog.open && userDialog.user) {
+      setFormData({
+        username: userDialog.user.username || '',
+        email: userDialog.user.email || '',
+        password: '',
+        role: userDialog.user.role || 'user',
+      });
+    } else if (userDialog.open) {
+      setFormData({ username: '', email: '', password: '', role: 'user' });
     }
-  }, [isAdmin, organization?.id]);
+  }, [userDialog.open, userDialog.user]);
 
   const loadUsers = async () => {
     try {
@@ -134,35 +100,31 @@ export default function Settings() {
     }
   };
 
-  const loadOrgMembers = async () => {
-    if (!organization?.id) return;
-    try {
-      setLoadingMembers(true);
-      const response = await axios.get(
-        `/api/organizations/${organization.id}/members`,
-        { headers: getAuthHeaders() }
-      );
-      setOrgMembers(response.data || []);
-    } catch (error) {
-      console.error('Failed to load org members:', error);
-    } finally {
-      setLoadingMembers(false);
-    }
-  };
-
-  const handleCreateUser = async () => {
+  const handleSaveUser = async () => {
     try {
       setActionLoading(true);
       setError(null);
-      await axios.post('/api/auth/register', newUser, { headers: getAuthHeaders() });
+
+      if (isEditing) {
+        // Update existing user
+        const updateData = {
+          email: formData.email,
+          role: formData.role,
+        };
+        await axios.put(`/api/auth/users/${userDialog.user.id}`, updateData, { headers: getAuthHeaders() });
+        setSuccess('User updated successfully');
+      } else {
+        // Create new user
+        await axios.post('/api/auth/users', formData, { headers: getAuthHeaders() });
+        setSuccess('User created successfully');
+      }
+
       setUserDialog({ open: false, user: null });
-      setNewUser({ username: '', email: '', password: '', role: 'user', org_role: 'member' });
-      setSuccess('User created successfully');
+      setFormData({ username: '', email: '', password: '', role: 'user' });
       loadUsers();
-      loadOrgMembers();
     } catch (error) {
-      console.error('Failed to create user:', error);
-      setError(error.response?.data?.detail || 'Failed to create user');
+      console.error('Failed to save user:', error);
+      setError(error.response?.data?.detail || 'Failed to save user');
     } finally {
       setActionLoading(false);
     }
@@ -177,7 +139,6 @@ export default function Settings() {
       setDeleteDialog({ open: false, user: null });
       setSuccess('User deleted successfully');
       loadUsers();
-      loadOrgMembers();
     } catch (error) {
       console.error('Failed to delete user:', error);
       setError(error.response?.data?.detail || 'Failed to delete user');
@@ -185,57 +146,21 @@ export default function Settings() {
       setActionLoading(false);
     }
   };
-
-  const handleUpdateOrgRole = async () => {
-    if (!roleDialog.member || !organization?.id) return;
+  const handleResetPassword = async () => {
+    if (!resetDialog.user) return;
     try {
       setActionLoading(true);
       setError(null);
-      await axios.put(
-        `/api/organizations/${organization.id}/members/${roleDialog.member.user_id}`,
-        { org_role: selectedOrgRole },
-        { headers: getAuthHeaders() }
-      );
-      setRoleDialog({ open: false, member: null });
-      setSuccess('Organization role updated successfully');
-      loadOrgMembers();
-      refreshOrg();
+      const response = await axios.post(`/api/auth/users/${resetDialog.user.id}/reset-password`, {}, { headers: getAuthHeaders() });
+      setResetDialog({ open: false, user: null });
+      setSuccess(`Password reset! Temporary password: ${response.data.temporary_password}`);
     } catch (error) {
-      console.error('Failed to update org role:', error);
-      setError(error.response?.data?.detail || 'Failed to update organization role');
+      console.error("Failed to reset password:", error);
+      setError(error.response?.data?.detail || "Failed to reset password");
     } finally {
       setActionLoading(false);
     }
   };
-
-  const handleRemoveFromOrg = async (userId) => {
-    if (!organization?.id) return;
-    if (!confirm('Are you sure you want to remove this member from the organization?')) return;
-
-    try {
-      setError(null);
-      await axios.delete(
-        `/api/organizations/${organization.id}/members/${userId}`,
-        { headers: getAuthHeaders() }
-      );
-      setSuccess('Member removed from organization');
-      loadOrgMembers();
-    } catch (error) {
-      console.error('Failed to remove member:', error);
-      setError(error.response?.data?.detail || 'Failed to remove member');
-    }
-  };
-
-  // Determine which tabs to show
-  const tabs = [];
-  if (isOrgAdmin) {
-    tabs.push({ icon: <Business />, label: 'Organization', key: 'org' });
-  }
-  tabs.push({ icon: <Group />, label: 'Members', key: 'members' });
-  tabs.push({ icon: <Person />, label: 'Profile', key: 'profile' });
-  tabs.push({ icon: <Security />, label: 'Security', key: 'security' });
-
-  const getCurrentTabKey = () => tabs[tabValue]?.key || 'members';
 
   return (
     <Box>
@@ -245,7 +170,7 @@ export default function Settings() {
           Settings
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Manage organization, users, and system configuration
+          Manage users and system configuration
         </Typography>
       </Box>
 
@@ -261,195 +186,98 @@ export default function Settings() {
         </Alert>
       )}
 
-      {/* Tabs */}
-      <Paper sx={{ borderRadius: 2, mb: 3 }}>
-        <Tabs
-          value={tabValue}
-          onChange={(e, v) => setTabValue(v)}
-          sx={{ borderBottom: 1, borderColor: 'divider', px: 2 }}
-        >
-          {tabs.map((tab) => (
-            <Tab key={tab.key} icon={tab.icon} iconPosition="start" label={tab.label} />
-          ))}
-        </Tabs>
-      </Paper>
 
-      {/* Organization Tab (Org Admin only) */}
-      {getCurrentTabKey() === 'org' && (
-        <TabPanel value={tabValue} index={tabs.findIndex(t => t.key === 'org')}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <Paper sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                  Organization Details
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 3 }}>
-                  <Avatar sx={{ width: 64, height: 64, fontSize: '1.5rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                    <Business />
-                  </Avatar>
-                  <Box>
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                      {organization?.name || 'Default Organization'}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {organization?.slug || 'default'}
-                    </Typography>
-                  </Box>
-                </Box>
-                <Divider sx={{ my: 2 }} />
-                <List dense>
-                  <ListItem>
-                    <ListItemText primary="Organization ID" secondary={organization?.id || 'N/A'} />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemText
-                      primary="Your Role"
-                      secondary={<Chip size="small" label={orgRoleLabels[orgRole] || orgRole} color={orgRoleColors[orgRole] || 'default'} />}
-                    />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemText primary="Total Members" secondary={orgMembers.length} />
-                  </ListItem>
-                </List>
-              </Paper>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Paper sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>Quick Stats</Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <Card variant="outlined">
-                      <CardContent sx={{ textAlign: 'center' }}>
-                        <Typography variant="h4" color="primary" sx={{ fontWeight: 700 }}>
-                          {orgMembers.filter(m => m.org_role === 'org_admin').length}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">Admins</Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Card variant="outlined">
-                      <CardContent sx={{ textAlign: 'center' }}>
-                        <Typography variant="h4" color="warning.main" sx={{ fontWeight: 700 }}>
-                          {orgMembers.filter(m => m.org_role === 'manager').length}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">Managers</Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Card variant="outlined">
-                      <CardContent sx={{ textAlign: 'center' }}>
-                        <Typography variant="h4" color="info.main" sx={{ fontWeight: 700 }}>
-                          {orgMembers.filter(m => m.org_role === 'member').length}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">Members</Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Card variant="outlined">
-                      <CardContent sx={{ textAlign: 'center' }}>
-                        <Typography variant="h4" color="success.main" sx={{ fontWeight: 700 }}>{orgMembers.length}</Typography>
-                        <Typography variant="body2" color="text.secondary">Total</Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                </Grid>
-              </Paper>
-            </Grid>
-          </Grid>
-        </TabPanel>
-      )}
-
-      {/* Members Tab */}
-      {getCurrentTabKey() === 'members' && (
-        <TabPanel value={tabValue} index={tabs.findIndex(t => t.key === 'members')}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              {isOrgAdmin ? 'Organization Members' : 'Team Members'}
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <Tooltip title="Refresh">
-                <IconButton onClick={() => { loadOrgMembers(); loadUsers(); }}>
-                  <Refresh />
-                </IconButton>
-              </Tooltip>
-              {isAdmin && (
-                <Button
-                  variant="contained"
-                  startIcon={<Add />}
-                  onClick={() => setUserDialog({ open: true, user: null })}
-                  sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
-                >
-                  Add User
-                </Button>
-              )}
-            </Box>
-          </Box>
+      {/* User Management Section */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          User Management
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Tooltip title="Refresh">
+            <IconButton onClick={() => { loadUsers() }}>
+              <Refresh />
+            </IconButton>
+          </Tooltip>
+          {isAdmin && (
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => setUserDialog({ open: true, user: null })}
+              sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
+            >
+              Add User
+            </Button>
+          )}
+        </Box>
+      </Box>
 
           <Paper sx={{ borderRadius: 2 }}>
-            {loadingMembers ? (
+            {loadingUsers ? (
               <Box sx={{ p: 2 }}>
                 {[1, 2, 3].map(i => (
                   <Skeleton key={i} variant="rectangular" height={72} sx={{ mb: 1, borderRadius: 1 }} />
                 ))}
               </Box>
-            ) : orgMembers.length === 0 ? (
+            ) : users.length === 0 ? (
               <Alert severity="info" sx={{ m: 2 }}>
-                No members found in this organization.
+                No users found.
               </Alert>
             ) : (
               <List>
-                {orgMembers.map((member, idx) => (
-                  <Box key={member.id || member.user_id}>
+                {users.map((u, idx) => (
+                  <Box key={u.id}>
                     {idx > 0 && <Divider />}
                     <ListItem sx={{ py: 2 }}>
                       <Avatar
                         sx={{
                           mr: 2,
-                          background: member.org_role === 'org_admin'
+                          background: u.role === 'admin'
                             ? 'linear-gradient(135deg, #f44336 0%, #e91e63 100%)'
-                            : member.org_role === 'manager'
+                            : u.role === 'admin'
                               ? 'linear-gradient(135deg, #f57c00 0%, #ff9800 100%)'
                               : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                         }}
                       >
-                        {member.username?.charAt(0).toUpperCase()}
+                        {u.username?.charAt(0).toUpperCase()}
                       </Avatar>
                       <ListItemText
                         primary={
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                             <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                              {member.username}
+                              {u.username}
                             </Typography>
                             <Chip
                               size="small"
                               icon={
-                                member.org_role === 'org_admin' ? <AdminPanelSettings sx={{ fontSize: 14 }} /> :
-                                member.org_role === 'manager' ? <SupervisorAccount sx={{ fontSize: 14 }} /> :
+                                u.role === 'admin' ? <AdminPanelSettings sx={{ fontSize: 14 }} /> :
+                                u.role === 'admin' ? <SupervisorAccount sx={{ fontSize: 14 }} /> :
                                 <PersonOutline sx={{ fontSize: 14 }} />
                               }
-                              label={orgRoleLabels[member.org_role] || member.org_role}
-                              color={orgRoleColors[member.org_role] || 'default'}
+                              label={u.role === 'admin' ? 'Admin' : 'User'}
+                              color={u.role === 'admin' ? 'warning' : 'primary'}
                               sx={{ height: 24, fontSize: '0.75rem' }}
                             />
-                            {member.user_id === user?.id && (
+                            {u.id === user?.id && (
                               <Chip size="small" label="You" variant="outlined" sx={{ height: 20, fontSize: '0.7rem' }} />
                             )}
                           </Box>
                         }
-                        secondary={<Typography variant="body2" color="text.secondary">{member.email}</Typography>}
+                        secondary={<Typography variant="body2" color="text.secondary">{u.email}</Typography>}
                       />
-                      {isOrgAdmin && member.user_id !== user?.id && (
+                      {isAdmin && u.id !== user?.id && (
                         <ListItemSecondaryAction>
-                          <Tooltip title="Change Role">
-                            <IconButton onClick={() => { setSelectedOrgRole(member.org_role); setRoleDialog({ open: true, member }); }}>
+                          <Tooltip title="Edit User">
+                            <IconButton onClick={() => setUserDialog({ open: true, user: { ...u } })}>
                               <Edit />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="Remove from Organization">
-                            <IconButton color="error" onClick={() => handleRemoveFromOrg(member.user_id)}>
+                          <Tooltip title="Reset Password">
+                            <IconButton onClick={() => setResetDialog({ open: true, user: u })}>
+                              <Lock />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete User">
+                            <IconButton color="error" onClick={() => setDeleteDialog({ open: true, user: u })}>
                               <Delete />
                             </IconButton>
                           </Tooltip>
@@ -460,144 +288,57 @@ export default function Settings() {
                 ))}
               </List>
             )}
-          </Paper>
-        </TabPanel>
-      )}
+      </Paper>
 
-      {/* Profile Tab */}
-      {getCurrentTabKey() === 'profile' && (
-        <TabPanel value={tabValue} index={tabs.findIndex(t => t.key === 'profile')}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <Paper sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>Your Profile</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 4 }}>
-                  <Avatar
-                    sx={{
-                      width: 80,
-                      height: 80,
-                      fontSize: '2rem',
-                      background: isAdmin
-                        ? 'linear-gradient(135deg, #f57c00 0%, #ff9800 100%)'
-                        : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    }}
-                  >
-                    {user?.username?.charAt(0).toUpperCase()}
-                  </Avatar>
-                  <Box>
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>{user?.username}</Typography>
-                    <Typography variant="body2" color="text.secondary">{user?.email}</Typography>
-                    <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-                      <Chip size="small" label={isAdmin ? 'System Admin' : 'User'} color={isAdmin ? 'warning' : 'primary'} />
-                      {orgRole && (
-                        <Chip size="small" label={orgRoleLabels[orgRole] || orgRole} color={orgRoleColors[orgRole] || 'default'} variant="outlined" />
-                      )}
-                    </Box>
-                  </Box>
-                </Box>
-                <Divider sx={{ my: 3 }} />
-                <List dense>
-                  <ListItem>
-                    <ListItemText primary="Organization" secondary={organization?.name || 'Default Organization'} />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemText primary="Organization Role" secondary={orgRoleLabels[orgRole] || 'Member'} />
-                  </ListItem>
-                </List>
-              </Paper>
-            </Grid>
-          </Grid>
-        </TabPanel>
-      )}
-
-      {/* Security Tab */}
-      {getCurrentTabKey() === 'security' && (
-        <TabPanel value={tabValue} index={tabs.findIndex(t => t.key === 'security')}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <Paper sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>Security Settings</Typography>
-                <List>
-                  <ListItem>
-                    <ListItemText primary="Session Timeout" secondary="Sessions expire after 2 hours of inactivity" />
-                  </ListItem>
-                  <Divider />
-                  <ListItem>
-                    <ListItemText primary="Password Requirements" secondary="Minimum 6 characters required" />
-                  </ListItem>
-                  <Divider />
-                  <ListItem>
-                    <ListItemText primary="Authentication" secondary="JWT-based authentication with secure token storage" />
-                  </ListItem>
-                </List>
-              </Paper>
-            </Grid>
-          </Grid>
-        </TabPanel>
-      )}
-
-      {/* Add User Dialog */}
+      {/* Add/Edit User Dialog */}
       <Dialog open={userDialog.open} onClose={() => setUserDialog({ open: false, user: null })} maxWidth="sm" fullWidth>
-        <DialogTitle>Add New User</DialogTitle>
+        <DialogTitle>{isEditing ? 'Edit User' : 'Add New User'}</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField label="Username" value={newUser.username} onChange={(e) => setNewUser({ ...newUser, username: e.target.value })} fullWidth />
-            <TextField label="Email" type="email" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} fullWidth />
-            <TextField label="Password" type="password" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} fullWidth helperText="User will be required to change password on first login" />
-            <FormControl fullWidth>
-              <InputLabel>Organization Role</InputLabel>
-              <Select value={newUser.org_role} label="Organization Role" onChange={(e) => setNewUser({ ...newUser, org_role: e.target.value })}>
-                {Object.entries(orgRoleLabels).map(([value, label]) => (
-                  <MenuItem key={value} value={value}>
-                    <Box>
-                      <Typography variant="body2">{label}</Typography>
-                      <Typography variant="caption" color="text.secondary">{orgRoleDescriptions[value]}</Typography>
-                    </Box>
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <TextField
+              label="Username"
+              value={formData.username}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+              fullWidth
+              disabled={isEditing}
+              helperText={isEditing ? "Username cannot be changed" : ""}
+            />
+            <TextField
+              label="Email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              fullWidth
+            />
+            {!isEditing && (
+              <TextField
+                label="Password"
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                fullWidth
+                helperText="User will be required to change password on first login"
+              />
+            )}
             <FormControlLabel
-              control={<Switch checked={newUser.role === 'admin'} onChange={(e) => setNewUser({ ...newUser, role: e.target.checked ? 'admin' : 'user' })} />}
+              control={
+                <Switch
+                  checked={formData.role === 'admin'}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.checked ? 'admin' : 'user' })}
+                />
+              }
               label="System Administrator (has access to all system features)"
             />
           </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setUserDialog({ open: false, user: null })}>Cancel</Button>
-          <Button variant="contained" onClick={handleCreateUser} disabled={actionLoading || !newUser.username || !newUser.email || !newUser.password}>
-            {actionLoading ? <CircularProgress size={20} /> : 'Create User'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Change Org Role Dialog */}
-      <Dialog open={roleDialog.open} onClose={() => setRoleDialog({ open: false, member: null })} maxWidth="sm" fullWidth>
-        <DialogTitle>Change Organization Role</DialogTitle>
-        <DialogContent>
-          <Box sx={{ pt: 2 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Changing role for: <strong>{roleDialog.member?.username}</strong>
-            </Typography>
-            <FormControl fullWidth>
-              <InputLabel>Organization Role</InputLabel>
-              <Select value={selectedOrgRole} label="Organization Role" onChange={(e) => setSelectedOrgRole(e.target.value)}>
-                {Object.entries(orgRoleLabels).map(([value, label]) => (
-                  <MenuItem key={value} value={value}>
-                    <Box>
-                      <Typography variant="body2">{label}</Typography>
-                      <Typography variant="caption" color="text.secondary">{orgRoleDescriptions[value]}</Typography>
-                    </Box>
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setRoleDialog({ open: false, member: null })}>Cancel</Button>
-          <Button variant="contained" onClick={handleUpdateOrgRole} disabled={actionLoading}>
-            {actionLoading ? <CircularProgress size={20} /> : 'Update Role'}
+          <Button
+            variant="contained"
+            onClick={handleSaveUser}
+            disabled={actionLoading || !formData.username || !formData.email || (!isEditing && !formData.password)}
+          >
+            {actionLoading ? <CircularProgress size={20} /> : (isEditing ? 'Save Changes' : 'Create User')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -615,6 +356,24 @@ export default function Settings() {
           <Button onClick={() => setDeleteDialog({ open: false, user: null })}>Cancel</Button>
           <Button variant="contained" color="error" onClick={handleDeleteUser} disabled={actionLoading}>
             {actionLoading ? <CircularProgress size={20} /> : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* Reset Password Dialog */}
+      <Dialog open={resetDialog.open} onClose={() => setResetDialog({ open: false, user: null })}>
+        <DialogTitle>Reset Password</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Reset password for user <strong>{resetDialog.user?.username}</strong>?
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            A temporary password will be generated. The user will be required to change it on next login.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setResetDialog({ open: false, user: null })}>Cancel</Button>
+          <Button variant="contained" onClick={handleResetPassword} disabled={actionLoading}>
+            {actionLoading ? <CircularProgress size={20} /> : 'Reset Password'}
           </Button>
         </DialogActions>
       </Dialog>

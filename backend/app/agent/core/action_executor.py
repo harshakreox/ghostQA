@@ -25,6 +25,7 @@ class ActionStatus(Enum):
     TIMEOUT = "timeout"
     ERROR = "error"
     RECOVERED = "recovered"
+    ASSERTION_FAILED = "assertion_failed"
 
 
 @dataclass
@@ -710,12 +711,12 @@ class ActionExecutor:
                 continue
 
         return ActionResult(
-            status=ActionStatus.ERROR,
+            status=ActionStatus.ASSERTION_FAILED,
             action="assert_url",
             selector=expected_url,
             selector_type="url",
             execution_time_ms=int((datetime.utcnow() - start_time).total_seconds() * 1000),
-            error_message=f"URL assertion failed. Expected '{expected_url}' ({match_type}) but got '{last_url}'"
+            error_message=f"Assertion failed: Expected URL '{expected_url}' ({match_type}) but got '{last_url}'"
         )
 
     async def assert_visible(
@@ -757,22 +758,22 @@ class ActionExecutor:
                 )
             else:
                 return ActionResult(
-                    status=ActionStatus.ERROR,
+                    status=ActionStatus.ASSERTION_FAILED,
                     action="assert_visible",
                     selector=selector,
                     selector_type=selector_type,
                     execution_time_ms=int((datetime.utcnow() - start_time).total_seconds() * 1000),
-                    error_message="Element exists but is not visible"
+                    error_message=f"Assertion failed: Element '{selector}' exists but is not visible"
                 )
 
         except Exception as e:
             return ActionResult(
-                status=ActionStatus.ERROR,
+                status=ActionStatus.ASSERTION_FAILED,
                 action="assert_visible",
                 selector=selector,
                 selector_type=selector_type,
                 execution_time_ms=int((datetime.utcnow() - start_time).total_seconds() * 1000),
-                error_message=f"Visibility assertion failed: {str(e)}"
+                error_message=f"Assertion failed: Element '{selector}' not found or not visible"
             )
 
     async def assert_text(
@@ -801,22 +802,22 @@ class ActionExecutor:
                 )
             else:
                 return ActionResult(
-                    status=ActionStatus.ERROR,
+                    status=ActionStatus.ASSERTION_FAILED,
                     action="assert_text",
                     selector=selector,
                     selector_type=selector_type,
                     execution_time_ms=int((datetime.utcnow() - start_time).total_seconds() * 1000),
-                    error_message=f"Expected '{expected_text}' but got '{actual_text}'"
+                    error_message=f"Assertion failed: Expected '{expected_text}' but found '{actual_text}'"
                 )
 
         except Exception as e:
             return ActionResult(
-                status=ActionStatus.ERROR,
+                status=ActionStatus.ASSERTION_FAILED,
                 action="assert_text",
                 selector=selector,
                 selector_type=selector_type,
                 execution_time_ms=int((datetime.utcnow() - start_time).total_seconds() * 1000),
-                error_message=str(e)
+                error_message=f"Assertion failed: {str(e)}"
             )
 
     async def assert_value(
